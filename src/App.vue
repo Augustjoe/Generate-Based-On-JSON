@@ -6,10 +6,8 @@ import { useNaiveStore } from '@/stores/naiveUimodules'
 const { setComponent } = useNaiveStore()
 
 onMounted(() => {
-  console.log(new Date().getTime())
   import('naive-ui').then((modules) => {
     setComponent(modules)
-    console.log(new Date().getTime())
   })
 })
 </script>
