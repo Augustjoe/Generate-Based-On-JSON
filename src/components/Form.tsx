@@ -1,5 +1,5 @@
 import { defineComponent, ref, reactive, onMounted, computed } from 'vue'
-import { NForm, NGrid, NFormItemGi, type NotificationApi } from 'naive-ui'
+import { NForm, NGrid, NFormItemGi, NGi, type NotificationApi } from 'naive-ui'
 import { useNaiveStore } from '@/stores/naiveUimodules'
 import type { FormProps, GridProps } from 'naive-ui'
 
@@ -16,6 +16,11 @@ type FormItem =
 export default defineComponent({
   name: 'Form',
   props: {
+    formData: {
+      required: false,
+      type: Object as () => Record<any, any>,
+      default: () => ({}),
+    },
     formItems: {
       required: false,
       type: Array as () => FormItem[],
@@ -34,15 +39,15 @@ export default defineComponent({
   },
   setup(props) {
     const { getComponent } = useNaiveStore()
-    const saveFormData = reactive<Record<string, any>>({})
-    const { formProps, GridProps } = props
+    const { formProps, GridProps, formData } = props
 
     const getNaiveUiItems: () => {
-      item: NaiveUIComponents | HTMLElement
+      item?: NaiveUIComponents | HTMLElement
       props?: Record<string, any>
       itemGiProps?: Record<string, any>
       path?: string
       itemType: string
+      render?: () => HTMLElement
     }[] = () => {
       return props.formItems
         .map(({ itemType, props: itemProps, itemGiProps, path, ...other }) => {
@@ -51,10 +56,13 @@ export default defineComponent({
           if (itemType === 'render' && other.render) {
             return {
               itemType,
-              item: other.render({
-                ...(path ? { 'v-model:value': saveFormData[path] } : {}),
-                ...(itemProps || {}),
-              }),
+              render: () => {
+                return other.render({
+                  ...(path ? { 'v-model:value': formData[path] } : {}),
+                  ...(itemProps || {}),
+                })
+              },
+              itemProps,
               path,
             }
           }
@@ -63,7 +71,7 @@ export default defineComponent({
             return {
               itemType,
               item: other.render({
-                ...(path ? { 'v-model:value': saveFormData[path] } : {}),
+                ...(path ? { 'v-model:value': formData[path] } : {}),
                 ...(itemProps || {}),
               }),
               itemGiProps: { path, ...itemGiProps },
@@ -78,7 +86,8 @@ export default defineComponent({
                 itemType,
                 item: item,
                 props: {
-                  ...(path ? { 'v-model:value': saveFormData[path] } : {}),
+                  'v-model:value': formData[path],
+                  ...(path ? { 'v-model:value': formData[path] } : {}),
                   ...(itemProps || {}),
                 },
                 itemGiProps: { path, ...itemGiProps },
@@ -96,35 +105,44 @@ export default defineComponent({
     }
     const loadedFormItems = computed(getNaiveUiItems)
 
+    const getFormData = () => props.formData
+
     onMounted(getNaiveUiItems)
 
-    return { loadedFormItems, saveFormData, formProps, GridProps }
+    return { loadedFormItems, formData, formProps, GridProps, getFormData }
   },
   render() {
-    const { loadedFormItems, saveFormData, formProps, GridProps } = this
+    const { loadedFormItems, formData, formProps, GridProps } = this
 
     return (
-      <NForm v-model:value={saveFormData} {...(formProps as FormProps)}>
-        <NGrid {...(GridProps as GridProps)}>
-          {loadedFormItems.map(({ item, props, itemGiProps, itemType, ...other }, index) => {
-            const Component = item as any
-            if (itemType === 'render') {
-              console.log('item', item)
-              return <Component />
-            }
-            if (itemType === 'renderInGi') {
-              return (
-                <NFormItemGi span={24} {...itemGiProps}>
-                  {item}
-                </NFormItemGi>
-              )
-            }
-            return (
-              <NFormItemGi span={24} {...itemGiProps}>
-                <Component key={index} {...props} />
-              </NFormItemGi>
-            )
-          })}
+      <NForm v-model:value={formData} inline {...(formProps as FormProps)}>
+        <NGrid cols={24} {...(GridProps as GridProps)}>
+          {loadedFormItems.map(
+            ({ item, props, itemGiProps, itemType, render, ...other }, index) => {
+              const Component = item as any
+              if (itemType === 'render' && render) {
+                return (
+                  <NGi span={24} {...itemGiProps}>
+                    {render()}
+                  </NGi>
+                )
+              }
+              if (itemType === 'renderInGi') {
+                return (
+                  <NFormItemGi span={24} {...itemGiProps}>
+                    {item}
+                  </NFormItemGi>
+                )
+              }
+              if (Component) {
+                return (
+                  <NFormItemGi span={24} {...itemGiProps}>
+                    <Component key={index} {...props} />
+                  </NFormItemGi>
+                )
+              }
+            },
+          )}
         </NGrid>
       </NForm>
     )
