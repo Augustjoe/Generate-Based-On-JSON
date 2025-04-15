@@ -11,7 +11,36 @@ export const test = {
         name: 'Home',
         setup: () => {
           const formData = reactive<Record<string, string>>({})
-          return { formData }
+          const formItems = ref([
+            {
+              itemType: 'NInput',
+              path: 'text',
+              props: {},
+              itemGiProps: {
+                label: '测试',
+                span: 12,
+              },
+            },
+            {
+              itemType: 'render',
+              render: () => (
+                <NSpace>
+                  <NButton>取消</NButton>
+                  <NButton
+                    type="primary"
+                    onClick={() => {
+                      formItems.value[0].itemGiProps!.label = '测试2'
+                      console.log(formData, formItems.value)
+                    }}
+                  >
+                    确定
+                  </NButton>
+                </NSpace>
+              ),
+            },
+          ])
+
+          return { formData, formItems }
         },
         render() {
           return (
@@ -26,33 +55,7 @@ export const test = {
                   labelPlacement: 'left',
                   labelWidth: 'auto',
                 }}
-                formItems={[
-                  {
-                    itemType: 'NInput',
-                    path: 'text',
-                    props: {},
-                    itemGiProps: {
-                      label: '测试',
-                      span: 12,
-                    },
-                  },
-                  {
-                    itemType: 'render',
-                    render: () => (
-                      <NSpace>
-                        <NButton>取消</NButton>
-                        <NButton
-                          type="primary"
-                          onClick={() => {
-                            console.log(this.formData.text)
-                          }}
-                        >
-                          确定
-                        </NButton>
-                      </NSpace>
-                    ),
-                  },
-                ]}
+                formItems={this.formItems}
                 GridProps={{
                   cols: 12,
                 }}
