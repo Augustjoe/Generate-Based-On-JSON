@@ -6,7 +6,7 @@ export const test = {
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: 'index',
       component: defineComponent({
         name: 'Home',
         setup: () => {
@@ -64,6 +64,12 @@ export const test = {
           )
         },
       }),
+      children: [
+        {
+          path: '/home',
+          home: '',
+        },
+      ],
     },
   ],
 }
