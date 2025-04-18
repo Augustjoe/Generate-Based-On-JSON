@@ -9,6 +9,10 @@ declare module 'vue' {
   export interface GlobalComponents {
     Form: typeof import('./src/components/Form.tsx')['default']
     NButton: typeof import('naive-ui')['NButton']
+    NLayout: typeof import('naive-ui')['NLayout']
+    NLayoutContent: typeof import('naive-ui')['NLayoutContent']
+    NLayoutHeader: typeof import('naive-ui')['NLayoutHeader']
+    NLayoutSider: typeof import('naive-ui')['NLayoutSider']
     NSpace: typeof import('naive-ui')['NSpace']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
