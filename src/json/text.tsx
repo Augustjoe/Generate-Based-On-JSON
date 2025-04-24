@@ -10,6 +10,7 @@ export const test = {
       path: '/',
       name: 'index',
       component: indexComponent,
+      redirect: '/home',
       children: [
         {
           path: '/home',
