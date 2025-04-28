@@ -21,6 +21,7 @@ export default defineComponent({
     const onUpdateValue = (key: string, item: MenuOption) => {
       console.log(item)
     }
+    console.log(props.MenuProps, 'MenuProps')
     return { ...props, onUpdateValue }
   },
   render() {

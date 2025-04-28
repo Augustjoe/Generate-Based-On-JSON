@@ -1,5 +1,5 @@
 import { RouterView } from 'vue-router'
-import { CSSProperties, Transition } from 'vue'
+import { CSSProperties, Transition, ref } from 'vue'
 import Menu from '@/components/Menu'
 import menuOptions from './menu'
 
@@ -17,18 +17,48 @@ export const indexComponent = defineComponent({
     const layoutHeaderStyle: CSSProperties = {
       height: '60px',
     }
+    const collapsed = ref(false)
+    const MenuProps = reactive({
+      collapsed: collapsed,
+      collapsedWidth: 65,
+      collapsedIconSize: 22,
+    })
 
-    return { layoutStyle, layoutContentStyle, layoutHeaderStyle }
+    return {
+      layoutStyle,
+      layoutContentStyle,
+      layoutHeaderStyle,
+      collapsed,
+      MenuProps,
+      Collapse: () => {
+        collapsed.value = true
+      },
+      Expand: () => {
+        collapsed.value = false
+      },
+    }
   },
   render() {
-    const { layoutStyle, layoutContentStyle, layoutHeaderStyle } = this
+    const {
+      layoutStyle,
+      layoutContentStyle,
+      layoutHeaderStyle,
+      collapsed,
+      Collapse,
+      Expand,
+      MenuProps,
+    } = this
     return (
       <n-layout style={layoutStyle} has-sider>
         <n-layout-sider
-          content-style={{
-            padding: '24px',
-            width: '200px',
-          }}
+          bordered
+          collapseMode="width"
+          collapsedWidth={65}
+          width={200}
+          collapsed={collapsed}
+          show-trigger
+          onCollapse={Collapse}
+          onExpand={Expand}
         >
           <div
             style={{
@@ -42,10 +72,13 @@ export const indexComponent = defineComponent({
               height: 'calc(100% - 60px)',
             }}
             options={menuOptions}
+            MenuProps={MenuProps}
           ></Menu>
         </n-layout-sider>
         <n-layout>
-          <n-layout-header style={layoutHeaderStyle}>颐和园路</n-layout-header>
+          <n-layout-header content-style={layoutHeaderStyle}>
+            <n-space> MenuFoldOutlined MenuUnfoldOutlined</n-space>
+          </n-layout-header>
           <n-layout-content content-style={layoutContentStyle}>
             <Transition>
               <RouterView />
