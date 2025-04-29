@@ -2,6 +2,9 @@ import { RouterView } from 'vue-router'
 import { CSSProperties, Transition, ref } from 'vue'
 import Menu from '@/components/Menu'
 import menuOptions from './menu'
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@vicons/antd'
+import { NButton, NSpace } from 'naive-ui'
+import iconImg from '@/assets/img/icon.png'
 
 export const indexComponent = defineComponent({
   name: 'Home',
@@ -65,7 +68,16 @@ export const indexComponent = defineComponent({
               height: '60px',
             }}
           >
-            数据菜单平台
+            <NSpace
+              style={{
+                height: '60px',
+              }}
+              align="center"
+              justify="center"
+            >
+              <img style={{ width: '40px' }} src={iconImg} alt="" />
+              {!collapsed && <span>数据生成平台</span>}
+            </NSpace>
           </div>
           <Menu
             style={{
@@ -76,8 +88,20 @@ export const indexComponent = defineComponent({
           ></Menu>
         </n-layout-sider>
         <n-layout>
-          <n-layout-header content-style={layoutHeaderStyle}>
-            <n-space> MenuFoldOutlined MenuUnfoldOutlined</n-space>
+          <n-layout-header style={layoutHeaderStyle}>
+            <NSpace style={{ height: '100%', marginLeft: '10px' }} align="center" justify="start">
+              {/* 缩放按钮 */}
+              <NButton
+                text
+                onClick={() => {
+                  this.collapsed = !this.collapsed
+                }}
+              >
+                {{
+                  icon: () => (collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />),
+                }}
+              </NButton>
+            </NSpace>
           </n-layout-header>
           <n-layout-content content-style={layoutContentStyle}>
             <Transition>
