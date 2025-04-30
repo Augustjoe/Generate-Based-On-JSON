@@ -1,14 +1,17 @@
 import { RouterView } from 'vue-router'
-import { CSSProperties, Transition, ref } from 'vue'
+import { CSSProperties, Transition, DefineComponent, ref, h, onMounted } from 'vue'
 import Menu from '@/components/Menu'
 import menuOptions from './menu'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@vicons/antd'
 import { NButton, NSpace } from 'naive-ui'
 import iconImg from '@/assets/img/icon.png'
+import { useLoadingBar } from 'naive-ui'
 
 export const indexComponent = defineComponent({
   name: 'Home',
   setup: () => {
+    const LoadingBar = useLoadingBar()
+    LoadingBar.start()
     const layoutStyle: CSSProperties = {
       width: '100%',
       height: '100%',
@@ -25,6 +28,10 @@ export const indexComponent = defineComponent({
       collapsed: collapsed,
       collapsedWidth: 65,
       collapsedIconSize: 22,
+    })
+
+    onMounted(() => {
+      LoadingBar.finish()
     })
 
     return {
@@ -104,9 +111,13 @@ export const indexComponent = defineComponent({
             </NSpace>
           </n-layout-header>
           <n-layout-content content-style={layoutContentStyle}>
-            <Transition>
-              <RouterView />
-            </Transition>
+            <routerView
+              v-slots={{
+                default: ({ Component }: { Component: DefineComponent }) => (
+                  <Transition>{h(Component)}</Transition>
+                ),
+              }}
+            />
           </n-layout-content>
         </n-layout>
       </n-layout>
