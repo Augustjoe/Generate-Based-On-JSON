@@ -1,11 +1,11 @@
-import { RouterView } from 'vue-router'
 import { CSSProperties, Transition, DefineComponent, ref, h, onMounted } from 'vue'
 import Menu from '@/components/Menu'
 import menuOptions from './menu'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@vicons/antd'
+import { DarkModeFilled, LightModeOutlined } from '@vicons/material'
 import { NButton, NSpace } from 'naive-ui'
 import iconImg from '@/assets/img/icon.png'
-import { useLoadingBar } from 'naive-ui'
+import { useLoadingBar, lightTheme, darkTheme } from 'naive-ui'
 
 export const indexComponent = defineComponent({
   name: 'Home',
@@ -59,68 +59,85 @@ export const indexComponent = defineComponent({
       MenuProps,
     } = this
     return (
-      <n-layout style={layoutStyle} has-sider>
-        <n-layout-sider
-          bordered
-          collapseMode="width"
-          collapsedWidth={65}
-          width={200}
-          collapsed={collapsed}
-          show-trigger
-          onCollapse={Collapse}
-          onExpand={Expand}
-        >
-          <div
-            style={{
-              height: '60px',
-            }}
+      <n-config-provider theme={lightTheme}>
+        <n-layout style={layoutStyle} has-sider>
+          <n-layout-sider
+            bordered
+            collapseMode="width"
+            collapsedWidth={65}
+            width={200}
+            collapsed={collapsed}
+            show-trigger
+            onCollapse={Collapse}
+            onExpand={Expand}
           >
-            <NSpace
+            <div
               style={{
                 height: '60px',
               }}
-              align="center"
-              justify="center"
             >
-              <img style={{ width: '40px' }} src={iconImg} alt="" />
-              {!collapsed && <span>数据生成平台</span>}
-            </NSpace>
-          </div>
-          <Menu
-            style={{
-              height: 'calc(100% - 60px)',
-            }}
-            options={menuOptions}
-            MenuProps={MenuProps}
-          ></Menu>
-        </n-layout-sider>
-        <n-layout>
-          <n-layout-header style={layoutHeaderStyle}>
-            <NSpace style={{ height: '100%', marginLeft: '10px' }} align="center" justify="start">
-              {/* 缩放按钮 */}
-              <NButton
-                text
-                onClick={() => {
-                  this.collapsed = !this.collapsed
+              <NSpace
+                style={{
+                  height: '60px',
+                  width: !collapsed ? "200px" : '65px'
                 }}
+                align="center"
+                justify="center"
               >
-                {{
-                  icon: () => (collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />),
-                }}
-              </NButton>
-            </NSpace>
-          </n-layout-header>
-          <n-layout-content content-style={layoutContentStyle}>
-            <routerView
-              v-slots={{
-                default: ({ Component }: { Component: DefineComponent }) => (
-                  <Transition>{h(Component)}</Transition>
-                ),
+                <img style={{ width: '40px' }} src={iconImg} alt="" />
+                {!collapsed && <span>数据生成平台</span>}
+              </NSpace>
+            </div>
+            <Menu
+              style={{
+                height: 'calc(100% - 60px)',
               }}
-            />
-          </n-layout-content>
+              options={menuOptions}
+              MenuProps={MenuProps}
+            ></Menu>
+          </n-layout-sider>
+          <n-layout>
+            <n-layout-header style={layoutHeaderStyle}>
+              <NSpace style={{ height: '100%', marginLeft: '10px' }} align="center" justify="space-around">
+                {/* 缩放按钮 */}
+                <NSpace align="center" justify="start">
+                  <NButton
+                    text
+                    onClick={() => {
+                      this.collapsed = !this.collapsed
+                    }}
+                  >
+                    {{
+                      icon: () => (collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />),
+                    }}
+                  </NButton>
+                </NSpace>
+                <NSpace align="center" justify="start">
+                  <NButton
+                    text
+                    onClick={() => {
+                      this.collapsed = !this.collapsed
+                    }}
+                  >
+                    {{
+                      icon: () => (collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />),
+                    }}
+                  </NButton>
+                </NSpace>
+              </NSpace>
+            </n-layout-header>
+            <n-layout-content content-style={layoutContentStyle}>
+              <routerView
+                v-slots={{
+                  default: ({ Component }: { Component: DefineComponent }) => (
+                    <Transition>{h(Component)}</Transition>
+                  ),
+                }}
+              />
+            </n-layout-content>
+          </n-layout>
         </n-layout>
-      </n-layout>
+      </n-config-provider>
     )
   },
 })

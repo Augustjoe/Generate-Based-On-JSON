@@ -49,7 +49,7 @@ export default defineComponent({
   setup(props) {
     const { getComponent } = useNaiveStore()
     const { formProps, GridProps, formData } = props
-    const getNaiveUiItems: () => renderItem[] = () => {
+    const getNaiveUiItems: () => (renderItem | null) [] = () => {
       return props.formItems
         .map(({ itemType, props: itemProps, itemGiProps, path, ...other }) => {
           if (!itemType) return null
@@ -106,7 +106,7 @@ export default defineComponent({
             return null
           }
         })
-        .filter((item) => item !== null)
+        .filter((item) => item)
     }
 
     const formItems = computed(getNaiveUiItems)
@@ -120,7 +120,7 @@ export default defineComponent({
     return (
       <NForm v-model:value={formData} inline {...(formProps as FormProps)}>
         <NGrid cols={24} {...(GridProps as GridProps)}>
-          {formItems.map(({ item, props, itemGiProps, itemType, render, ...other }, index) => {
+          {(formItems.filter((item) => item) as renderItem[]).map(({ item, props, itemGiProps, itemType, render, ...other }, index) => {
             const Component = item as any
             if (itemType === 'render' && render) {
               return (
