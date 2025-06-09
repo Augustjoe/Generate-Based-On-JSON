@@ -76,21 +76,26 @@ export const indexComponent = defineComponent({
                 height: '60px',
               }}
             >
-              <NSpace
+              <div
                 style={{
+                  display:'flex',
+                  alignItems:'center',
+                  justifyContent:'center',
                   height: '60px',
-                  width: !collapsed ? "200px" : '65px'
+                  width: '100%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
                 }}
-                align="center"
-                justify="center"
               >
-                <img style={{ width: '40px' }} src={iconImg} alt="" />
+                <img style={{ width: '40px',marginRight:'10px' }} src={iconImg} alt="" />
                 {!collapsed && <span>数据生成平台</span>}
-              </NSpace>
+              </div>
             </div>
             <Menu
               style={{
                 height: 'calc(100% - 60px)',
+                //  width: !collapsed ? "200px" : '65px'
               }}
               options={menuOptions}
               MenuProps={MenuProps}
@@ -98,7 +103,7 @@ export const indexComponent = defineComponent({
           </n-layout-sider>
           <n-layout>
             <n-layout-header style={layoutHeaderStyle}>
-              <NSpace style={{ height: '100%', marginLeft: '10px' }} align="center" justify="space-around">
+              <NSpace style={{ height: '100%', marginLeft: '10px' }} align="center" justify="space-between">
                 {/* 缩放按钮 */}
                 <NSpace align="center" justify="start">
                   <NButton
