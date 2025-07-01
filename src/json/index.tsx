@@ -2,14 +2,18 @@ import { CSSProperties, Transition, DefineComponent, ref, h, onMounted } from 'v
 import Menu from '@/components/Menu'
 import menuOptions from './menu'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@vicons/antd'
-import { DarkModeFilled, LightModeOutlined } from '@vicons/material'
+import { Refresh } from '@vicons/ionicons5'
 import { NButton, NSpace } from 'naive-ui'
 import iconImg from '@/assets/img/icon.png'
 import { useLoadingBar, lightTheme, darkTheme } from 'naive-ui'
+import { useRouter, useRoute } from 'vue-router'
 
 export const indexComponent = defineComponent({
   name: 'Home',
   setup: () => {
+    const router = useRouter()
+    const route = useRoute()
+    const routerKey = ref(1)
     const LoadingBar = useLoadingBar()
     LoadingBar.start()
     const layoutStyle: CSSProperties = {
@@ -30,16 +34,22 @@ export const indexComponent = defineComponent({
       collapsedIconSize: 22,
     })
 
+    const refreshRoute = () => {
+      routerKey.value += 1
+    }
+
     onMounted(() => {
       LoadingBar.finish()
     })
 
     return {
+      routerKey,
       layoutStyle,
       layoutContentStyle,
       layoutHeaderStyle,
       collapsed,
       MenuProps,
+      refreshRoute,
       Collapse: () => {
         collapsed.value = true
       },
@@ -78,9 +88,9 @@ export const indexComponent = defineComponent({
             >
               <div
                 style={{
-                  display:'flex',
-                  alignItems:'center',
-                  justifyContent:'center',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   height: '60px',
                   width: '100%',
                   overflow: 'hidden',
@@ -88,7 +98,7 @@ export const indexComponent = defineComponent({
                   whiteSpace: 'nowrap',
                 }}
               >
-                <img style={{ width: '40px',marginRight:'10px' }} src={iconImg} alt="" />
+                <img style={{ width: '40px', marginRight: '10px' }} src={iconImg} alt="" />
                 {!collapsed && <span>数据生成平台</span>}
               </div>
             </div>
@@ -104,8 +114,8 @@ export const indexComponent = defineComponent({
           <n-layout>
             <n-layout-header style={layoutHeaderStyle}>
               <NSpace style={{ height: '100%', marginLeft: '10px' }} align="center" justify="space-between">
-                {/* 缩放按钮 */}
                 <NSpace align="center" justify="start">
+                  {/* 缩放按钮 */}
                   <NButton
                     text
                     onClick={() => {
@@ -114,6 +124,15 @@ export const indexComponent = defineComponent({
                   >
                     {{
                       icon: () => (collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />),
+                    }}
+                  </NButton>
+                  {/* 刷新按钮 */}
+                  <NButton
+                    text
+                    onClick={this.refreshRoute}
+                  >
+                    {{
+                      icon: () => <Refresh />,
                     }}
                   </NButton>
                 </NSpace>
@@ -133,6 +152,7 @@ export const indexComponent = defineComponent({
             </n-layout-header>
             <n-layout-content content-style={layoutContentStyle}>
               <routerView
+                key={`routerKey` + this.routerKey}
                 v-slots={{
                   default: ({ Component }: { Component: DefineComponent }) => (
                     <Transition>{h(Component)}</Transition>
