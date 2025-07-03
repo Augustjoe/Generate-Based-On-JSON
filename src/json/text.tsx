@@ -2,7 +2,7 @@ import { defineComponent, reactive } from 'vue'
 import Form from '@/components/Form'
 import { NSpace, NButton } from 'naive-ui'
 import { RouterView } from 'vue-router'
-import { indexComponent } from './index'
+import { indexComponent } from './layout/index'
 
 export const test = {
   routes: [

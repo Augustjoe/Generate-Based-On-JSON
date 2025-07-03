@@ -1,12 +1,14 @@
 import { CSSProperties, Transition, DefineComponent, ref, h, onMounted } from 'vue'
 import Menu from '@/components/Menu'
-import menuOptions from './menu'
+import menuOptions from '../menu'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@vicons/antd'
 import { Refresh } from '@vicons/ionicons5'
-import { NButton, NSpace } from 'naive-ui'
+import { NButton, NSpace, NBreadcrumb } from 'naive-ui'
 import iconImg from '@/assets/img/icon.png'
 import { useLoadingBar, lightTheme, darkTheme } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
+import HearderButtons from "./components/hearderButtons"
+import "./less/index.less"
 
 export const indexComponent = defineComponent({
   name: 'Home',
@@ -67,6 +69,7 @@ export const indexComponent = defineComponent({
       Collapse,
       Expand,
       MenuProps,
+      refreshRoute
     } = this
     return (
       <n-config-provider theme={lightTheme}>
@@ -113,42 +116,15 @@ export const indexComponent = defineComponent({
           </n-layout-sider>
           <n-layout>
             <n-layout-header style={layoutHeaderStyle}>
-              <NSpace style={{ height: '100%', marginLeft: '10px' }} align="center" justify="space-between">
-                <NSpace align="center" justify="start">
-                  {/* 缩放按钮 */}
-                  <NButton
-                    text
-                    onClick={() => {
-                      this.collapsed = !this.collapsed
-                    }}
-                  >
-                    {{
-                      icon: () => (collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />),
-                    }}
-                  </NButton>
-                  {/* 刷新按钮 */}
-                  <NButton
-                    text
-                    onClick={this.refreshRoute}
-                  >
-                    {{
-                      icon: () => <Refresh />,
-                    }}
-                  </NButton>
-                </NSpace>
-                <NSpace align="center" justify="start">
-                  <NButton
-                    text
-                    onClick={() => {
-                      this.collapsed = !this.collapsed
-                    }}
-                  >
-                    {{
-                      icon: () => (collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />),
-                    }}
-                  </NButton>
-                </NSpace>
-              </NSpace>
+
+              <HearderButtons
+                collapsed={collapsed}
+                onToggleCollapsed={() => {
+                  this.collapsed = !this.collapsed
+                }}
+                onRefreshRoute={refreshRoute}
+              ></HearderButtons>
+              
             </n-layout-header>
             <n-layout-content content-style={layoutContentStyle}>
               <routerView

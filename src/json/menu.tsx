@@ -7,6 +7,11 @@ export const MenuOptions: MenuOption[] = [
     key: 'home',
     icon: () => <ControlOutlined />,
   },
+  {
+    label: '工作台',
+    key: 'home',
+    icon: () => <ControlOutlined />,
+  },
 ]
 
 export default MenuOptions
