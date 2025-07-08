@@ -1,9 +1,6 @@
 import { CSSProperties, Transition, DefineComponent, ref, h, onMounted } from 'vue'
 import Menu from '@/components/Menu'
 import menuOptions from '../menu'
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@vicons/antd'
-import { Refresh } from '@vicons/ionicons5'
-import { NButton, NSpace, NBreadcrumb } from 'naive-ui'
 import iconImg from '@/assets/img/icon.png'
 import { useLoadingBar, lightTheme, darkTheme } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
@@ -14,7 +11,6 @@ export const indexComponent = defineComponent({
   name: 'Home',
   setup: () => {
     const router = useRouter()
-    const route = useRoute()
     const routerKey = ref(1)
     const LoadingBar = useLoadingBar()
     LoadingBar.start()
@@ -34,6 +30,10 @@ export const indexComponent = defineComponent({
       collapsed: collapsed,
       collapsedWidth: 65,
       collapsedIconSize: 22,
+      value: 'home',
+      'onUpdate:value': (path: string) => {
+        router.push({ path })
+      }
     })
 
     const refreshRoute = () => {
@@ -112,6 +112,7 @@ export const indexComponent = defineComponent({
               }}
               options={menuOptions}
               MenuProps={MenuProps}
+
             ></Menu>
           </n-layout-sider>
           <n-layout>
@@ -124,7 +125,7 @@ export const indexComponent = defineComponent({
                 }}
                 onRefreshRoute={refreshRoute}
               ></HearderButtons>
-              
+
             </n-layout-header>
             <n-layout-content content-style={layoutContentStyle}>
               <routerView

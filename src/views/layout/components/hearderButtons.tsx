@@ -1,7 +1,8 @@
 import { defineComponent, ref } from 'vue'
-import { NButton, NSpace, NBreadcrumb, NDropdown } from 'naive-ui'
+import { NButton, NSpace, NBreadcrumb, NDropdown, DropdownOption, dropdownDark } from 'naive-ui'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@vicons/antd'
 import { Refresh } from '@vicons/ionicons5'
+import { useRouter, useRoute } from 'vue-router'
 
 export const LeftHeaderComponent = defineComponent({
     name: 'HeaderComponent',
@@ -24,10 +25,30 @@ export const LeftHeaderComponent = defineComponent({
     },
     setup(props) {
         const collapsed = ref(props.collapsed)
+        const menuOptions: DropdownOption[] = [
+            {
+                label: '主控台',
+                key: 'home'
+            }, {
+                label: '工作台',
+                key: 'workbench'
+            }
+        ]
+        const router = useRouter()
+        const route = useRoute()
+
+        const nowSelectMenu = computed(() => {
+            console.log(route,'route')
+            return route.name
+        })
 
         const toggleCollapse = () => {
             collapsed.value = !collapsed.value
             props.onToggleCollapsed(collapsed.value)
+        }
+
+        const dropdownSelectChange = (key: string) => {
+            router.push({ path: key })
         }
 
         return () => (
@@ -67,14 +88,14 @@ export const LeftHeaderComponent = defineComponent({
                         {/* 菜单题头 */}
                         <NBreadcrumb class="item-button">
                             <n-breadcrumb-item>
-                                <NDropdown options={[]}>
+                                <NDropdown options={menuOptions} onSelect={dropdownSelectChange}>
                                     <div>
                                         控制面板
                                     </div>
                                 </NDropdown>
                             </n-breadcrumb-item>
                             <n-breadcrumb-item>
-                                菜单
+                                {nowSelectMenu.value}
                             </n-breadcrumb-item>
                         </NBreadcrumb>
                     </div>

@@ -9,7 +9,7 @@ export const MenuOptions: MenuOption[] = [
   },
   {
     label: '工作台',
-    key: 'home',
+    key: 'workbench',
     icon: () => <ControlOutlined />,
   },
 ]
