@@ -12,7 +12,6 @@ declare module 'vue' {
     Menu: typeof import('./src/components/Menu.tsx')['default']
     NBreadcrumbItem: typeof import('naive-ui')['NBreadcrumbItem']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
-    NDropdown: typeof import('naive-ui')['NDropdown']
     NLayout: typeof import('naive-ui')['NLayout']
     NLayoutContent: typeof import('naive-ui')['NLayoutContent']
     NLayoutHeader: typeof import('naive-ui')['NLayoutHeader']

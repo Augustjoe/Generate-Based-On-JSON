@@ -4,8 +4,8 @@ import menuOptions from '../menu'
 import iconImg from '@/assets/img/icon.png'
 import { useLoadingBar, lightTheme, darkTheme } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
-import HearderButtons from "./components/hearderButtons"
-import "./less/index.less"
+import HearderButtons from './components/hearderButtons'
+import './less/index.less'
 
 export const indexComponent = defineComponent({
   name: 'Home',
@@ -33,7 +33,7 @@ export const indexComponent = defineComponent({
       value: 'home',
       'onUpdate:value': (path: string) => {
         router.push({ path })
-      }
+      },
     })
 
     const refreshRoute = () => {
@@ -69,7 +69,7 @@ export const indexComponent = defineComponent({
       Collapse,
       Expand,
       MenuProps,
-      refreshRoute
+      refreshRoute,
     } = this
     return (
       <n-config-provider theme={lightTheme}>
@@ -112,12 +112,10 @@ export const indexComponent = defineComponent({
               }}
               options={menuOptions}
               MenuProps={MenuProps}
-
             ></Menu>
           </n-layout-sider>
           <n-layout>
             <n-layout-header style={layoutHeaderStyle}>
-
               <HearderButtons
                 collapsed={collapsed}
                 onToggleCollapsed={() => {
@@ -125,14 +123,13 @@ export const indexComponent = defineComponent({
                 }}
                 onRefreshRoute={refreshRoute}
               ></HearderButtons>
-
             </n-layout-header>
             <n-layout-content content-style={layoutContentStyle}>
               <routerView
                 key={`routerKey` + this.routerKey}
                 v-slots={{
                   default: ({ Component }: { Component: DefineComponent }) => (
-                    <Transition>{h(Component)}</Transition>
+                    <Transition mode="out-in">{h(Component)}</Transition>
                   ),
                 }}
               />
