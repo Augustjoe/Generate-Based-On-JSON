@@ -20,5 +20,7 @@ declare module 'vue' {
     PopoverButton: typeof import('./src/components/PopoverButton.tsx')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Searchinput: typeof import('./src/components/Searchinput.tsx')['default']
+    SearchInput: typeof import('./src/components/SearchInput.tsx')['default']
   }
 }

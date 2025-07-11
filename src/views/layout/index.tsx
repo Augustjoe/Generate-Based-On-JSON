@@ -11,6 +11,7 @@ export const indexComponent = defineComponent({
   name: 'Home',
   setup: () => {
     const router = useRouter()
+    const route = useRoute()
     const routerKey = ref(1)
     const LoadingBar = useLoadingBar()
     LoadingBar.start()
@@ -26,11 +27,16 @@ export const indexComponent = defineComponent({
       height: '60px',
     }
     const collapsed = ref(false)
+
+    const routeKey = computed(() => {
+      return menuOptions.find(({ label }) => route.name === label)?.key || null
+    })
+
     const MenuProps = reactive({
       collapsed: collapsed,
       collapsedWidth: 65,
       collapsedIconSize: 22,
-      value: 'home',
+      value: routeKey,
       'onUpdate:value': (path: string) => {
         router.push({ path })
       },
@@ -72,7 +78,7 @@ export const indexComponent = defineComponent({
       refreshRoute,
     } = this
     return (
-      <n-config-provider theme={lightTheme}>
+      <n-config-provider style={{ height: '100%' }} theme={lightTheme}>
         <n-layout style={layoutStyle} has-sider>
           <n-layout-sider
             bordered
@@ -114,7 +120,7 @@ export const indexComponent = defineComponent({
               MenuProps={MenuProps}
             ></Menu>
           </n-layout-sider>
-          <n-layout>
+          <n-layout content-style={{ height: '100%' }} style={{ height: '100%' }}>
             <n-layout-header style={layoutHeaderStyle}>
               <HearderButtons
                 collapsed={collapsed}
@@ -124,7 +130,10 @@ export const indexComponent = defineComponent({
                 onRefreshRoute={refreshRoute}
               ></HearderButtons>
             </n-layout-header>
-            <n-layout-content content-style={layoutContentStyle}>
+            <n-layout-content
+              style={{ height: 'calc(100% - 60px)', background: '#f5f7f9' }}
+              content-style={layoutContentStyle}
+            >
               <routerView
                 key={`routerKey` + this.routerKey}
                 v-slots={{
