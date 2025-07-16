@@ -23,9 +23,7 @@ export const indexComponent = defineComponent({
       height: '100%',
       padding: '24px',
     }
-    const layoutHeaderStyle: CSSProperties = {
-      height: '60px',
-    }
+    const layoutHeaderStyle: CSSProperties = {}
     const collapsed = ref(false)
 
     const routeKey = computed(() => {

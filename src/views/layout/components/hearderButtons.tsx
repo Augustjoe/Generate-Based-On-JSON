@@ -1,9 +1,11 @@
 import { defineComponent, ref } from 'vue'
 import { NButton, NBreadcrumb, NDropdown, DropdownOption } from 'naive-ui'
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@vicons/antd'
-import { Refresh } from '@vicons/ionicons5'
+import { MenuFoldOutlined, MenuUnfoldOutlined, FullscreenOutlined } from '@vicons/antd'
+import { LogoGithub, Refresh } from '@vicons/ionicons5'
+import { enterFullScreen } from '@/assets/tool'
 import { useRouter, useRoute } from 'vue-router'
-import { SearchInput } from '@/components/searchinput'
+import SearchInput from '@/components/searchinput'
+import TooltipButton from '@/components/TooltipButton'
 
 export const LeftHeaderComponent = defineComponent({
   name: 'HeaderComponent',
@@ -56,10 +58,11 @@ export const LeftHeaderComponent = defineComponent({
     return () => (
       <div
         style={{
-          height: '100%',
-          marginLeft: '10px',
+          height: '60px',
+          padding: '0px 10px',
           display: 'flex',
           alignItems: 'center',
+          boxShadow: `0 1px 4px rgba(0, 21, 41, 0.08)`,
           justifyContent: 'space-between',
         }}
       >
@@ -94,7 +97,36 @@ export const LeftHeaderComponent = defineComponent({
         </div>
 
         <div class="right-header-buttons">
+          {/* <span class="item-button"> */}
           <SearchInput />
+          {/* </span> */}
+
+          <TooltipButton
+            tooltipProps={{}}
+            buttonProps={{
+              icon: <LogoGithub />,
+              onClick: () => {
+                window.open('https://www.github.com', '_blank')
+              },
+              style: { marginLeft: '10px' },
+              class: 'item-button',
+            }}
+          >
+            Github
+          </TooltipButton>
+
+          <TooltipButton
+            tooltipProps={{}}
+            buttonProps={{
+              icon: <FullscreenOutlined />,
+              onClick: () => {
+                enterFullScreen(document.documentElement)
+              },
+              class: 'item-button',
+            }}
+          >
+            全屏
+          </TooltipButton>
         </div>
       </div>
     )

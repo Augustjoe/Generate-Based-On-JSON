@@ -12,7 +12,7 @@ export const SearchInput = defineComponent({
     const inputRef = ref<InputInst | null>(null) // 初始化为 null
 
     return () => (
-      <div class="search-input">
+      <>
         {isShowInput.value ? (
           <NInput
             ref={inputRef} // 绑定 ref
@@ -45,7 +45,7 @@ export const SearchInput = defineComponent({
             }}
           </NButton>
         )}
-      </div>
+      </>
     )
   },
 })
