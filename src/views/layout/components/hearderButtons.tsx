@@ -4,6 +4,8 @@ import { MenuFoldOutlined, MenuUnfoldOutlined, FullscreenOutlined } from '@vicon
 import { LogoGithub, Refresh } from '@vicons/ionicons5'
 import { enterFullScreen } from '@/assets/tool'
 import { useRouter, useRoute } from 'vue-router'
+import { Settings28Regular } from '@vicons/fluent'
+
 
 import SearchInput from '@/components/SearchInput'
 import TooltipButton from '@/components/TooltipButton'
@@ -131,6 +133,19 @@ export const LeftHeaderComponent = defineComponent({
           </TooltipButton>
 
           <UserAvatar></UserAvatar>
+
+          <TooltipButton
+            tooltipProps={{}}
+            buttonProps={{
+              icon: <Settings28Regular />,
+              onClick: () => {
+                console.log('设置')
+              },
+              class: 'item-button',
+            }}
+          >
+            设置
+          </TooltipButton>
         </div>
       </div>
     )
