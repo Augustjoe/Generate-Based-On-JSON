@@ -1,11 +1,13 @@
 import { defineComponent, ref } from 'vue'
-import { NButton, NBreadcrumb, NDropdown, DropdownOption } from 'naive-ui'
+import { NButton, NBreadcrumb, NDropdown, DropdownOption, NAvatar } from 'naive-ui'
 import { MenuFoldOutlined, MenuUnfoldOutlined, FullscreenOutlined } from '@vicons/antd'
 import { LogoGithub, Refresh } from '@vicons/ionicons5'
 import { enterFullScreen } from '@/assets/tool'
 import { useRouter, useRoute } from 'vue-router'
-import SearchInput from '@/components/searchinput'
+
+import SearchInput from '@/components/SearchInput'
 import TooltipButton from '@/components/TooltipButton'
+import UserAvatar from './UserAvatar'
 
 export const LeftHeaderComponent = defineComponent({
   name: 'HeaderComponent',
@@ -127,6 +129,8 @@ export const LeftHeaderComponent = defineComponent({
           >
             全屏
           </TooltipButton>
+
+          <UserAvatar></UserAvatar>
         </div>
       </div>
     )

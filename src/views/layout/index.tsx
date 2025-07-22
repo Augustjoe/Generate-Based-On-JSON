@@ -4,7 +4,7 @@ import menuOptions from '../menu'
 import iconImg from '@/assets/img/icon.png'
 import { useLoadingBar, lightTheme, darkTheme } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
-import HearderButtons from './components/hearderButtons'
+import HearderButtons from './components/HearderButtons'
 import './less/index.less'
 
 export const indexComponent = defineComponent({
