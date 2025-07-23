@@ -4,8 +4,10 @@ import menuOptions from '../menu'
 import iconImg from '@/assets/img/icon.png'
 import { useLoadingBar, lightTheme, darkTheme } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
-import HearderButtons from './components/HearderButtons'
 import './less/index.less'
+
+import HearderButtons from './components/HearderButtons'
+import MenuTag from './components/MenuTag'
 
 export const indexComponent = defineComponent({
   name: 'Home',
@@ -132,6 +134,8 @@ export const indexComponent = defineComponent({
               style={{ height: 'calc(100% - 60px)', background: '#f5f7f9' }}
               content-style={layoutContentStyle}
             >
+              <MenuTag></MenuTag>
+
               <routerView
                 key={`routerKey` + this.routerKey}
                 v-slots={{

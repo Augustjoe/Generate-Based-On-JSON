@@ -22,12 +22,12 @@ export const LeftHeaderComponent = defineComponent({
     onToggleCollapsed: {
       type: Function,
       required: true,
-      default: () => {},
+      default: () => { },
     },
     onRefreshRoute: {
       type: Function,
       required: true,
-      default: () => {},
+      default: () => { },
     },
   },
   setup(props) {
@@ -46,7 +46,6 @@ export const LeftHeaderComponent = defineComponent({
     const route = useRoute()
 
     const nowSelectMenu = computed(() => {
-      console.log(route, 'route')
       return route.name
     })
 
