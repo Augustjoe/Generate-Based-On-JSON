@@ -3,6 +3,9 @@ import { NButton, NSpace, NIcon } from 'naive-ui'
 import { useRoute, useRouter } from "vue-router";
 import MenuOptions from '@/views/menu'
 import { Close } from '@vicons/ionicons5'
+import Draggable from 'vuedraggable'
+
+type MenuItem = { name: string, path: string }
 
 export const MenuTag = defineComponent({
     name: 'MenuTag',
@@ -13,9 +16,19 @@ export const MenuTag = defineComponent({
         const router = useRouter();
         const route = useRoute();
 
-        const paths = ref<{ name: string, path: string }[]>([])
+        const paths = ref<MenuItem[]>([
+            { name: '主控台', path: '/home' }
+        ])
 
-        const handleClose = (tag: string) => {
+        const currentPath = computed(() => {
+            return route.path;
+        });
+
+        const handleClose = async (tag: string) => {
+            paths.value = paths.value.filter(item => item.path !== tag);
+            if (tag === currentPath.value) {
+                router.push({ path: paths.value[0].path });
+            }
             emit('update:tag', tag);
         };
         const handleClick = (path: string) => {
@@ -26,34 +39,44 @@ export const MenuTag = defineComponent({
         }
 
         watch(() => route.path, (path) => {
-            const menu = getSelectMenu(path.replace('/', ''));
-            if (menu) {
+            const selectKey = path.replace('/', '');
+            const menu = getSelectMenu(selectKey);
+            if (menu && !paths.value.some(item => item.path === path)) {
                 paths.value.push({ name: (menu.label) as string, path });
             }
         })
 
         return () => (
-            <NSpace>
-                {paths.value.map((item) => (
-                    <NButton
-                        type="info"
-                        tertiary
-                        key={item.path}
-                        dashed
-                        // onClose={() => handleClose(item.path)}
-                        onClick={() => handleClick(item.path)}
-                        style={{
-                            background: '#fff',
-                        }}
-                    >
-                        <span> {item.name} </span>
-                        <NButton  renderIcon={ () =><Close />} text onClick={() => handleClose(item.path)} style={{ color:'#999',marginLeft: '5px' }}>
-                        </NButton>
-                    </NButton>
-                ))}
-
-            </NSpace>
-
+                <Draggable v-model={paths.value} itemKey="path">
+                    {{
+                        item: ({ element: item }: { element: MenuItem }) => (
+                            <NButton
+                                type={item.path === currentPath.value ? 'info' : 'default'}
+                                size="small"
+                                tertiary
+                                key={item.path}
+                                dashed
+                                onClick={() => handleClick(item.path)}
+                                style={{ background: '#fff',marginRight:'10px' }}
+                            >
+                                <span>{item.name}</span>
+                                {
+                                    item.path !== '/home' && (
+                                        <NButton
+                                            renderIcon={() => <Close />}
+                                            text
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                handleClose(item.path)
+                                            }}
+                                            style={{ color: '#999', marginLeft: '5px' }}
+                                        />
+                                    )
+                                }
+                            </NButton>
+                        )
+                    }}
+                </Draggable>
         );
     }
 })

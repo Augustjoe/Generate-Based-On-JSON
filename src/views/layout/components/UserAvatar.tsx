@@ -7,6 +7,7 @@ export const UserAvatar = defineComponent({
     const divStyle = {
       display: 'flex',
       alignItems: 'center',
+      minWidth: '100px',
     }
 
     const renderCustomHeader = () => {

@@ -23,7 +23,7 @@ export const indexComponent = defineComponent({
     }
     const layoutContentStyle: CSSProperties = {
       height: '100%',
-      padding: '24px',
+      padding: '0px 20px 20px',
     }
     const layoutHeaderStyle: CSSProperties = {}
     const collapsed = ref(false)
@@ -130,11 +130,16 @@ export const indexComponent = defineComponent({
                 onRefreshRoute={refreshRoute}
               ></HearderButtons>
             </n-layout-header>
+
+              <div class="MenuTag">
+                <MenuTag></MenuTag>
+              </div>
+
             <n-layout-content
               style={{ height: 'calc(100% - 60px)', background: '#f5f7f9' }}
               content-style={layoutContentStyle}
             >
-              <MenuTag></MenuTag>
+              
 
               <routerView
                 key={`routerKey` + this.routerKey}
