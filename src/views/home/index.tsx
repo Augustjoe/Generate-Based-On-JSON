@@ -1,63 +1,41 @@
 import { defineComponent, reactive } from 'vue'
-import Form from '@/components/Form'
-import { NSpace, NButton } from 'naive-ui'
+import { NCard, NGrid } from 'naive-ui'
+import { BorderTop20Filled } from '@vicons/fluent'
 
 export const Home = defineComponent({
-    name: 'Home',
-    setup: () => {
-        const formData = reactive<Record<string, string>>({})
-        const formItems = ref([
-            {
-                itemType: 'NInput',
-                path: 'text',
-                props: {},
-                itemGiProps: {
-                    label: '测试',
-                    span: 12,
-                },
-            },
-            {
-                itemType: 'render',
-                render: () => (
-                    <NSpace>
-                        <NButton>取消</NButton>
-                        <NButton
-                            type="primary"
-                            onClick={() => {
-                                formItems.value[0].itemGiProps!.label = '测试2'
-                                console.log(formData, formItems.value)
-                            }}
-                        >
-                            确定
-                        </NButton>
-                    </NSpace>
-                ),
-            },
-        ])
+  name: 'Home',
+  setup: () => {
+    const formData = reactive<Record<string, string>>({})
 
-        return { formData, formItems }
-    },
-    render() {
-        return (
-            <div
-                style={{
-                    width: '400px',
-                }}
+    return () => {
+      return (
+        <div style={{}}>
+          <div class={'heardCard'}>
+            <n-grid cols="1 s:2 m:3 l:8 xl:8 2xl:8" item-responsive>
+              <n-grid-item span=""></n-grid-item>
+            </n-grid>
+            <NCard
+              contentStyle={{
+                paddingTop: '24px',
+                borderTop: '1px solid #e8e8e8',
+              }}
+              footerStyle={{
+                paddingTop: '24px',
+                borderTop: '1px solid #e8e8e8',
+              }}
             >
-                <Form
-                    formData={this.formData}
-                    formProps={{
-                        labelPlacement: 'left',
-                        labelWidth: 'auto',
-                    }}
-                    formItems={this.formItems}
-                    GridProps={{
-                        cols: 12,
-                    }}
-                ></Form>
-            </div>
-        )
-    },
+              {{
+                header: () => '访问量',
+                'header-extra': () => <span>2023-10-01</span>,
+                default: () => <span>1000</span>,
+                footer: () => <span>今日访问量</span>,
+              }}
+            </NCard>
+          </div>
+        </div>
+      )
+    }
+  },
 })
 
 export default Home
