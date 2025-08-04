@@ -131,16 +131,14 @@ export const indexComponent = defineComponent({
               ></HearderButtons>
             </n-layout-header>
 
-              <div class="MenuTag">
-                <MenuTag></MenuTag>
-              </div>
+            <div class="MenuTag">
+              <MenuTag></MenuTag>
+            </div>
 
             <n-layout-content
-              style={{ height: 'calc(100% - 60px)', background: '#f5f7f9' }}
+              style={{ height: 'calc(100% - 98px)', background: '#f5f7f9' }}
               content-style={layoutContentStyle}
             >
-              
-
               <routerView
                 key={`routerKey` + this.routerKey}
                 v-slots={{
