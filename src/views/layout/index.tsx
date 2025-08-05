@@ -23,7 +23,7 @@ export const indexComponent = defineComponent({
     }
     const layoutContentStyle: CSSProperties = {
       height: '100%',
-      padding: '0px 20px 20px',
+      padding: '0px 10px 10px',
     }
     const layoutHeaderStyle: CSSProperties = {}
     const collapsed = ref(false)
