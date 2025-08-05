@@ -107,7 +107,7 @@ export const Workbench = defineComponent({
                     width: '100%',
                     display: '-webkit-box',
                     height: '44px',
-                    WebkitBoxOrient: 'vertical',
+                    WebkitBoxOrient: 'vertical' as any,
                     WebkitLineClamp: 2,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
