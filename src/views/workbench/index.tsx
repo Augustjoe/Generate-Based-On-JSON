@@ -104,6 +104,44 @@ export const Workbench = defineComponent({
       },
     ]
 
+    const dynamicList: {
+      avatar: string
+      content: string
+      time: string
+    }[] = [
+      {
+        avatar: new URL('@/assets/img/smile_cat.png', import.meta.url).href,
+        content: '狗哥下次再来一起玩，别管那些神经病！',
+        time: '2025.08.14 15:09:01',
+      },
+      {
+        avatar: new URL('@/assets/img/dog_happy.png', import.meta.url).href,
+        content: '猫猫是我们最好的朋友！！和猫猫玩最开心了！',
+        time: '2025.08.14 15:00:01',
+      },
+
+      {
+        avatar: new URL('@/assets/img/beautiful_dog.png', import.meta.url).href,
+        content: '哇，猫哥好可怕，不像我，只会心疼哥哥！',
+        time: '2025.08.14 14:51:01',
+      },
+      {
+        avatar: new URL('@/assets/img/dog_smile.png', import.meta.url).href,
+        content: '猫哥，伸手不打笑脸狗！',
+        time: '2025.08.14 14:02:01',
+      },
+      {
+        avatar: new URL('@/assets/img/shikimi.png', import.meta.url).href,
+        content: '嗨，希基米！！',
+        time: '2025.08.14 12:04:01',
+      },
+      {
+        avatar: new URL('@/assets/img/General_cat.png', import.meta.url).href,
+        content: '猫猫必将统治世界，现在只是为了罐头，暂时的妥协，',
+        time: '2025.08.14 11:44:01',
+      },
+    ]
+
     return () => (
       <div class="workbench">
         <n-card bordered={false} title="工作台" style={{ marginBottom: '10px' }}>
@@ -138,15 +176,14 @@ export const Workbench = defineComponent({
           </n-grid>
         </n-card>
 
-        <n-grid
-          cols="1 s:1 m:1 l:2 xl:2 2xl:2"
-          responsive="screen"
-          x-gap="10"
-          y-gap="10"
-          style={{ marginBottom: '10px' }}
-        >
+        <n-grid cols="1 s:1 m:1 l:2 xl:2 2xl:2" responsive="screen" x-gap="10" y-gap="10">
           <n-gi>
-            <n-card bordered={false} title="项目" contentStyle={{ padding: 0 }}>
+            <n-card
+              bordered={false}
+              title="项目"
+              style={{ marginBottom: '10px' }}
+              contentStyle={{ padding: 0 }}
+            >
               <n-grid cols="3" responsive="screen">
                 {projectArr.map((item) => {
                   const contentStyle = {
@@ -182,9 +219,52 @@ export const Workbench = defineComponent({
                 })}
               </n-grid>
             </n-card>
+
+            <n-card bordered={false} title="动态" contentStyle={{ padding: 12 }}>
+              <n-list>
+                {dynamicList.map((item) => {
+                  return (
+                    <n-list-item
+                      style={{
+                        borderBottom: '1px solid rgb(229, 231, 235)',
+                      }}
+                    >
+                      {{
+                        prefix: () => <n-avatar size={48} round src={item.avatar} />,
+                        default: () => (
+                          <div>
+                            <p
+                              style={{
+                                fontSize: '16px',
+                                marginBottom: '4px',
+                              }}
+                            >
+                              {item.content}
+                            </p>
+                            <p
+                              style={{
+                                fontSize: '12px',
+                                color: 'rgb(156, 163, 175)',
+                              }}
+                            >
+                              {item.time}
+                            </p>
+                          </div>
+                        ),
+                      }}
+                    </n-list-item>
+                  )
+                })}
+              </n-list>
+            </n-card>
           </n-gi>
           <n-gi>
-            <n-card bordered={false} title="快捷操作" contentStyle={{ padding: 0 }}>
+            <n-card
+              bordered={false}
+              title="快捷操作"
+              style={{ marginBottom: '10px' }}
+              contentStyle={{ padding: 0 }}
+            >
               <n-grid cols="3" responsive="screen">
                 {shortcutArr.map((item) => {
                   return (
@@ -203,6 +283,10 @@ export const Workbench = defineComponent({
                   )
                 })}
               </n-grid>
+            </n-card>
+
+            <n-card segmented={{ content: true }} bordered={false} size="small" class="mt-4">
+              <n-image width="100%" src="src/assets/img/Business.svg" />
             </n-card>
           </n-gi>
         </n-grid>

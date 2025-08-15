@@ -4,6 +4,7 @@ import menuOptions from '../menu'
 import iconImg from '@/assets/img/icon.png'
 import { useLoadingBar, lightTheme, darkTheme } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
+import { MenuOption } from 'naive-ui'
 import './less/index.less'
 
 import HearderButtons from './components/HearderButtons'
@@ -29,7 +30,19 @@ export const indexComponent = defineComponent({
     const collapsed = ref(false)
 
     const routeKey = computed(() => {
-      return menuOptions.find(({ label }) => route.name === label)?.key || null
+      const menuOptionArr: MenuOption[] = []
+      // 取出其中的所有子菜单项
+      menuOptions.forEach((item) => {
+        if (item.children) {
+          item.children.forEach((child) => {
+            menuOptionArr.push(child)
+          })
+        } else {
+          menuOptionArr.push(item)
+        }
+      })
+
+      return menuOptionArr.find(({ label }) => route.name === label)?.key || null
     })
 
     const MenuProps = reactive({
@@ -147,6 +160,7 @@ export const indexComponent = defineComponent({
                   ),
                 }}
               />
+              <n-back-top right={30} />
             </n-layout-content>
           </n-layout>
         </n-layout>
