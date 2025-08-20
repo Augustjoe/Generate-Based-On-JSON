@@ -1,12 +1,9 @@
-import { defineComponent, reactive } from 'vue'
-import Form from '@/components/Form'
-import { NSpace, NButton } from 'naive-ui'
-import { RouterView } from 'vue-router'
 import { indexComponent } from './layout/index'
 import Home from './home'
 import Workbench from './workbench'
+import TableView from './tableView'
 
-export const test = {
+export const config = {
   routes: [
     {
       path: '/',
@@ -24,7 +21,17 @@ export const test = {
           name: '工作台',
           component: Workbench,
         },
+        {
+          path: '/tableView',
+          name: '基本表格',
+          component: TableView,
+        },
       ],
     },
+    // {
+    //   path: '/tableView',
+    //   name: 'tableView',
+    //   component: TableView,
+    // },
   ],
 }

@@ -1,5 +1,6 @@
 import { MenuOption } from 'naive-ui'
 import { ControlOutlined } from '@vicons/antd'
+import { TableChartOutlined } from '@vicons/material'
 
 export const MenuOptions: MenuOption[] = [
   {
@@ -16,6 +17,11 @@ export const MenuOptions: MenuOption[] = [
       },
     ],
     icon: () => <ControlOutlined />,
+  },
+  {
+    label: '基本表格',
+    key: 'tableView',
+    icon: () => <TableChartOutlined />,
   },
 ]
 

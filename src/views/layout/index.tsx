@@ -7,7 +7,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { MenuOption } from 'naive-ui'
 import './less/index.less'
 
-import HearderButtons from './components/HearderButtons'
+import { LeftHeaderComponent } from './components/HearderButtons'
 import MenuTag from './components/MenuTag'
 
 export const indexComponent = defineComponent({
@@ -135,13 +135,13 @@ export const indexComponent = defineComponent({
           </n-layout-sider>
           <n-layout content-style={{ height: '100%' }} style={{ height: '100%' }}>
             <n-layout-header style={layoutHeaderStyle}>
-              <HearderButtons
+              <LeftHeaderComponent
                 collapsed={collapsed}
                 onToggleCollapsed={() => {
                   this.collapsed = !this.collapsed
                 }}
                 onRefreshRoute={refreshRoute}
-              ></HearderButtons>
+              ></LeftHeaderComponent>
             </n-layout-header>
 
             <div class="MenuTag">
