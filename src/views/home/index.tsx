@@ -161,7 +161,7 @@ export const Home = defineComponent({
                       borderTop: '1px solid #e8e8e8',
                       fontSize: '14px',
                     }}
-                    // v-slots={card}
+                    v-slots={card}
                   ></NCard>
                 </n-grid-item>
               ))}
