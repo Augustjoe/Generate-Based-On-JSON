@@ -9,4 +9,13 @@ declare global {
       : never
   }[keyof NaiveUIComponents]
   type NaiveUIComponentsKeys = keyof NaiveUIComponents
+  type FormItem =
+    | {
+        itemType: string
+        path?: string
+        props?: Record<string, any>
+        itemGiProps?: Record<string, any>
+        render?: () => HTMLElement
+      }
+    | Record<string, any>
 }

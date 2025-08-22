@@ -7,6 +7,8 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    '副本': typeof import('./src/components/Form - 副本.tsx')['default']
+    BasisFrom: typeof import('./src/components/BasisFrom.tsx')['default']
     Components: typeof import('./src/components/index.ts')['default']
     Form: typeof import('./src/components/Form.tsx')['default']
     Menu: typeof import('./src/components/Menu.tsx')['default']

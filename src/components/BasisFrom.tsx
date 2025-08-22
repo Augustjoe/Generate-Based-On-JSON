@@ -2,7 +2,6 @@ import { defineComponent, ref, markRaw, onMounted, computed } from 'vue'
 import { NForm, NGrid, NFormItemGi, NGi, type NotificationApi } from 'naive-ui'
 import { useNaiveStore } from '@/stores/naiveUimodules'
 import type { FormProps, GridProps } from 'naive-ui'
-import Draggable from 'vuedraggable'
 
 type renderItem = {
   item?: NaiveUIComponents | HTMLElement
@@ -101,46 +100,42 @@ export default defineComponent({
     }
 
     const formItems = computed(getNaiveUiItems)
-    const getFormData = () => props.formData
 
-    // const formItems = ref(getNaiveUiItems())
+    const getFormData = () => props.formData
 
     return { formItems, formData, formProps, GridProps, getFormData }
   },
   render() {
     const { formItems, formData, formProps, GridProps } = this
-    console.log('Form render', formItems, formData, formProps, GridProps)
     return (
       <NForm v-model:value={formData} inline {...(formProps as FormProps)}>
         <NGrid cols={24} {...(GridProps as GridProps)}>
-          <Draggable list={this.formItems} itemKey="path">
-            {(formItems.filter((item) => item) as renderItem[]).map(
-              ({ item, props, itemGiProps, itemType, render, ...other }, index) => {
-                const Component = item as any
-                if (itemType === 'render' && render) {
-                  return (
-                    <NGi span={24} {...itemGiProps}>
-                      {render()}
-                    </NGi>
-                  )
-                }
-                if (itemType === 'renderInGi') {
-                  return (
-                    <NFormItemGi span={24} {...itemGiProps}>
-                      {item}
-                    </NFormItemGi>
-                  )
-                }
-                if (Component) {
-                  return (
-                    <NFormItemGi span={24} {...itemGiProps}>
-                      <Component key={index} {...props} />
-                    </NFormItemGi>
-                  )
-                }
-              },
-            )}
-          </Draggable>
+          {(formItems.filter((item) => item) as renderItem[]).map(
+            ({ item, props, itemGiProps, itemType, render, ...other }, index) => {
+              const Component = item as any
+              if (itemType === 'render' && render) {
+                return (
+                  <NGi span={24} {...itemGiProps}>
+                    {render()}
+                  </NGi>
+                )
+              }
+              if (itemType === 'renderInGi') {
+                return (
+                  <NFormItemGi span={24} {...itemGiProps}>
+                    {item}
+                  </NFormItemGi>
+                )
+              }
+              if (Component) {
+                return (
+                  <NFormItemGi span={24} {...itemGiProps}>
+                    <Component key={index} {...props} />
+                  </NFormItemGi>
+                )
+              }
+            },
+          )}
         </NGrid>
       </NForm>
     )
