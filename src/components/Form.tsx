@@ -1,7 +1,7 @@
 import { defineComponent, ref, markRaw, onMounted, computed } from 'vue'
 import { NForm, NFormItemCol, NGi, NRow, type NotificationApi } from 'naive-ui'
 import { useNaiveStore } from '@/stores/naiveUimodules'
-import type { FormProps, GridProps } from 'naive-ui'
+import type { FormProps, RowProps } from 'naive-ui'
 import Draggable from 'vuedraggable'
 
 type renderItem = {
@@ -31,111 +31,97 @@ export default defineComponent({
       type: Object as () => FormProps,
       default: () => {},
     },
-    GridProps: {
+    RowProps: {
       required: false,
-      type: Object as () => GridProps,
+      type: Object as () => RowProps,
       default: () => {},
     },
   },
   setup(props) {
     const { getComponent } = useNaiveStore()
-    const { formProps, GridProps, formData } = props
-    const getNaiveUiItems: () => (renderItem | null)[] = () => {
-      return props.formItems
-        .map(({ itemType, props: itemProps, itemGiProps, path, ...other }) => {
-          if (!itemType) return null
+    const { formProps, RowProps, formData } = props
+    const formItems = ref(props.formItems)
 
-          const props = {
-            ...(itemProps || {}),
-            ...(path
-              ? {
-                  'v-model:value': formData[path],
-                  value: formData[path],
-                  'onUpdate:value': (val: any) => {
-                    formData[path] = val
-                    itemProps['onUpdate:value'] && itemProps['onUpdate:value']()
-                  },
-                }
-              : {}),
-          }
-          const item = getComponent(itemType as NaiveUIComponentsKeys)
-          if (itemType === 'render' && other.render) {
-            return {
-              itemType,
-              render: () => {
-                return other.render(props)
+    const getNaiveUiItems: (formItem: FormItem) => renderItem | null = (formItem: FormItem) => {
+      const { itemType, props: itemProps, itemGiProps, path, ...other } = formItem
+      if (!itemType) return null
+
+      const props = {
+        ...(itemProps || {}),
+        ...(path
+          ? {
+              'v-model:value': formData[path],
+              value: formData[path],
+              'onUpdate:value': (val: any) => {
+                formData[path] = val
+                itemProps['onUpdate:value'] && itemProps['onUpdate:value']()
               },
-              itemProps,
-              path,
             }
-          }
+          : {}),
+      }
+      if (itemType === 'render' && other.render) {
+        return {
+          itemType,
+          render: other.render,
+          itemProps,
+          path,
+        }
+      }
 
-          if (itemType === 'renderInGi' && other.render) {
-            return {
-              itemType,
-              item: other.render(props),
-              itemGiProps: { path, ...itemGiProps },
-              path,
-            }
-          }
+      if (itemType === 'renderInGi' && other.render) {
+        return {
+          itemType,
+          render: other.render,
+          itemGiProps: { path, ...itemGiProps },
+          path,
+        }
+      }
 
-          if (item) {
-            try {
-              return {
-                itemType,
-                item: toRaw(item),
-                props,
-                itemGiProps: { path, ...itemGiProps },
-                path,
-              }
-            } catch (error) {
-              console.error(`加载组件 ${itemType} 失败:`, error)
-              return null
-            }
-          } else {
-            console.log(itemType, item)
-            return null
+      const item = getComponent(itemType as NaiveUIComponentsKeys)
+      if (item) {
+        try {
+          return {
+            itemType,
+            item,
+            props,
+            itemGiProps: { path, ...itemGiProps },
+            path,
           }
-        })
-        .filter((item) => item)
+        } catch (error) {
+          console.error(`加载组件 ${itemType} 失败:`, error)
+          return null
+        }
+      } else {
+        return null
+      }
     }
 
-    // const formItems = computed(getNaiveUiItems)
-    const getFormData = () => props.formData
-
-    const formItems = ref(getNaiveUiItems().filter((item) => item))
-
-    const list = ref<{ name: string }[]>([{ name: 'Item 1' }, { name: 'Item 2' }])
-
-    return { formItems, formData, formProps, GridProps, getFormData, list }
-  },
-  render() {
-    const { formItems, formData, formProps, GridProps } = this
-    console.log('Form render', formItems, formData, formProps, GridProps)
-    return (
+    return () => (
       <NForm v-model:value={formData} inline {...(formProps as FormProps)}>
-        <NRow {...(GridProps as GridProps)}>
-          <Draggable v-model={formItems} item-key="path" style={{ width: '100%' }}>
+        <NRow {...(RowProps as RowProps)}>
+          <Draggable v-model={formItems.value} item-key="path" style={{ width: '100%' }}>
             {{
-              item: ({ element }: { element: renderItem }) => {
-                const { item, props, itemGiProps, itemType, render, ...other } = element
-                console.log('Form item render')
-                const Component = item as any
+              item: ({ element }: { element: FormItem }) => {
+                const NaiveUiItem = getNaiveUiItems(element)
+                if (!NaiveUiItem) return null
+                const { item, props, itemGiProps, itemType, render, ...other } = NaiveUiItem
                 if (itemType === 'render' && render) {
                   return (
-                    <NGi span={24} key={other.path} {...itemGiProps}>
-                      {render()}
-                    </NGi>
-                  )
-                }
-                if (itemType === 'renderInGi') {
-                  return (
                     <NFormItemCol span={24} key={other.path} {...itemGiProps}>
-                      {item}
+                      {render()}
                     </NFormItemCol>
                   )
                 }
-                if (Component) {
+                if (itemType === 'renderInGi' && render) {
+                  return (
+                    <NFormItemCol span={24} key={other.path} {...itemGiProps}>
+                      {render()}
+                    </NFormItemCol>
+                  )
+                }
+
+                if (item) {
+                  const Component = toRaw(item) as any
                   return (
                     <NFormItemCol span={24} key={other.path} {...itemGiProps}>
                       <Component {...props} />

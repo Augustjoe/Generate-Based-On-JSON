@@ -36,7 +36,7 @@ export const TableView = defineComponent({
           <div class="tableSearchFrom">
             <Form
               formItems={FormItems.value}
-              GridProps={{ gutter: '12' }}
+              RowProps={{ gutter: '12' }}
               formProps={formProps}
               formData={FormData}
             />
