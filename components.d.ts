@@ -10,6 +10,7 @@ declare module 'vue' {
     '副本': typeof import('./src/components/Form - 副本.tsx')['default']
     BasisFrom: typeof import('./src/components/BasisFrom.tsx')['default']
     Components: typeof import('./src/components/index.ts')['default']
+    'Components.d': typeof import('./src/components/components.d.ts')['default']
     Form: typeof import('./src/components/Form.tsx')['default']
     Menu: typeof import('./src/components/Menu.tsx')['default']
     NAvatar: typeof import('naive-ui')['NAvatar']
@@ -40,5 +41,6 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SearchInput: typeof import('./src/components/SearchInput.tsx')['default']
     TooltipButton: typeof import('./src/components/TooltipButton.tsx')['default']
+    UseDrawer: typeof import('./src/components/useDrawer.tsx')['default']
   }
 }

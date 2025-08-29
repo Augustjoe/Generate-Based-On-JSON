@@ -7,6 +7,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { MenuOption } from 'naive-ui'
 import './less/index.less'
 
+import UseDrawer from '@/components/useDrawer'
 import { LeftHeaderComponent } from './components/HearderButtons'
 import MenuTag from './components/MenuTag'
 
@@ -164,6 +165,7 @@ export const indexComponent = defineComponent({
             </n-layout-content>
           </n-layout>
         </n-layout>
+        <UseDrawer />
       </n-config-provider>
     )
   },
