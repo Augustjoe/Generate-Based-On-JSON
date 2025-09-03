@@ -65,7 +65,7 @@ export const MenuTag = defineComponent({
             <NButton
               type={item.path === currentPath.value ? 'info' : 'default'}
               size="small"
-              tertiary
+              // tertiary
               key={item.path}
               dashed
               onClick={() => handleClick(item.path)}

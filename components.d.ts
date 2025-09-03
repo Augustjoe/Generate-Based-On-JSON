@@ -9,9 +9,12 @@ declare module 'vue' {
   export interface GlobalComponents {
     '副本': typeof import('./src/components/Form - 副本.tsx')['default']
     BasisFrom: typeof import('./src/components/BasisFrom.tsx')['default']
+    CardCodeEditor: typeof import('./src/components/CardCodeEditor.tsx')['default']
+    CodeEditor: typeof import('./src/components/CodeEditor.tsx')['default']
     Components: typeof import('./src/components/index.ts')['default']
     'Components.d': typeof import('./src/components/components.d.ts')['default']
     Form: typeof import('./src/components/Form.tsx')['default']
+    FormEditorButton: typeof import('./src/components/FormEditorButton.tsx')['default']
     Menu: typeof import('./src/components/Menu.tsx')['default']
     NAvatar: typeof import('naive-ui')['NAvatar']
     NBackTop: typeof import('naive-ui')['NBackTop']

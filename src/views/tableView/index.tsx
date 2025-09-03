@@ -32,13 +32,23 @@ export const TableView = defineComponent({
 
     return () => {
       return (
-        <div class="tableView">
+        <div
+          class="tableView"
+          style={{
+            width: '100%',
+            height: '100%',
+            background: '#fff',
+          }}
+        >
           <div class="tableSearchFrom">
             <Form
               formItems={FormItems.value}
               RowProps={{ gutter: '12' }}
               formProps={formProps}
               formData={FormData}
+              onUpdate:formItems={(val) => {
+                FormItems.value = val
+              }}
             />
           </div>
         </div>
