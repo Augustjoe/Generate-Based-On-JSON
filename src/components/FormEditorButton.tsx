@@ -3,7 +3,7 @@ import CardCodeEditor from './CardCodeEditor'
 import { SettingOutlined } from '@vicons/antd'
 import { useAppDrawerStore } from '@/stores/appDrawerStore'
 import { CSSProperties } from 'vue'
-import type { FormProps } from 'naive-ui'
+import type { ButtonProps, FormProps } from 'naive-ui'
 
 export const FormEditorButton = defineComponent({
   props: {
@@ -30,6 +30,11 @@ export const FormEditorButton = defineComponent({
       required: false,
       default: '配置',
     },
+    buttonProps: {
+      type: Object as () => ButtonProps,
+      required: false,
+      default: () => ({}),
+    },
   },
   emits: ['update:formItems', 'update:formProps'],
   setup(props, { emit }) {
@@ -52,6 +57,7 @@ export const FormEditorButton = defineComponent({
           {{
             trigger: () => (
               <NButton
+                type="info"
                 text
                 render-icon={() => <NIcon component={<SettingOutlined></SettingOutlined>}></NIcon>}
                 onClick={() => {
@@ -98,6 +104,7 @@ export const FormEditorButton = defineComponent({
                       ),
                   })
                 }}
+                {...props.buttonProps}
               ></NButton>
             ),
             default: () => props.propoverTitle || '配置',
