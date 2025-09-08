@@ -1,4 +1,4 @@
-import Form from '@/components/Form'
+import SearchFrom from '@/components/SearchFrom'
 
 export const TableView = defineComponent({
   name: 'TableView',
@@ -12,6 +12,18 @@ export const TableView = defineComponent({
         itemGiProps: { span: 8, label: '名称:' },
       },
       {
+        itemType: 'NInput',
+        path: 'num',
+        props: { placeholder: '请输入名称' },
+        itemGiProps: { span: 8, label: '工号:' },
+      },
+      {
+        itemType: 'NInput',
+        path: 'pro',
+        props: { placeholder: '请输入名称' },
+        itemGiProps: { span: 8, label: '职务:' },
+      },
+      {
         itemType: 'NSelect',
         path: '类型',
         props: {
@@ -22,6 +34,18 @@ export const TableView = defineComponent({
           ],
         },
         itemGiProps: { span: 8, label: '类型:' },
+      },
+      {
+        itemType: 'NSelect',
+        path: 'sex',
+        props: {
+          placeholder: '请选择性别',
+          options: [
+            { label: '男', value: '1' },
+            { label: '女', value: '2' },
+          ],
+        },
+        itemGiProps: { span: 8, label: '性别:' },
       },
     ])
 
@@ -41,7 +65,7 @@ export const TableView = defineComponent({
           }}
         >
           <div class="tableSearchFrom">
-            <Form
+            <SearchFrom
               formItems={FormItems.value}
               RowProps={{ gutter: '12' }}
               formProps={formProps}

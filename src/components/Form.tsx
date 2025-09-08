@@ -4,7 +4,7 @@ import {
   NForm,
   NFormItemCol,
   NGrid,
-  NGridItem,
+  NGi,
   NRow,
   type NotificationApi,
   NButton,
@@ -30,6 +30,10 @@ type renderItem = {
 export default defineComponent({
   name: 'Form',
   props: {
+    isEdit: {
+      type: Boolean,
+      default: false,
+    },
     formData: {
       required: false,
       type: Object as () => Record<any, any>,
@@ -54,7 +58,7 @@ export default defineComponent({
   emits: ['update:formItems', 'update:formProps'],
   setup(props, { emit }) {
     const { getComponent } = useNaiveStore()
-    const { RowProps, formData } = props
+    const { RowProps, formData, isEdit } = props
     const formItems = ref(props.formItems)
     const formProps = ref(props.formProps)
 
@@ -113,87 +117,83 @@ export default defineComponent({
     }
 
     return () => (
-      <NCard bordered={false} contentStyle={{ padding: '16px' }}>
-        <NFlex style={{ position: 'absolute', top: '5px', right: '5px', zIndex: 1 }}>
-          <FormEditorButton
-            style={{}}
-            formItems={formItems.value}
-            buttonProps={{
-              renderIcon: () => <NIcon component={<DisplaySettingsFilled />}></NIcon>,
-              type: 'success',
-            }}
-            onUpdate:formItems={(items: FormItem[]) => {
-              formItems.value = items
-              emit('update:formItems', items)
-            }}
-            propoverTitle="表单元素"
-          ></FormEditorButton>
-          <FormEditorButton
-            style={{}}
-            buttonProps={{
-              renderIcon: () => <NIcon component={<CalendarSettings16Regular />}></NIcon>,
-              type: 'info',
-            }}
-            formProps={formProps.value}
-            onUpdate:formItems={(items: FormProps) => {
-              formProps.value = items
-              // emit('update:formItems', items)
-            }}
-            propoverTitle="表单设置"
-          ></FormEditorButton>
-        </NFlex>
-        <NGrid cols="1 s:2 m:3 l:4 xl:5 2xl:5">
-          <NGridItem span="4">
-            <NForm v-model:value={formData} inline {...(formProps.value as FormProps)}>
-              <NRow {...(RowProps as RowProps)}>
-                <Draggable v-model={formItems.value} item-key="path" style={{ width: '100%' }}>
-                  {{
-                    item: ({ element }: { element: FormItem }) => {
-                      const NaiveUiItem = getNaiveUiItems(element)
-                      if (!NaiveUiItem) return null
-                      const { item, props, itemGiProps, itemType, render, ...other } = NaiveUiItem
-                      if (itemType === 'render' && render) {
-                        return (
-                          <NFormItemCol span={24} key={other.path} {...itemGiProps}>
-                            {render()}
-                          </NFormItemCol>
-                        )
-                      }
-                      if (itemType === 'renderInGi' && render) {
-                        return (
-                          <NFormItemCol span={24} key={other.path} {...itemGiProps}>
-                            {render()}
-                          </NFormItemCol>
-                        )
-                      }
+      <NForm v-model:value={formData} inline {...(formProps.value as FormProps)}>
+        {isEdit && (
+          <NFlex style={{ position: 'absolute', top: '5px', right: '5px', zIndex: 1 }}>
+            <FormEditorButton
+              style={{}}
+              formItems={formItems.value}
+              buttonProps={{
+                renderIcon: () => <NIcon component={<DisplaySettingsFilled />}></NIcon>,
+                type: 'success',
+              }}
+              onUpdate:formItems={(items: FormItem[]) => {
+                formItems.value = items
+                emit('update:formItems', items)
+              }}
+              propoverTitle="表单元素"
+            ></FormEditorButton>
+            <FormEditorButton
+              style={{}}
+              buttonProps={{
+                renderIcon: () => <NIcon component={<CalendarSettings16Regular />}></NIcon>,
+                type: 'info',
+              }}
+              formProps={formProps.value}
+              onUpdate:formItems={(items: FormProps) => {
+                formProps.value = items
+                // emit('update:formItems', items)
+              }}
+              propoverTitle="表单设置"
+            ></FormEditorButton>
+          </NFlex>
+        )}
 
-                      if (item) {
-                        const Component = toRaw(item) as any
-                        return (
-                          <NFormItemCol span={24} key={other.path} {...itemGiProps}>
-                            <Component {...props} />
-                            <FormEditorButton
-                              element={element}
-                              formItems={formItems.value}
-                              onUpdate:formItems={(items: FormItem[]) => {
-                                formItems.value = items
-                                emit('update:formItems', items)
-                              }}
-                            ></FormEditorButton>
-                          </NFormItemCol>
-                        )
-                      }
-                    },
-                  }}
-                </Draggable>
-              </NRow>
-            </NForm>
-          </NGridItem>
-          <NGridItem span="1">
-            <div>查询按钮</div>
-          </NGridItem>
-        </NGrid>
-      </NCard>
+        <NRow {...(RowProps as RowProps)}>
+          <Draggable v-model={formItems.value} item-key="path" style={{ width: '100%' }}>
+            {{
+              item: ({ element }: { element: FormItem }) => {
+                const NaiveUiItem = getNaiveUiItems(element)
+                if (!NaiveUiItem) return null
+                const { item, props, itemGiProps, itemType, render, ...other } = NaiveUiItem
+                if (itemType === 'render' && render) {
+                  return (
+                    <NFormItemCol span={24} key={other.path} {...itemGiProps}>
+                      {render()}
+                    </NFormItemCol>
+                  )
+                }
+                if (itemType === 'renderInGi' && render) {
+                  return (
+                    <NFormItemCol span={24} key={other.path} {...itemGiProps}>
+                      {render()}
+                    </NFormItemCol>
+                  )
+                }
+
+                if (item) {
+                  const Component = toRaw(item) as any
+                  return (
+                    <NFormItemCol span={24} key={other.path} {...itemGiProps}>
+                      <Component {...props} />
+                      {isEdit && (
+                        <FormEditorButton
+                          element={element}
+                          formItems={formItems.value}
+                          onUpdate:formItems={(items: FormItem[]) => {
+                            formItems.value = items
+                            emit('update:formItems', items)
+                          }}
+                        ></FormEditorButton>
+                      )}
+                    </NFormItemCol>
+                  )
+                }
+              },
+            }}
+          </Draggable>
+        </NRow>
+      </NForm>
     )
   },
 })
