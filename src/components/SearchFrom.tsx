@@ -51,11 +51,20 @@ export default defineComponent({
     const { formData } = props
     const formItems = ref(props.formItems)
     const formProps = ref(props.formProps)
+    const isHidden = ref(false)
+    const hiddenStyle = {
+      'white-space': 'nowrap',
+      overflow: 'hidden',
+      transition: '0.5s ease-out',
+    }
 
     return () => (
       <NCard bordered={false} contentStyle={{ padding: '16px' }}>
         <NGrid cols="1 s:2 m:3 l:4 xl:5 2xl:5" responsive="screen">
-          <NGi span="1 s:1 m:2 l:3 xl:4 2xl:4">
+          <NGi
+            style={isHidden.value ? hiddenStyle : { transition: '0.5s ease-out' }}
+            span="1 s:1 m:2 l:3 xl:4 2xl:4"
+          >
             <Form
               formData={formData}
               formItems={formItems.value}
@@ -74,7 +83,14 @@ export default defineComponent({
             <NFlex style={{ height: '100%' }} justify="center" align="center">
               <NButton>查询</NButton>
               <NButton>重置</NButton>
-              <NButton text>展开 </NButton>
+              <NButton
+                text
+                onClick={() => {
+                  isHidden.value = !isHidden.value
+                }}
+              >
+                {isHidden.value ? '展开' : '收起'}
+              </NButton>
             </NFlex>
           </NGi>
         </NGrid>
