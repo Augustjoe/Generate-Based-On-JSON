@@ -1,11 +1,7 @@
 import { defineComponent, ref, markRaw, onMounted, computed } from 'vue'
 import { NCard, NForm, NButton, NGrid, NGi, NRow, NIcon, NFlex } from 'naive-ui'
-import { useNaiveStore } from '@/stores/naiveUimodules'
 import type { FormProps, RowProps, ButtonProps } from 'naive-ui'
-import Draggable from 'vuedraggable'
-import FormEditorButton from './FormEditorButton'
-import { DisplaySettingsFilled } from '@vicons/material'
-import { CalendarSettings16Regular } from '@vicons/fluent'
+
 import Form from './Form'
 
 type renderItem = {
@@ -42,8 +38,13 @@ export default defineComponent({
     },
     ButtonItems: {
       required: false,
-      type: Array as () => ButtonProps[],
-      default: () => {},
+      type: Array as () => (
+        | (ButtonProps & {
+            buttonText: string
+          })
+        | { type: 'expand' }
+      )[],
+      default: () => [],
     },
   },
   emits: ['update:formItems', 'update:formProps'],
@@ -51,21 +52,46 @@ export default defineComponent({
     const { formData } = props
     const formItems = ref(props.formItems)
     const formProps = ref(props.formProps)
-    const isHidden = ref(false)
-    const hiddenStyle = {
-      'white-space': 'nowrap',
-      overflow: 'hidden',
-      transition: '0.5s ease-out',
-    }
+    const ButtonItems = ref(props.ButtonItems)
+    const isHidden = ref(true)
+    const formRef = ref()
+    const formNGiRef = ref()
+    const hiddenStyle = reactive({
+      height: '58px',
+    })
+    const notHiddenStyle = reactive({
+      height: '116px',
+    })
+
+    onMounted(() => {
+      // 计算高度从而设计动画
+      const el = formRef.value?.$el as HTMLElement | undefined
+      const height = el?.getBoundingClientRect().height
+
+      const formNGiRefEl = formNGiRef.value?.$el as HTMLElement | undefined
+      const NGheight = formNGiRefEl?.getBoundingClientRect().height
+      if (el && height) {
+        notHiddenStyle.height = height + 'px'
+      }
+      if (formNGiRefEl && NGheight) {
+        hiddenStyle.height = NGheight + 'px'
+      }
+    })
 
     return () => (
       <NCard bordered={false} contentStyle={{ padding: '16px' }}>
         <NGrid cols="1 s:2 m:3 l:4 xl:5 2xl:5" responsive="screen">
           <NGi
-            style={isHidden.value ? hiddenStyle : { transition: '0.5s ease-out' }}
+            ref={formNGiRef}
+            style={{
+              ...(isHidden.value ? hiddenStyle : notHiddenStyle),
+              transition: 'height 0.2s ease-out',
+              overflow: 'hidden',
+            }}
             span="1 s:1 m:2 l:3 xl:4 2xl:4"
           >
             <Form
+              ref={formRef}
               formData={formData}
               formItems={formItems.value}
               formProps={formProps.value}
@@ -81,16 +107,22 @@ export default defineComponent({
           </NGi>
           <NGi span="1">
             <NFlex style={{ height: '100%' }} justify="center" align="center">
-              <NButton>查询</NButton>
-              <NButton>重置</NButton>
-              <NButton
-                text
-                onClick={() => {
-                  isHidden.value = !isHidden.value
-                }}
-              >
-                {isHidden.value ? '展开' : '收起'}
-              </NButton>
+              {ButtonItems.value.map((item) => {
+                if (item.type === 'expand') {
+                  return (
+                    <NButton
+                      text
+                      onClick={() => {
+                        isHidden.value = !isHidden.value
+                      }}
+                    >
+                      {isHidden.value ? '展开' : '收起'}
+                    </NButton>
+                  )
+                } else {
+                  return <NButton {...item}>{item.buttonText}</NButton>
+                }
+              })}
             </NFlex>
           </NGi>
         </NGrid>
