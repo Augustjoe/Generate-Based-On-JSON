@@ -1,9 +1,10 @@
 import SearchFrom from '@/components/SearchFrom'
+import type { ButtonProps } from 'naive-ui'
 
 export const TableView = defineComponent({
   name: 'TableView',
   setup: () => {
-    const FormData = reactive({})
+    const FormData = reactive<Record<string, any>>({})
     const FormItems = ref<FormItem[]>([
       {
         itemType: 'NInput',
@@ -54,6 +55,27 @@ export const TableView = defineComponent({
       'label-placement': 'left',
     })
 
+    const ButtonItems = ref<searchButtonItem>([
+      {
+        buttonText: '查询',
+        type: 'primary',
+        onClick: () => {
+          console.log('查询', FormData)
+        },
+      },
+      {
+        buttonText: '重置',
+        onClick: () => {
+          Object.keys(FormData).forEach((key) => {
+            FormData[key] = null
+          })
+        },
+      },
+      {
+        type: 'expand',
+      },
+    ])
+
     return () => {
       return (
         <div
@@ -73,6 +95,7 @@ export const TableView = defineComponent({
               onUpdate:formItems={(val) => {
                 FormItems.value = val
               }}
+              ButtonItems={ButtonItems.value}
             />
           </div>
         </div>

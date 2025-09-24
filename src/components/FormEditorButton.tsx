@@ -97,6 +97,7 @@ export const FormEditorButton = defineComponent({
                                 emit('update:formProps', formProps.value)
                               }
                             } catch (error) {
+                              console.log(val)
                               console.error('配置解析失败', error)
                             }
                           }}

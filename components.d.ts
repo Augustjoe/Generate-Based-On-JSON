@@ -44,6 +44,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SearchFrom: typeof import('./src/components/SearchFrom.tsx')['default']
     SearchInput: typeof import('./src/components/SearchInput.tsx')['default']
+    'Stores.d': typeof import('./src/components/stores.d.ts')['default']
     TooltipButton: typeof import('./src/components/TooltipButton.tsx')['default']
     UseDrawer: typeof import('./src/components/useDrawer.tsx')['default']
   }

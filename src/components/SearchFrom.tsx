@@ -38,12 +38,7 @@ export default defineComponent({
     },
     ButtonItems: {
       required: false,
-      type: Array as () => (
-        | (ButtonProps & {
-            buttonText: string
-          })
-        | { type: 'expand' }
-      )[],
+      type: Array as () => searchButtonItem,
       default: () => [],
     },
   },
