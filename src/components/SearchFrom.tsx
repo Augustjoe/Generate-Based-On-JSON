@@ -1,6 +1,8 @@
 import { defineComponent, ref, markRaw, onMounted, computed } from 'vue'
 import { NCard, NForm, NButton, NGrid, NGi, NRow, NIcon, NFlex } from 'naive-ui'
 import type { FormProps, RowProps, ButtonProps } from 'naive-ui'
+import FormEditorButton from './FormEditorButton'
+import { EditSettings24Regular } from '@vicons/fluent'
 
 import Form from './Form'
 
@@ -16,6 +18,10 @@ type renderItem = {
 export default defineComponent({
   name: 'Form',
   props: {
+    isEdit: {
+      type: Boolean,
+      default: true,
+    },
     formData: {
       required: false,
       type: Object as () => Record<any, any>,
@@ -42,7 +48,7 @@ export default defineComponent({
       default: () => [],
     },
   },
-  emits: ['update:formItems', 'update:formProps'],
+  emits: ['update:formItems', 'update:formProps', 'update:ButtonItems'],
   setup(props, { emit }) {
     const { formData } = props
     const formItems = ref(props.formItems)
@@ -86,6 +92,7 @@ export default defineComponent({
             span="1 s:1 m:2 l:3 xl:4 2xl:4"
           >
             <Form
+              isEdit={props.isEdit}
               ref={formRef}
               formData={formData}
               formItems={formItems.value}
@@ -118,6 +125,21 @@ export default defineComponent({
                   return <NButton {...item}>{item.buttonText}</NButton>
                 }
               })}
+              {props.isEdit && (
+                <FormEditorButton
+                  style={{}}
+                  formItems={ButtonItems.value}
+                  buttonProps={{
+                    renderIcon: () => <NIcon component={<EditSettings24Regular />}></NIcon>,
+                    type: 'info',
+                  }}
+                  onUpdate:formItems={(items: searchButtonItem) => {
+                    ButtonItems.value = items
+                    emit('update:ButtonItems', ButtonItems.value)
+                  }}
+                  propoverTitle="按钮配置"
+                ></FormEditorButton>
+              )}
             </NFlex>
           </NGi>
         </NGrid>

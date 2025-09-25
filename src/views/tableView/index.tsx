@@ -95,6 +95,9 @@ export const TableView = defineComponent({
               onUpdate:formItems={(val) => {
                 FormItems.value = val
               }}
+              onUpdate:ButtonItems={(val) => {
+                ButtonItems.value = val
+              }}
               ButtonItems={ButtonItems.value}
             />
           </div>

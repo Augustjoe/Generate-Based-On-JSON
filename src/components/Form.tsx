@@ -33,7 +33,7 @@ export default defineComponent({
   props: {
     isEdit: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     formData: {
       required: false,

@@ -43,6 +43,23 @@ export const FormEditorButton = defineComponent({
     const formItems = ref(props.formItems)
     const formProps = ref(props.formProps)
 
+    //  处理字符串 使其变成可读性更强的字符串
+    function customStringify(arr: { [key: string]: any }[]): string {
+      return JSON.stringify(
+        arr.map((item) =>
+          JSON.stringify(item, (key, value) =>
+            typeof value === 'function'
+              ? value.toString()
+              : value && typeof value === 'object'
+                ? customStringify([value])
+                : value,
+          ),
+        ), // 合并成一个字符串,
+        null,
+        2,
+      )
+    }
+
     return () => (
       <div
         style={
@@ -73,11 +90,7 @@ export const FormEditorButton = defineComponent({
                     default: () =>
                       markRaw(
                         <CardCodeEditor
-                          codeValue={JSON.stringify(
-                            element || formItems.value || formProps.value,
-                            null,
-                            2,
-                          )}
+                          codeValue={customStringify(element || formItems.value || formProps.value)}
                           onUpdate:codeValue={(val: string) => {
                             try {
                               const obj = JSON.parse(val)
@@ -97,7 +110,6 @@ export const FormEditorButton = defineComponent({
                                 emit('update:formProps', formProps.value)
                               }
                             } catch (error) {
-                              console.log(val)
                               console.error('配置解析失败', error)
                             }
                           }}
