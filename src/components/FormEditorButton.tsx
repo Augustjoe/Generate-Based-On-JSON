@@ -43,21 +43,47 @@ export const FormEditorButton = defineComponent({
     const formItems = ref(props.formItems)
     const formProps = ref(props.formProps)
 
-    //  处理字符串 使其变成可读性更强的字符串
-    function customStringify(arr: { [key: string]: any }[]): string {
-      return JSON.stringify(
-        arr.map((item) =>
-          JSON.stringify(item, (key, value) =>
+    function convertFunctionsToStrings(input: any): any {
+      // 如果是数组，递归处理每个元素
+      if (Array.isArray(input)) {
+        return input.map(convertFunctionsToStrings)
+      }
+
+      // 如果是对象，递归处理每个属性
+      if (input && typeof input === 'object') {
+        return Object.fromEntries(
+          Object.entries(input).map(([key, value]) => [
+            key,
             typeof value === 'function'
-              ? value.toString()
-              : value && typeof value === 'object'
-                ? customStringify([value])
-                : value,
-          ),
-        ), // 合并成一个字符串,
-        null,
-        2,
-      )
+              ? value.toString().replace(/\n/g, '')
+              : convertFunctionsToStrings(value),
+          ]),
+        )
+      }
+
+      // 其他类型直接返回
+      return input
+    }
+
+    //  处理字符串 使其变成可读性更强的字符串
+    function customStringify(input: { [key: string]: any } | { [key: string]: any }[]): string {
+      return JSON.stringify(convertFunctionsToStrings(input), null, 2)
+    }
+
+    function parseCustomStringified(input: string): any {
+      return JSON.parse(input, (key, value) => {
+        if (
+          typeof value === 'string' &&
+          (value.startsWith('function') || value.startsWith('() =>'))
+        ) {
+          try {
+            return new Function('return ' + value)()
+          } catch (e) {
+            console.error('无法还原函数:', e)
+          }
+        }
+        return value
+      })
     }
 
     return () => (
@@ -93,7 +119,8 @@ export const FormEditorButton = defineComponent({
                           codeValue={customStringify(element || formItems.value || formProps.value)}
                           onUpdate:codeValue={(val: string) => {
                             try {
-                              const obj = JSON.parse(val)
+                              const obj = parseCustomStringified(val)
+                              console.log('解析后的对象:', obj)
                               if (formItems.value) {
                                 if (element) {
                                   formItems.value.splice(
