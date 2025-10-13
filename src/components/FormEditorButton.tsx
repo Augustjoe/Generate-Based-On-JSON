@@ -77,7 +77,7 @@ export const FormEditorButton = defineComponent({
           (value.startsWith('function') || value.startsWith('() =>'))
         ) {
           try {
-            return new Function('return ' + value)()
+            return eval(value)
           } catch (e) {
             console.error('无法还原函数:', e)
           }
@@ -108,6 +108,7 @@ export const FormEditorButton = defineComponent({
                     show: true,
                     defaultWidth: '502',
                     resizable: true,
+                    autoFocus: false,
                     onUpdateShow(value: boolean) {
                       setDrawerProps({ show: value })
                     },

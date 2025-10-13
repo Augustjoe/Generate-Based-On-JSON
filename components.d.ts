@@ -13,6 +13,7 @@ declare module 'vue' {
     CodeEditor: typeof import('./src/components/CodeEditor.tsx')['default']
     Components: typeof import('./src/components/index.ts')['default']
     'Components.d': typeof import('./src/components/components.d.ts')['default']
+    CustomTable: typeof import('./src/components/CustomTable.tsx')['default']
     Form: typeof import('./src/components/Form.tsx')['default']
     FormEditorButton: typeof import('./src/components/FormEditorButton.tsx')['default']
     Menu: typeof import('./src/components/Menu.tsx')['default']

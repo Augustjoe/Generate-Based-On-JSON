@@ -12,4 +12,13 @@ declare global {
       })
     | { type: 'expand' }
   )[]
+  type tableButtonItem = (
+    | (ButtonProps & {
+        buttonText: string
+      })
+    | {
+        type: 'custom'
+        render: () => HTMLElement | VNode
+      }
+  )[]
 }

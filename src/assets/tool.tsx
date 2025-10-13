@@ -1,15 +1,15 @@
-import { useLoadingBar } from 'naive-ui'
+// import { useLoadingBar } from 'naive-ui'
 
-const loadingBar = useLoadingBar()
+// const loadingBar = useLoadingBar()
 
-export const startLoading = () => {
-  console.log(loadingBar, 'loadingBar')
-  loadingBar.start()
-}
+// export const startLoading = () => {
+//   console.log(loadingBar, 'loadingBar')
+//   loadingBar.start()
+// }
 
-export const finishLoading = () => {
-  loadingBar.finish()
-}
+// export const finishLoading = () => {
+//   loadingBar.finish()
+// }
 // 全屏
 export function enterFullScreen(element: HTMLElement) {
   if (element.requestFullscreen) {

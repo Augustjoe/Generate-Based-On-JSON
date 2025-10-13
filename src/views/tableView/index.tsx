@@ -1,5 +1,5 @@
 import SearchFrom from '@/components/SearchFrom'
-import type { ButtonProps } from 'naive-ui'
+import CustomTable from '@/components/CustomTable'
 
 export const TableView = defineComponent({
   name: 'TableView',
@@ -76,6 +76,44 @@ export const TableView = defineComponent({
       },
     ])
 
+    const data = Array.from({ length: 46 }).map((_, index) => ({
+      key: index,
+      name: `Edward King ${index}`,
+      age: 32,
+      address: `London, Park Lane no. ${index}`,
+    }))
+    const columns = ref([
+      {
+        title: 'Name',
+        key: 'name',
+      },
+      {
+        title: 'Age',
+        key: 'age',
+      },
+      {
+        title: 'Address',
+        key: 'address',
+      },
+    ])
+
+    const tableButtons = ref<tableButtonItem>([
+      {
+        type: 'primary',
+        buttonText: '新增',
+        onClick: () => {
+          console.log('新增')
+        },
+      },
+      {
+        type: 'error',
+        buttonText: '批量删除',
+        onClick: () => {
+          console.log('批量删除')
+        },
+      },
+    ])
+
     return () => {
       return (
         <div
@@ -84,9 +122,17 @@ export const TableView = defineComponent({
             width: '100%',
             height: '100%',
             background: '#fff',
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: 0,
           }}
         >
-          <div class="tableSearchFrom">
+          <div
+            style={{
+              flex: '0 0 auto',
+            }}
+            class="tableSearchFrom"
+          >
             <SearchFrom
               formItems={FormItems.value}
               RowProps={{ gutter: '12' }}
@@ -100,6 +146,20 @@ export const TableView = defineComponent({
               }}
               ButtonItems={ButtonItems.value}
             />
+          </div>
+          <div
+            style={{
+              flex: '1 1 auto',
+              minHeight: 0,
+              overflow: 'auto',
+            }}
+          >
+            <CustomTable
+              data={data}
+              columns={columns.value}
+              tableProps={{ pagination: { pageSize: 10 } }}
+              tableButtons={tableButtons.value}
+            ></CustomTable>
           </div>
         </div>
       )
