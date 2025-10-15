@@ -1,4 +1,4 @@
-import { defineComponent } from 'vue'
+import { defineComponent, watch } from 'vue'
 import {
   NDataTable,
   NFlex,
@@ -9,6 +9,7 @@ import {
 } from 'naive-ui'
 import FormEditorButton from './FormEditorButton'
 import { EditSettings24Regular, Settings32Regular, TableSettings24Regular } from '@vicons/fluent'
+import { extractRenderFns, restoreRenderFns } from '@/assets/render-fn-extractor'
 
 export default defineComponent({
   name: 'CustomTable',
@@ -50,9 +51,21 @@ export default defineComponent({
   },
   emits: ['update:tableButtons', 'update:columns', 'update:tableProps'],
   setup(props, { emit }) {
-    const tableButtons = ref<tableButtonItem>(props.tableButtons || [])
     const columns = ref<DataTableColumns<Record<string, any>>>(props.columns || [])
     const tableProps = ref<Partial<DataTableProps>>(props.tableProps || [])
+    let editTableButtons = ref<tableButtonItem>([])
+    let tempRender: Record<string, () => HTMLElement | VNode> = {}
+
+    const getTempRenderMap = () => {
+      const { data, slots } = extractRenderFns(props.tableButtons || [])
+      editTableButtons.value = data
+      tempRender = slots
+    }
+
+    // 监控 tableButtons 的变化
+    watch(() => props.tableButtons, getTempRenderMap)
+
+    onMounted(getTempRenderMap)
 
     return () => (
       <div
@@ -74,7 +87,7 @@ export default defineComponent({
           }}
         >
           <NFlex style={{ height: '100%' }} justify="center" align="center">
-            {tableButtons.value.map((item) => {
+            {props.tableButtons.map((item) => {
               if (item.type === 'custom' && item.render) {
                 return item.render()
               } else if (item.type !== 'custom') {
@@ -84,14 +97,13 @@ export default defineComponent({
             {props.isEdit && (
               <FormEditorButton
                 style={{}}
-                formItems={tableButtons.value}
+                formItems={editTableButtons.value}
                 buttonProps={{
                   renderIcon: () => <NIcon component={<EditSettings24Regular />}></NIcon>,
                   type: 'info',
                 }}
                 onUpdate:formItems={(items: tableButtonItem) => {
-                  tableButtons.value = items
-                  emit('update:tableButtons', tableButtons.value)
+                  emit('update:tableButtons', restoreRenderFns(items, tempRender))
                 }}
                 propoverTitle="表格按钮配置"
               ></FormEditorButton>
@@ -129,9 +141,10 @@ export default defineComponent({
             </NFlex>
           )}
         </div>
-        <div style={{ height: '100%', minHeight: 0, overflow: 'hidden' }}>
+        <div style={{ height: '100%', minHeight: 0, overflow: 'auto' }}>
           <NDataTable
-            maxHeight="100%"
+            style={{ height: '100%' }}
+            flexHeight
             columns={columns.value}
             data={props.data}
             {...(tableProps.value as Partial<DataTableProps>)}

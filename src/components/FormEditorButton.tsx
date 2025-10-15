@@ -121,7 +121,6 @@ export const FormEditorButton = defineComponent({
                           onUpdate:codeValue={(val: string) => {
                             try {
                               const obj = parseCustomStringified(val)
-                              console.log('解析后的对象:', obj)
                               if (formItems.value) {
                                 if (element) {
                                   formItems.value.splice(

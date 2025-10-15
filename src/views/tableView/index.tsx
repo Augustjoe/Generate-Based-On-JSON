@@ -1,5 +1,7 @@
 import SearchFrom from '@/components/SearchFrom'
 import CustomTable from '@/components/CustomTable'
+import { NIcon, NSwitch } from 'naive-ui'
+import { Add12Filled } from '@vicons/fluent'
 
 export const TableView = defineComponent({
   name: 'TableView',
@@ -96,11 +98,15 @@ export const TableView = defineComponent({
         key: 'address',
       },
     ])
+    const isEdit = ref(false)
 
     const tableButtons = ref<tableButtonItem>([
       {
         type: 'primary',
         buttonText: '新增',
+        renderIcon: () => {
+          return <NIcon component={Add12Filled}></NIcon>
+        },
         onClick: () => {
           console.log('新增')
         },
@@ -110,6 +116,16 @@ export const TableView = defineComponent({
         buttonText: '批量删除',
         onClick: () => {
           console.log('批量删除')
+        },
+      },
+      {
+        type: 'custom',
+        render: () => {
+          return (
+            <n-switch v-model:value={isEdit.value}>
+              {{ checked: () => '编辑模式', unchecked: () => '预览模式' }}
+            </n-switch>
+          )
         },
       },
     ])
@@ -134,6 +150,7 @@ export const TableView = defineComponent({
             class="tableSearchFrom"
           >
             <SearchFrom
+              isEdit={isEdit.value}
               formItems={FormItems.value}
               RowProps={{ gutter: '12' }}
               formProps={formProps}
@@ -155,10 +172,17 @@ export const TableView = defineComponent({
             }}
           >
             <CustomTable
+              isEdit={isEdit.value}
               data={data}
               columns={columns.value}
               tableProps={{ pagination: { pageSize: 10 } }}
               tableButtons={tableButtons.value}
+              onUpdate:columns={(val) => {
+                columns.value = val
+              }}
+              onUpdate:tableButtons={(val) => {
+                tableButtons.value = val
+              }}
             ></CustomTable>
           </div>
         </div>

@@ -18,7 +18,8 @@ declare global {
       })
     | {
         type: 'custom'
-        render: () => HTMLElement | VNode
+        render?: () => HTMLElement | VNode
+        key?: string
       }
   )[]
 }

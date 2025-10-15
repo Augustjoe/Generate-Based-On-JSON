@@ -62,11 +62,11 @@ export default defineComponent({
     },
   },
   emits: ['update:formItems', 'update:formProps'],
-  setup(props, { emit }) {
+  setup(Props, { emit }) {
     const { getComponent } = useNaiveStore()
-    const { RowProps, GridProps, formData, isEdit } = props
-    const formItems = ref(props.formItems)
-    const formProps = reactive(props.formProps)
+    const { GridProps, formData } = Props
+    const formItems = ref(Props.formItems)
+    const formProps = reactive(Props.formProps)
 
     const getNaiveUiItems: (formItem: FormItem) => renderItem | null = (formItem: FormItem) => {
       const { itemType, props: itemProps, itemGiProps, path, ...other } = formItem
@@ -124,7 +124,7 @@ export default defineComponent({
 
     return () => (
       <NForm model={formData} {...(formProps as FormProps)} inline={false}>
-        {isEdit && (
+        {Props.isEdit && (
           <NFlex style={{ position: 'absolute', top: '5px', right: '5px', zIndex: 1 }}>
             <FormEditorButton
               style={{}}
@@ -226,7 +226,7 @@ export default defineComponent({
               return (
                 <NFormItemGi span={24} key={other.path} {...itemGiProps}>
                   <Component {...props} />
-                  {isEdit && (
+                  {Props.isEdit && (
                     <FormEditorButton
                       element={element}
                       formItems={formItems.value}

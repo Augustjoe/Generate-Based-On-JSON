@@ -63,6 +63,7 @@ export default defineComponent({
     const notHiddenStyle = reactive({
       height: '116px',
     })
+    const isEdit = toRef(props, 'isEdit')
 
     onMounted(() => {
       // 计算高度从而设计动画
@@ -92,7 +93,7 @@ export default defineComponent({
             span="1 s:1 m:2 l:3 xl:4 2xl:4"
           >
             <Form
-              isEdit={props.isEdit}
+              isEdit={isEdit.value}
               ref={formRef}
               formData={formData}
               formItems={formItems.value}
