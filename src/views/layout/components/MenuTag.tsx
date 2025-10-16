@@ -56,6 +56,7 @@ export const MenuTag = defineComponent({
           paths.value.push({ name: menu.label as string, path })
         }
       },
+      { immediate: true },
     )
 
     return () => (

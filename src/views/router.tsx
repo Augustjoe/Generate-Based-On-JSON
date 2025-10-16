@@ -14,7 +14,7 @@ export const config = {
         {
           path: '/home',
           name: '主控台',
-          component: Home,
+          component: () => import('./home'),
         },
         {
           path: '/workbench',
@@ -26,12 +26,12 @@ export const config = {
           name: '基本表格',
           component: TableView,
         },
+        {
+          path: '/formView',
+          name: '基本表单',
+          component: () => import('./formView'),
+        },
       ],
     },
-    // {
-    //   path: '/tableView',
-    //   name: 'tableView',
-    //   component: TableView,
-    // },
   ],
 }

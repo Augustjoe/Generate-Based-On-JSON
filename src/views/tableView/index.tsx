@@ -2,6 +2,8 @@ import SearchFrom from '@/components/SearchFrom'
 import CustomTable from '@/components/CustomTable'
 import { NIcon, NSwitch } from 'naive-ui'
 import { Add12Filled } from '@vicons/fluent'
+import useEditMode from '@/stores/editmode'
+import { storeToRefs } from 'pinia'
 
 export const TableView = defineComponent({
   name: 'TableView',
@@ -98,8 +100,8 @@ export const TableView = defineComponent({
         key: 'address',
       },
     ])
-    const isEdit = ref(false)
-
+    const { isEdit } = storeToRefs(useEditMode())
+    console.log(isEdit, 'isEdit')
     const tableButtons = ref<tableButtonItem>([
       {
         type: 'primary',
@@ -121,11 +123,7 @@ export const TableView = defineComponent({
       {
         type: 'custom',
         render: () => {
-          return (
-            <n-switch v-model:value={isEdit.value}>
-              {{ checked: () => '编辑模式', unchecked: () => '预览模式' }}
-            </n-switch>
-          )
+          return <div>自定义模块</div>
         },
       },
     ])
@@ -140,6 +138,7 @@ export const TableView = defineComponent({
             background: '#fff',
             display: 'flex',
             flexDirection: 'column',
+            padding: '10px',
             minHeight: 0,
           }}
         >

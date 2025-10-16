@@ -8,7 +8,7 @@ import { MenuOption } from 'naive-ui'
 import './less/index.less'
 
 import UseDrawer from '@/components/useDrawer'
-import { LeftHeaderComponent } from './components/HearderButtons'
+import { LeftHeaderComponent } from './components/hearderButtons'
 import MenuTag from './components/MenuTag'
 
 export const indexComponent = defineComponent({

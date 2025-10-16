@@ -18,10 +18,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const onUpdateValue = (key: string, item: MenuOption) => {
-
-    }
-    console.log(props.MenuProps, 'MenuProps')
+    const onUpdateValue = (key: string, item: MenuOption) => {}
     return { ...props, onUpdateValue }
   },
   render() {

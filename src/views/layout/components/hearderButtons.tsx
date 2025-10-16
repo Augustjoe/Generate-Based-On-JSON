@@ -1,12 +1,12 @@
 import { defineComponent, ref } from 'vue'
-import { NButton, NBreadcrumb, NDropdown, DropdownOption, NAvatar } from 'naive-ui'
+import { NButton, NBreadcrumb, NDropdown, DropdownOption, NSwitch } from 'naive-ui'
 import { MenuFoldOutlined, MenuUnfoldOutlined, FullscreenOutlined } from '@vicons/antd'
 import { LogoGithub, Refresh } from '@vicons/ionicons5'
 import { enterFullScreen } from '@/assets/tool'
 import { useRouter, useRoute } from 'vue-router'
 import { Settings28Regular } from '@vicons/fluent'
 
-
+import useEditMode from '@/stores/editmode'
 import SearchInput from '@/components/SearchInput'
 import TooltipButton from '@/components/TooltipButton'
 import UserAvatar from './UserAvatar'
@@ -22,12 +22,12 @@ export const LeftHeaderComponent = defineComponent({
     onToggleCollapsed: {
       type: Function,
       required: true,
-      default: () => { },
+      default: () => {},
     },
     onRefreshRoute: {
       type: Function,
       required: true,
-      default: () => { },
+      default: () => {},
     },
   },
   setup(props) {
@@ -70,6 +70,15 @@ export const LeftHeaderComponent = defineComponent({
         }}
       >
         <div class="left-header-buttons">
+          {/* 选择模式 */}
+          <NSwitch
+            onUpdate:value={(val: boolean) => {
+              useEditMode().setEditMode(val)
+            }}
+          >
+            {{ checked: () => '编辑模式', unchecked: () => '预览模式' }}
+          </NSwitch>
+
           {/* 缩放按钮 */}
           <NButton class="item-button" text onClick={toggleCollapse}>
             {{

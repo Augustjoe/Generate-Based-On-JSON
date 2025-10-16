@@ -33,7 +33,7 @@ export const TooltipButton = defineComponent({
             <NButton
               text
               {...props.buttonProps}
-              v-slots={{ icon: () => props.buttonProps.icon, ...props.buttonSlots }}
+              v-slots={{ icon: () => props.buttonProps.icon || null, ...props.buttonSlots }}
             />
           ),
           default: () => (slots.default ? slots.default() : null),
