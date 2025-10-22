@@ -4,7 +4,7 @@ import menuOptions from '../menu'
 import iconImg from '@/assets/img/icon.png'
 import { useLoadingBar, lightTheme, darkTheme } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
-import { MenuOption } from 'naive-ui'
+import { MenuOption, useMessage } from 'naive-ui'
 import './less/index.less'
 
 import UseDrawer from '@/components/useDrawer'
@@ -25,7 +25,9 @@ export const indexComponent = defineComponent({
     }
     const layoutContentStyle: CSSProperties = {
       height: '100%',
-      padding: '0px 10px 10px',
+      padding: '0px 0px 10px 10px',
+      scrollbarGutter: 'stable',
+      overflowX: 'hidden',
     }
     const layoutHeaderStyle: CSSProperties = {}
     const collapsed = ref(false)
@@ -61,6 +63,7 @@ export const indexComponent = defineComponent({
     }
 
     onMounted(() => {
+      window.$message = useMessage()
       LoadingBar.finish()
     })
 
@@ -150,14 +153,18 @@ export const indexComponent = defineComponent({
             </div>
 
             <n-layout-content
-              style={{ height: 'calc(100% - 98px)', background: '#f5f7f9' }}
+              style={{
+                height: 'calc(100% - 98px)',
+                background: '#f5f7f9',
+              }}
               content-style={layoutContentStyle}
             >
               <routerView
-                key={`routerKey` + this.routerKey}
                 v-slots={{
                   default: ({ Component }: { Component: DefineComponent }) => (
-                    <Transition mode="out-in">{h(Component)}</Transition>
+                    <Transition mode="out-in">
+                      {h(Component, { key: `routerKey` + this.routerKey })}
+                    </Transition>
                   ),
                 }}
               />

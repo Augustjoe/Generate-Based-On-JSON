@@ -13,7 +13,7 @@ import {
   NFlex,
 } from 'naive-ui'
 import { useNaiveStore } from '@/stores/naiveUimodules'
-import type { FormProps, RowProps, GridProps } from 'naive-ui'
+import type { FormProps, RowProps, GridProps, FormInst } from 'naive-ui'
 import Draggable from 'vuedraggable'
 import FormEditorButton from './FormEditorButton'
 import { DisplaySettingsFilled } from '@vicons/material'
@@ -25,6 +25,7 @@ type renderItem = {
   itemGiProps?: Record<string, any>
   path?: string
   itemType: string
+  slots?: Record<string, () => any>
   render?: () => HTMLElement
 }
 
@@ -62,14 +63,15 @@ export default defineComponent({
     },
   },
   emits: ['update:formItems', 'update:formProps'],
-  setup(Props, { emit }) {
+  setup(Props, { emit, expose }) {
     const { getComponent } = useNaiveStore()
     const { GridProps, formData } = Props
     const formItems = ref(Props.formItems)
     const formProps = reactive(Props.formProps)
+    const nFormRef = ref<FormInst | null>(null)
 
     const getNaiveUiItems: (formItem: FormItem) => renderItem | null = (formItem: FormItem) => {
-      const { itemType, props: itemProps, itemGiProps, path, ...other } = formItem
+      const { itemType, props: itemProps, itemGiProps, path, slots, ...other } = formItem
       if (!itemType) return null
 
       const props = {
@@ -112,6 +114,7 @@ export default defineComponent({
             props,
             itemGiProps: { path, ...itemGiProps },
             path,
+            slots,
           }
         } catch (error) {
           console.error(`加载组件 ${itemType} 失败:`, error)
@@ -121,9 +124,15 @@ export default defineComponent({
         return null
       }
     }
-
+    expose({
+      validate: (...args: any[]) => nFormRef.value?.validate?.(...args),
+      restoreValidation: () => nFormRef.value?.restoreValidation?.(),
+      get form() {
+        return nFormRef.value
+      },
+    })
     return () => (
-      <NForm model={formData} {...(formProps as FormProps)} inline={false}>
+      <NForm ref={nFormRef} model={formData} {...(formProps as FormProps)} inline={false}>
         {Props.isEdit && (
           <NFlex style={{ position: 'absolute', top: '5px', right: '5px', zIndex: 1 }}>
             <FormEditorButton
@@ -205,7 +214,7 @@ export default defineComponent({
           {formItems.value.map((element: FormItem) => {
             const NaiveUiItem = getNaiveUiItems(element)
             if (!NaiveUiItem) return null
-            const { item, props, itemGiProps, itemType, render, ...other } = NaiveUiItem
+            const { item, props, itemGiProps, itemType, slots, render, ...other } = NaiveUiItem
             if (itemType === 'render' && render) {
               return (
                 <NFormItemGi span={24} key={other.path} {...itemGiProps}>
@@ -225,7 +234,7 @@ export default defineComponent({
               const Component = toRaw(item) as any
               return (
                 <NFormItemGi span={24} key={other.path} {...itemGiProps}>
-                  <Component {...props} />
+                  <Component {...props} v-slots={slots || undefined} />
                   {Props.isEdit && (
                     <FormEditorButton
                       element={element}

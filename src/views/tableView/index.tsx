@@ -2,7 +2,7 @@ import SearchFrom from '@/components/SearchFrom'
 import CustomTable from '@/components/CustomTable'
 import { NIcon, NSwitch } from 'naive-ui'
 import { Add12Filled } from '@vicons/fluent'
-import useEditMode from '@/stores/editmode'
+import useEditMode from '@/stores/editMode'
 import { storeToRefs } from 'pinia'
 
 export const TableView = defineComponent({

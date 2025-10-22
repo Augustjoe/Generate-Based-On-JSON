@@ -6,7 +6,7 @@ import { enterFullScreen } from '@/assets/tool'
 import { useRouter, useRoute } from 'vue-router'
 import { Settings28Regular } from '@vicons/fluent'
 
-import useEditMode from '@/stores/editmode'
+import useEditMode from '@/stores/editMode'
 import SearchInput from '@/components/SearchInput'
 import TooltipButton from '@/components/TooltipButton'
 import UserAvatar from './UserAvatar'
