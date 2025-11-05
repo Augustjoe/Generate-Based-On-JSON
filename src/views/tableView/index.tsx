@@ -101,7 +101,6 @@ export const TableView = defineComponent({
       },
     ])
     const { isEdit } = storeToRefs(useEditMode())
-    console.log(isEdit, 'isEdit')
     const tableButtons = ref<tableButtonItem>([
       {
         type: 'primary',

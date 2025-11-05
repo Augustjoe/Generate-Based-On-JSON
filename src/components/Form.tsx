@@ -18,6 +18,7 @@ import Draggable from 'vuedraggable'
 import FormEditorButton from './FormEditorButton'
 import { DisplaySettingsFilled } from '@vicons/material'
 import { CalendarSettings16Regular } from '@vicons/fluent'
+import { extractRenderFns, restoreRenderFns } from '@/assets/render-fn-extractor'
 
 type renderItem = {
   item?: NaiveUIComponents | HTMLElement
@@ -63,12 +64,14 @@ export default defineComponent({
     },
   },
   emits: ['update:formItems', 'update:formProps'],
-  setup(Props, { emit, expose }) {
+  setup(props, { emit, expose }) {
     const { getComponent } = useNaiveStore()
-    const { GridProps, formData } = Props
-    const formItems = ref(Props.formItems)
-    const formProps = reactive(Props.formProps)
+    const { GridProps, formData } = props
+    const formItems = ref(props.formItems)
+    const formProps = reactive(props.formProps)
     const nFormRef = ref<FormInst | null>(null)
+    const tempRenderFormItems = ref<Record<string, () => HTMLElement | VNode>>({})
+    let editFormItems = ref<FormItem[]>([])
 
     const getNaiveUiItems: (formItem: FormItem) => renderItem | null = (formItem: FormItem) => {
       const { itemType, props: itemProps, itemGiProps, path, slots, ...other } = formItem
@@ -124,6 +127,17 @@ export default defineComponent({
         return null
       }
     }
+
+    const getTempRenderMap = () => {
+      const { data, slots } = extractRenderFns(props.formItems || [])
+      editFormItems.value = data
+      tempRenderFormItems.value = slots
+    }
+
+    watch(() => props.formItems, getTempRenderMap)
+
+    onMounted(getTempRenderMap)
+
     expose({
       validate: (...args: any[]) => nFormRef.value?.validate?.(...args),
       restoreValidation: () => nFormRef.value?.restoreValidation?.(),
@@ -131,20 +145,21 @@ export default defineComponent({
         return nFormRef.value
       },
     })
+
     return () => (
       <NForm ref={nFormRef} model={formData} {...(formProps as FormProps)} inline={false}>
-        {Props.isEdit && (
+        {props.isEdit && (
           <NFlex style={{ position: 'absolute', top: '5px', right: '5px', zIndex: 1 }}>
             <FormEditorButton
               style={{}}
-              formItems={formItems.value}
+              formItems={editFormItems.value}
               buttonProps={{
                 renderIcon: () => <NIcon component={<DisplaySettingsFilled />}></NIcon>,
                 type: 'success',
               }}
               onUpdate:formItems={(items: FormItem[]) => {
-                formItems.value = items
-                emit('update:formItems', items)
+                formItems.value = restoreRenderFns(items, tempRenderFormItems.value)
+                emit('update:formItems', formItems.value)
               }}
               propoverTitle="表单元素"
             ></FormEditorButton>
@@ -157,8 +172,7 @@ export default defineComponent({
               formProps={formProps}
               onUpdate:formProps={(items: FormProps) => {
                 Object.assign(formProps, items)
-                console.log(formProps, 'formProps')
-                // emit('update:formItems', items)
+                emit('update:formProps', items)
               }}
               propoverTitle="表单设置"
             ></FormEditorButton>
@@ -235,7 +249,7 @@ export default defineComponent({
               return (
                 <NFormItemGi span={24} key={other.path} {...itemGiProps}>
                   <Component {...props} v-slots={slots || undefined} />
-                  {Props.isEdit && (
+                  {props?.isEdit && (
                     <FormEditorButton
                       element={element}
                       formItems={formItems.value}

@@ -1,9 +1,12 @@
 import From from '@/components/Form'
 import { FormProps, NFlex, NCard, NRadio, NButton, FormValidationError } from 'naive-ui'
+import { useEditMode } from '@/stores/editMode'
+import { storeToRefs } from 'pinia'
 
 export const FromView = defineComponent({
   name: 'FromView',
   setup: () => {
+    const { isEdit } = storeToRefs(useEditMode())
     const formRef = ref<any>(null)
     const formData = reactive<Record<string, any>>({
       name: '张三',
@@ -150,6 +153,7 @@ export const FromView = defineComponent({
           title={'表单'}
         >
           <From
+            isEdit={isEdit.value}
             ref={formRef}
             formData={formData}
             formItems={FormItems.value}

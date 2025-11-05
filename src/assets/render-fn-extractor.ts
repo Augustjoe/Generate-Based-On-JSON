@@ -19,6 +19,7 @@ export interface ExtractOptions {
  * - 且值是函数
  */
 function defaultShouldExtract(key: string, value: unknown): boolean {
+  if (key == 'slots') return true
   if (typeof value !== 'function') return false
   if (/^on[A-Z_]/.test(key)) return false // 排除 onClick/onUpdateValue 等事件
   if (/^render/.test(key)) return true
