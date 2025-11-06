@@ -2,6 +2,7 @@ import { indexComponent } from './layout/index'
 import Home from './home'
 import Workbench from './workbench'
 import TableView from './tableView'
+import Login from './login'
 
 export const config = {
   routes: [
@@ -32,6 +33,11 @@ export const config = {
           component: () => import('./formView'),
         },
       ],
+    },
+    {
+      path: '/login',
+      name: '登录',
+      component: Login,
     },
   ],
 }
