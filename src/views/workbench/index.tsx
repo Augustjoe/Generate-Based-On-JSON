@@ -1,4 +1,4 @@
-import { defineComponent, reactive, VNode } from 'vue'
+import { defineComponent, VNode } from 'vue'
 import {
   GithubOutlined,
   DashboardOutlined,

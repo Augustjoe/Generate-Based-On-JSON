@@ -1,4 +1,4 @@
-import type * as NaiveUI from 'naive-ui'
+export {}
 
 declare global {
   type NaiveUIComponents = Partial<typeof NaiveUI>

@@ -2,7 +2,7 @@ import { CSSProperties, Transition, DefineComponent, ref, h, onMounted } from 'v
 import Menu from '@/components/Menu'
 import menuOptions from '../menu'
 import iconImg from '@/assets/img/icon.png'
-import { useLoadingBar, lightTheme, darkTheme } from 'naive-ui'
+import { useLoadingBar, lightTheme } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
 import { MenuOption, useMessage } from 'naive-ui'
 import './less/index.less'

@@ -1,9 +1,7 @@
-import { defineComponent, reactive, VNode } from 'vue'
+import { defineComponent, VNode } from 'vue'
 import { NCard, NIcon, NProgress } from 'naive-ui'
 import { titleDefaultRender, titleHeaderExtra, titleFooter } from './renderFunction'
 import {
-  CaretUpOutlined,
-  CaretDownOutlined,
   UsergroupAddOutlined,
   BarChartOutlined,
   ShoppingCartOutlined,
@@ -19,7 +17,6 @@ import { DailyTraffic, Visits } from './echartData'
 export const Home = defineComponent({
   name: 'Home',
   setup: () => {
-    const formData = reactive<Record<string, string>>({})
     const cssIconCard = {
       display: 'flex',
       alignItems: 'center',
@@ -141,8 +138,6 @@ export const Home = defineComponent({
         click: () => {},
       },
     ]
-
-    const echartRef = ref<HTMLDivElement | null>(null)
 
     return () => {
       return (

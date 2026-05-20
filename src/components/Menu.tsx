@@ -1,24 +1,23 @@
-import { defineComponent, ref, markRaw, onMounted, computed } from 'vue'
+import { defineComponent, type PropType } from 'vue'
 import { NMenu } from 'naive-ui'
-import { useNaiveStore } from '@/stores/naiveUimodules'
 import type { MenuProps, MenuOption } from 'naive-ui'
 
 export default defineComponent({
   name: 'Menu',
   props: {
     MenuProps: {
-      require: false,
-      type: Object as () => MenuProps,
+      required: false,
+      type: Object as PropType<MenuProps>,
       default: () => ({}),
     },
     options: {
-      require: true,
-      type: Object as () => MenuOption[],
+      required: true,
+      type: Array as PropType<MenuOption[]>,
       default: () => [],
     },
   },
   setup(props) {
-    const onUpdateValue = (key: string, item: MenuOption) => {}
+    const onUpdateValue = () => {}
     return { ...props, onUpdateValue }
   },
   render() {
@@ -26,3 +25,4 @@ export default defineComponent({
     return <NMenu options={options} onUpdateValue={onUpdateValue} {...MenuProps} />
   },
 })
+

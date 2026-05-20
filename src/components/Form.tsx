@@ -1,4 +1,4 @@
-import { defineComponent, ref, markRaw, onMounted, computed } from 'vue'
+import { defineComponent, ref, onMounted, watch, reactive } from 'vue'
 import {
   NCard,
   NForm,
@@ -12,7 +12,7 @@ import {
   NIcon,
   NFlex,
 } from 'naive-ui'
-import { useNaiveStore } from '@/stores/naiveUimodules'
+import { getNaiveComponent } from '@/utils/dynamicComponent'
 import type { FormProps, RowProps, GridProps, FormInst } from 'naive-ui'
 import Draggable from 'vuedraggable'
 import FormEditorButton from './FormEditorButton'
@@ -21,7 +21,7 @@ import { CalendarSettings16Regular } from '@vicons/fluent'
 import { extractRenderFns, restoreRenderFns } from '@/assets/render-fn-extractor'
 
 type renderItem = {
-  item?: NaiveUIComponents | HTMLElement
+  item?: Component | HTMLElement
   props?: Record<string, any>
   itemGiProps?: Record<string, any>
   path?: string
@@ -65,7 +65,6 @@ export default defineComponent({
   },
   emits: ['update:formItems', 'update:formProps'],
   setup(props, { emit, expose }) {
-    const { getComponent } = useNaiveStore()
     const { GridProps, formData } = props
     const formItems = ref(props.formItems)
     const formProps = reactive(props.formProps)
@@ -85,11 +84,12 @@ export default defineComponent({
               value: formData[path],
               'onUpdate:value': (val: any) => {
                 formData[path] = val
-                itemProps['onUpdate:value'] && itemProps['onUpdate:value']()
+                itemProps['onUpdate:value']?.()
               },
             }
           : {}),
       }
+
       if (itemType === 'render' && other.render) {
         return {
           itemType,
@@ -108,7 +108,7 @@ export default defineComponent({
         }
       }
 
-      const item = getComponent(itemType as NaiveUIComponentsKeys)
+      const item = getNaiveComponent(itemType)
       if (item) {
         try {
           return {

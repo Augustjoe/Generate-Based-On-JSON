@@ -1,4 +1,4 @@
-import { NCard, NTag, NSpace, NNumberAnimation, NIcon } from 'naive-ui'
+import { NTag, NSpace, NNumberAnimation, NIcon } from 'naive-ui'
 import { ArrowDropUpFilled, ArrowDropDownFilled } from '@vicons/material'
 
 type type = 'default' | 'success' | 'info' | 'warning' | 'error'
@@ -36,13 +36,13 @@ export const titleDefaultRender = ({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          {LSubTitle} <NNumberAnimation show-separator from={0} to={RSubNum} />%{' '}
+          {LSubTitle} <NNumberAnimation show-separator from={0} to={LSubNum} />%{' '}
           <NIcon color="rgb(0, 255, 111)" size={24}>
             <ArrowDropUpFilled />
           </NIcon>
         </div>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          {RSubTitle} <NNumberAnimation show-separator from={0} to={LSubNum} />%{' '}
+          {RSubTitle} <NNumberAnimation show-separator from={0} to={RSubNum} />%{' '}
           <NIcon color="rgb(255, 222, 102)" size={24}>
             <ArrowDropDownFilled />
           </NIcon>

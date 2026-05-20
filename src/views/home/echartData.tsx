@@ -136,7 +136,7 @@ export const Visits = defineComponent({
             type: 'shadow',
           },
           formatter: function (params: any[]) {
-            let data = params[0]
+            const data = params[0]
             return data.name + '<br/>' + data.marker + data.seriesName + ': ' + data.value
           },
         },
