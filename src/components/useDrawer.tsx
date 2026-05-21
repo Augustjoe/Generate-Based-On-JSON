@@ -1,7 +1,6 @@
 import { NDrawer, NDrawerContent, DrawerProps } from 'naive-ui'
 import { useAppDrawerStore } from '@/stores/appDrawerStore'
 import { defineComponent } from 'vue'
-import { use } from 'echarts/types/src/extension.js'
 
 export const DrawerDom = defineComponent({
   name: 'UseDrawer',

@@ -1,5 +1,4 @@
 import { indexComponent } from './layout/index'
-import Home from './home'
 import Workbench from './workbench'
 import TableView from './tableView'
 import Login from './login'

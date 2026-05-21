@@ -1,20 +1,13 @@
 import { defineComponent, ref, onMounted, watch, reactive } from 'vue'
 import {
-  NCard,
   NForm,
-  NFormItemCol,
   NFormItemGi,
   NGrid,
-  NGi,
-  NRow,
-  type NotificationApi,
-  NButton,
   NIcon,
   NFlex,
 } from 'naive-ui'
 import { getNaiveComponent } from '@/utils/dynamicComponent'
 import type { FormProps, RowProps, GridProps, FormInst } from 'naive-ui'
-import Draggable from 'vuedraggable'
 import FormEditorButton from './FormEditorButton'
 import { DisplaySettingsFilled } from '@vicons/material'
 import { CalendarSettings16Regular } from '@vicons/fluent'
@@ -70,7 +63,7 @@ export default defineComponent({
     const formProps = reactive(props.formProps)
     const nFormRef = ref<FormInst | null>(null)
     const tempRenderFormItems = ref<Record<string, () => HTMLElement | VNode>>({})
-    let editFormItems = ref<FormItem[]>([])
+    const editFormItems = ref<FormItem[]>([])
 
     const getNaiveUiItems: (formItem: FormItem) => renderItem | null = (formItem: FormItem) => {
       const { itemType, props: itemProps, itemGiProps, path, slots, ...other } = formItem

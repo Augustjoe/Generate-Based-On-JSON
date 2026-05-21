@@ -1,19 +1,11 @@
-import { defineComponent, ref, markRaw, onMounted, computed } from 'vue'
-import { NCard, NForm, NButton, NGrid, NGi, NRow, NIcon, NFlex } from 'naive-ui'
-import type { FormProps, RowProps, ButtonProps } from 'naive-ui'
+import { defineComponent, ref, onMounted } from 'vue'
+import { NCard, NButton, NGrid, NGi, NIcon, NFlex } from 'naive-ui'
+import type { FormProps, RowProps } from 'naive-ui'
 import FormEditorButton from './FormEditorButton'
 import { EditSettings24Regular } from '@vicons/fluent'
 
 import Form from './Form'
 
-type renderItem = {
-  item?: NaiveUIComponents | HTMLElement
-  props?: Record<string, any>
-  itemGiProps?: Record<string, any>
-  path?: string
-  itemType: string
-  render?: () => HTMLElement
-}
 
 export default defineComponent({
   name: 'Form',

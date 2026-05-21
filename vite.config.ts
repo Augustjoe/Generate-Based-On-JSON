@@ -23,6 +23,7 @@ export default defineConfig({
       resolvers: [NaiveUiResolver()],
       extensions: ['vue', 'tsx', 'ts'],
       include: [/\.vue$/, /\.vue\?vue/, /\.tsx?$/],
+      dts: 'src/components.d.ts',
     }),
   ],
   resolve: {

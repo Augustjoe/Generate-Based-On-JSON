@@ -1,4 +1,4 @@
-import { reactive, shallowReactive, VNode } from 'vue'
+import { reactive, shallowReactive } from 'vue'
 import { DrawerProps } from 'naive-ui'
 import { defineStore } from 'pinia'
 

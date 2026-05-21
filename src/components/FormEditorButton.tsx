@@ -1,4 +1,4 @@
-import { NButton, NIcon, NFlex, NPopover, popoverProps } from 'naive-ui'
+import { NButton, NIcon, NPopover } from 'naive-ui'
 import CardCodeEditor from './CardCodeEditor'
 import { SettingOutlined } from '@vicons/antd'
 import { useAppDrawerStore } from '@/stores/appDrawerStore'

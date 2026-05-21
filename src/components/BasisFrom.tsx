@@ -1,6 +1,6 @@
-import { defineComponent, ref, markRaw, onMounted, computed } from 'vue'
-import { NForm, NGrid, NFormItemGi, NGi, type NotificationApi } from 'naive-ui'
-import { useNaiveStore } from '@/stores/naiveUimodules'
+import { defineComponent, computed, toRaw } from 'vue'
+import { NForm, NGrid, NFormItemGi, NGi } from 'naive-ui'
+import { getNaiveComponent } from '@/utils/dynamicComponent'
 import type { FormProps, GridProps } from 'naive-ui'
 
 type renderItem = {
@@ -37,8 +37,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const { getComponent } = useNaiveStore()
-    const { formProps, GridProps, formData } = props
+    const { formData } = props
     const getNaiveUiItems: () => (renderItem | null)[] = () => {
       return props.formItems
         .map(({ itemType, props: itemProps, itemGiProps, path, ...other }) => {
@@ -52,12 +51,12 @@ export default defineComponent({
                   value: formData[path],
                   'onUpdate:value': (val: any) => {
                     formData[path] = val
-                    itemProps['onUpdate:value'] && itemProps['onUpdate:value']()
+                    itemProps['onUpdate:value']?.()
                   },
                 }
               : {}),
           }
-          const item = getComponent(itemType as NaiveUIComponentsKeys)
+          const item = getNaiveComponent(itemType)
           if (itemType === 'render' && other.render) {
             return {
               itemType,
@@ -99,19 +98,19 @@ export default defineComponent({
         .filter((item) => item)
     }
 
-    const formItems = computed(getNaiveUiItems)
+    const computedFormItems = computed(getNaiveUiItems)
 
     const getFormData = () => props.formData
 
-    return { formItems, formData, formProps, GridProps, getFormData }
+    return { computedFormItems, getFormData }
   },
   render() {
-    const { formItems, formData, formProps, GridProps } = this
+    const { computedFormItems, formData, formProps, GridProps } = this
     return (
       <NForm v-model:value={formData} inline {...(formProps as FormProps)}>
         <NGrid cols={24} {...(GridProps as GridProps)}>
-          {(formItems.filter((item) => item) as renderItem[]).map(
-            ({ item, props, itemGiProps, itemType, render, ...other }, index) => {
+          {(computedFormItems.filter((item) => item) as renderItem[]).map(
+            ({ item, props, itemGiProps, itemType, render }, index) => {
               const Component = item as any
               if (itemType === 'render' && render) {
                 return (

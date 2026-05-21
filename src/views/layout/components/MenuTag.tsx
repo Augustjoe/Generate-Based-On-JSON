@@ -1,10 +1,9 @@
 import { defineComponent, watch } from 'vue'
-import { NButton, NSpace, NIcon } from 'naive-ui'
+import { NButton, type MenuOption } from 'naive-ui'
 import { useRoute, useRouter } from 'vue-router'
 import MenuOptions from '@/views/menu'
 import { Close } from '@vicons/ionicons5'
 import Draggable from 'vuedraggable'
-import { MenuOption } from 'naive-ui'
 
 type MenuItem = { name: string; path: string }
 

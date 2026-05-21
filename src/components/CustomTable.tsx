@@ -53,7 +53,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const columns = ref<DataTableColumns<Record<string, any>>>(props.columns || [])
     const tableProps = ref<Partial<DataTableProps>>(props.tableProps || [])
-    let editTableButtons = ref<tableButtonItem>([])
+    const editTableButtons = ref<tableButtonItem>([])
     let tempRender: Record<string, () => HTMLElement | VNode> = {}
 
     const getTempRenderMap = () => {
