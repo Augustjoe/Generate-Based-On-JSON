@@ -1,3 +1,4 @@
+import { defineComponent, ref, onMounted, type PropType } from 'vue'
 import * as eCharts from 'echarts'
 
 export const DailyTraffic = defineComponent({

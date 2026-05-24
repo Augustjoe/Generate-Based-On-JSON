@@ -1,8 +1,9 @@
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent, ref, onMounted, reactive, toRef } from 'vue'
 import { NCard, NButton, NGrid, NGi, NIcon, NFlex } from 'naive-ui'
 import type { FormProps, RowProps } from 'naive-ui'
 import FormEditorButton from './FormEditorButton'
 import { EditSettings24Regular } from '@vicons/fluent'
+import { renderIconFromString } from '@/utils/iconMap'
 
 import Form from './Form'
 
@@ -40,7 +41,7 @@ export default defineComponent({
       default: () => [],
     },
   },
-  emits: ['update:formItems', 'update:formProps', 'update:ButtonItems'],
+  emits: ['update:formItems', 'update:formProps', 'update:ButtonItems', 'action'],
   setup(props, { emit }) {
     const { formData } = props
     const formItems = ref(props.formItems)
@@ -115,7 +116,23 @@ export default defineComponent({
                     </NButton>
                   )
                 } else {
-                  return <NButton {...item}>{item.buttonText}</NButton>
+                  const { icon, actionType, onClick, ...btnProps } = item
+                  const finalRenderIcon = icon ? renderIconFromString(icon) : btnProps.renderIcon
+                  const handleClick = (e: MouseEvent) => {
+                    if (onClick) {
+                      if (Array.isArray(onClick)) {
+                        onClick.forEach((fn: any) => fn(e))
+                      } else {
+                        (onClick as any)(e)
+                      }
+                    }
+                    if (actionType) emit('action', actionType, formData)
+                  }
+                  return (
+                    <NButton {...btnProps} renderIcon={finalRenderIcon} onClick={handleClick}>
+                      {item.buttonText}
+                    </NButton>
+                  )
                 }
               })}
               {props.isEdit && (

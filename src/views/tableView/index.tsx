@@ -1,14 +1,11 @@
-import SearchFrom from '@/components/SearchFrom'
-import CustomTable from '@/components/CustomTable'
-import { NIcon } from 'naive-ui'
-import { Add12Filled } from '@vicons/fluent'
+import ProTable from '@/components/ProTable'
 import useEditMode from '@/stores/editMode'
 import { storeToRefs } from 'pinia'
+import { reactive, ref, defineComponent } from 'vue'
 
 export const TableView = defineComponent({
   name: 'TableView',
   setup: () => {
-    const FormData = reactive<Record<string, any>>({})
     const FormItems = ref<FormItem[]>([
       {
         itemType: 'NInput',
@@ -19,20 +16,20 @@ export const TableView = defineComponent({
       {
         itemType: 'NInput',
         path: 'num',
-        props: { placeholder: '请输入名称' },
+        props: { placeholder: '请输入工号' },
         itemGiProps: { span: 8, label: '工号:' },
       },
       {
         itemType: 'NInput',
         path: 'pro',
-        props: { placeholder: '请输入名称' },
+        props: { placeholder: '请输入职务' },
         itemGiProps: { span: 8, label: '职务:' },
       },
       {
         itemType: 'NSelect',
         path: '类型',
         props: {
-          placeholder: '请选择名称',
+          placeholder: '请选择类型',
           options: [
             { label: '成功', value: 'success' },
             { label: '失败', value: 'error' },
@@ -59,33 +56,21 @@ export const TableView = defineComponent({
       'label-placement': 'left',
     })
 
-    const ButtonItems = ref<searchButtonItem>([
+    const formButtonItems = ref<searchButtonItem>([
       {
         buttonText: '查询',
         type: 'primary',
-        onClick: () => {
-          console.log('查询', FormData)
-        },
+        actionType: 'search',
       },
       {
         buttonText: '重置',
-        onClick: () => {
-          Object.keys(FormData).forEach((key) => {
-            FormData[key] = null
-          })
-        },
+        actionType: 'reset',
       },
       {
         type: 'expand',
       },
     ])
 
-    const data = Array.from({ length: 46 }).map((_, index) => ({
-      key: index,
-      name: `Edward King ${index}`,
-      age: 32,
-      address: `London, Park Lane no. ${index}`,
-    }))
     const columns = ref([
       {
         title: 'Name',
@@ -105,19 +90,13 @@ export const TableView = defineComponent({
       {
         type: 'primary',
         buttonText: '新增',
-        renderIcon: () => {
-          return <NIcon component={Add12Filled}></NIcon>
-        },
-        onClick: () => {
-          console.log('新增')
-        },
+        icon: 'Add12Filled',
+        actionType: 'add',
       },
       {
         type: 'error',
         buttonText: '批量删除',
-        onClick: () => {
-          console.log('批量删除')
-        },
+        actionType: 'batchDelete',
       },
       {
         type: 'custom',
@@ -127,6 +106,46 @@ export const TableView = defineComponent({
       },
     ])
 
+    // 模拟服务端分页和搜索请求
+    const handleRequest = (params: any) => {
+      console.log('ProTable 请求参数:', params)
+      return new Promise<{ data: any[]; total: number }>((resolve) => {
+        setTimeout(() => {
+          const allData = Array.from({ length: 46 }).map((_, index) => ({
+            key: index,
+            name: `Edward King ${index}`,
+            age: 32 + (index % 10),
+            address: `London, Park Lane no. ${index}`,
+          }))
+
+          // 本地模拟过滤
+          const filteredData = allData.filter((item) => {
+            if (params.name && !item.name.toLowerCase().includes(params.name.toLowerCase())) {
+              return false
+            }
+            return true
+          })
+
+          const start = (params.page - 1) * params.pageSize
+          const end = start + params.pageSize
+
+          resolve({
+            data: filteredData.slice(start, end),
+            total: filteredData.length,
+          })
+        }, 400)
+      })
+    }
+
+    const handleAction = ({ source, actionType, data }: { source: string; actionType: string; data: any }) => {
+      console.log(`Action triggered from ${source}:`, actionType, data)
+      if (actionType === 'add') {
+        window.$message?.success('点击了新增按钮')
+      } else if (actionType === 'batchDelete') {
+        window.$message?.warning('点击了批量删除按钮')
+      }
+    }
+
     return () => {
       return (
         <div
@@ -134,55 +153,32 @@ export const TableView = defineComponent({
           style={{
             width: '100%',
             height: '100%',
-            background: '#fff',
             display: 'flex',
             flexDirection: 'column',
             padding: '10px',
             minHeight: 0,
+            boxSizing: 'border-box'
           }}
         >
-          <div
-            style={{
-              flex: '0 0 auto',
+          <ProTable
+            isEdit={isEdit.value}
+            formItems={FormItems.value}
+            formProps={formProps}
+            formButtonItems={formButtonItems.value}
+            columns={columns.value}
+            tableButtons={tableButtons.value}
+            request={handleRequest}
+            onUpdate:formItems={(val) => {
+              FormItems.value = val
             }}
-            class="tableSearchFrom"
-          >
-            <SearchFrom
-              isEdit={isEdit.value}
-              formItems={FormItems.value}
-              RowProps={{ gutter: '12' }}
-              formProps={formProps}
-              formData={FormData}
-              onUpdate:formItems={(val) => {
-                FormItems.value = val
-              }}
-              onUpdate:ButtonItems={(val) => {
-                ButtonItems.value = val
-              }}
-              ButtonItems={ButtonItems.value}
-            />
-          </div>
-          <div
-            style={{
-              flex: '1 1 auto',
-              minHeight: 0,
-              overflow: 'auto',
+            onUpdate:columns={(val) => {
+              columns.value = val
             }}
-          >
-            <CustomTable
-              isEdit={isEdit.value}
-              data={data}
-              columns={columns.value}
-              tableProps={{ pagination: { pageSize: 10 } }}
-              tableButtons={tableButtons.value}
-              onUpdate:columns={(val) => {
-                columns.value = val
-              }}
-              onUpdate:tableButtons={(val) => {
-                tableButtons.value = val
-              }}
-            ></CustomTable>
-          </div>
+            onUpdate:tableButtons={(val) => {
+              tableButtons.value = val
+            }}
+            onAction={handleAction}
+          />
         </div>
       )
     }
@@ -190,3 +186,4 @@ export const TableView = defineComponent({
 })
 
 export default TableView
+

@@ -10,15 +10,26 @@ function toKebabCase(str: string) {
     .replace(/^-/, '')
 }
 
+// 缓存已创建的组件包装器，防止组件在重新 render 时被销毁重装导致失去焦点
+const componentCache = new Map<string, any>()
+
 /**
  * 动态获取 Naive UI 异步组件
  * @param name 组件名称 (例如 "NInput", "NSelect")
  */
 export function getNaiveComponent(name: string) {
+  if (componentCache.has(name)) {
+    return componentCache.get(name)
+  }
+
   const kebabName = toKebabCase(name)
-  return defineAsyncComponent(() =>
+  const component = defineAsyncComponent(() =>
     import(`../../node_modules/naive-ui/es/${kebabName}/index.mjs`).then(
       (m) => m[name] || m.default
     )
   )
+  
+  componentCache.set(name, component)
+  return component
 }
+

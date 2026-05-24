@@ -9,12 +9,16 @@ declare global {
   type searchButtonItem = (
     | (ButtonProps & {
         buttonText: string
+        icon?: string
+        actionType?: string
       })
     | { type: 'expand' }
   )[]
   type tableButtonItem = (
     | (ButtonProps & {
         buttonText: string
+        icon?: string
+        actionType?: string
       })
     | {
         type: 'custom'

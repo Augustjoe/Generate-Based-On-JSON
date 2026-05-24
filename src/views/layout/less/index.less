@@ -3,8 +3,17 @@
   justify-content: center;
   align-items: center;
   height: 100%;
+  
   .item-button {
     padding: 0px 12px;
+    height: 38px;
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+      transform: translateY(-1px);
+    }
   }
 }
 
@@ -13,13 +22,142 @@
   justify-content: center;
   align-items: center;
   height: 100%;
+  gap: 6px;
+  
   .item-button {
     padding: 0px 12px;
+    height: 38px;
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+      transform: translateY(-1px);
+    }
   }
 }
 
-.MenuTag{
-  background-color: #f5f7f9;
-  padding: 5px 20px;
-  height: 38px;
+.MenuTag {
+  background-color: var(--app-bg-color, #f5f7f9);
+  padding: 0px 16px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 99;
 }
+
+.custom-tag-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 14px;
+  background-color: var(--tag-bg-color, #f4f6f8);
+  border: 1px solid var(--tag-border-color, #e5e7eb);
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--tag-text-color, #4b5563);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  min-width: max-content;
+
+  &:hover {
+    background-color: var(--tag-hover-bg, #e5e7eb);
+  }
+
+  &.active {
+    background-color: var(--tag-active-bg, #eef2ff);
+    border-color: var(--tag-active-border, #c7d2fe);
+    color: var(--tag-active-text, #4f46e5);
+
+    .active-dot {
+      background-color: #4f46e5;
+    }
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #d1d5db;
+    margin-right: 6px;
+    transition: background-color 0.2s ease;
+  }
+
+  .close-icon {
+    margin-left: 6px;
+    font-size: 14px;
+    color: #9ca3af;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: #d1d5db;
+      color: #4b5563;
+    }
+  }
+}
+
+/* Global improvements for Naive UI elements to look more premium */
+.n-layout-sider {
+  box-shadow: 2px 0 8px rgba(29, 35, 41, 0.05);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+.n-layout-header {
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.06);
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-bottom: 1px solid #efeff5;
+  position: relative;
+  z-index: 100 !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 60px;
+}
+
+.n-card {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.02) !important;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06) !important;
+  }
+}
+
+/* Dark mode specific fine-tuning */
+:root {
+  --card-background-color: #fff;
+  --app-bg-color: #f5f7f9;
+}
+
+.theme-dark {
+  --card-background-color: #18181c;
+  --app-bg-color: #18181c;
+  
+  .n-layout-header {
+    background-color: rgba(24, 24, 28, 0.9) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.09) !important;
+  }
+  
+  .custom-tag-item {
+    --tag-bg-color: #242428;
+    --tag-border-color: #303033;
+    --tag-text-color: #9ca3af;
+    --tag-hover-bg: #303033;
+    
+    &.active {
+      --tag-active-bg: #2d2d3d;
+      --tag-active-border: #3b3b5c;
+      --tag-active-text: #818cf8;
+    }
+  }
+}
+

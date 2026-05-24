@@ -132,3 +132,37 @@ body {
     transform: rotate(360deg);
   }
 }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.login-btn {
+  background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%) !important;
+  border: none !important;
+  box-shadow: 0 6px 20px rgba(24, 144, 255, 0.25) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(24, 144, 255, 0.35) !important;
+  filter: brightness(1.05);
+}
+
+.login-btn:active {
+  transform: translateY(0);
+}
+
+

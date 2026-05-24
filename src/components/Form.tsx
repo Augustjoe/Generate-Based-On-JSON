@@ -1,4 +1,4 @@
-import { defineComponent, ref, onMounted, watch, reactive } from 'vue'
+import { defineComponent, ref, onMounted, watch, reactive, toRaw, type Component, type VNode } from 'vue'
 import {
   NForm,
   NFormItemGi,
@@ -65,7 +65,7 @@ export default defineComponent({
     const tempRenderFormItems = ref<Record<string, () => HTMLElement | VNode>>({})
     const editFormItems = ref<FormItem[]>([])
 
-    const getNaiveUiItems: (formItem: FormItem) => renderItem | null = (formItem: FormItem) => {
+      const getNaiveUiItems: (formItem: FormItem) => renderItem | null = (formItem: FormItem) => {
       const { itemType, props: itemProps, itemGiProps, path, slots, ...other } = formItem
       if (!itemType) return null
 
@@ -101,6 +101,19 @@ export default defineComponent({
         }
       }
 
+      let normalizedSlots: Record<string, () => any> | undefined = undefined
+      if (slots) {
+        normalizedSlots = {}
+        for (const key in slots) {
+          if (typeof slots[key] !== 'function') {
+            const val = slots[key]
+            normalizedSlots[key] = () => val
+          } else {
+            normalizedSlots[key] = slots[key]
+          }
+        }
+      }
+
       const item = getNaiveComponent(itemType)
       if (item) {
         try {
@@ -110,7 +123,7 @@ export default defineComponent({
             props,
             itemGiProps: { path, ...itemGiProps },
             path,
-            slots,
+            slots: normalizedSlots,
           }
         } catch (error) {
           console.error(`加载组件 ${itemType} 失败:`, error)

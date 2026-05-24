@@ -16,7 +16,7 @@ declare global {
         props?: Record<string, any>
         itemGiProps?: Record<string, any>
         render?: () => HTMLElement
-        slots?: Record<string, () => any>
+        slots?: Record<string, any>
       }
     | Record<string, any>
 }

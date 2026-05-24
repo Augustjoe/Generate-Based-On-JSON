@@ -1,8 +1,8 @@
-import { defineComponent, watch } from 'vue'
-import { NButton, type MenuOption } from 'naive-ui'
+import { defineComponent, watch, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MenuOptions from '@/views/menu'
 import { Close } from '@vicons/ionicons5'
+import { NIcon } from 'naive-ui'
 import Draggable from 'vuedraggable'
 
 type MenuItem = { name: string; path: string }
@@ -23,7 +23,7 @@ export const MenuTag = defineComponent({
     const handleClose = async (tag: string) => {
       paths.value = paths.value.filter((item) => item.path !== tag)
       if (tag === currentPath.value) {
-        router.push({ path: paths.value[0].path })
+        router.push({ path: paths.value[paths.value.length - 1]?.path || '/home' })
       }
       emit('update:tag', tag)
     }
@@ -31,18 +31,16 @@ export const MenuTag = defineComponent({
       router.push({ path })
     }
     const getSelectMenu = (path: string) => {
-      const menuOptionArr: MenuOption[] = []
-      // 取出其中的所有子菜单项
-      MenuOptions.forEach((item) => {
+      const menuOptionArr: any[] = []
+      MenuOptions.forEach((item: any) => {
         if (item.children) {
-          item.children.forEach((child) => {
+          item.children.forEach((child: any) => {
             menuOptionArr.push(child)
           })
         } else {
           menuOptionArr.push(item)
         }
       })
-
       return menuOptionArr.find((option) => option.key === path)
     }
 
@@ -59,32 +57,31 @@ export const MenuTag = defineComponent({
     )
 
     return () => (
-      <Draggable v-model={paths.value} itemKey="path">
+      <Draggable v-model={paths.value} itemKey="path" style={{ display: 'flex', gap: '8px', overflowX: 'auto', width: '100%', height: '100%', alignItems: 'center' }}>
         {{
-          item: ({ element: item }: { element: MenuItem }) => (
-            <NButton
-              type={item.path === currentPath.value ? 'info' : 'default'}
-              size="small"
-              // tertiary
-              key={item.path}
-              dashed
-              onClick={() => handleClick(item.path)}
-              style={{ background: '#fff', marginRight: '10px' }}
-            >
-              <span>{item.name}</span>
-              {item.path !== '/home' && (
-                <NButton
-                  renderIcon={() => <Close />}
-                  text
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleClose(item.path)
-                  }}
-                  style={{ color: '#999', marginLeft: '5px' }}
-                />
-              )}
-            </NButton>
-          ),
+          item: ({ element: item }: { element: MenuItem }) => {
+            const isActive = item.path === currentPath.value
+            return (
+              <div
+                class={`custom-tag-item ${isActive ? 'active' : ''}`}
+                onClick={() => handleClick(item.path)}
+              >
+                <span class={isActive ? 'dot active-dot' : 'dot'}></span>
+                <span class="tag-text">{item.name}</span>
+                {item.path !== '/home' && (
+                  <span
+                    class="close-icon"
+                    onClick={(e: MouseEvent) => {
+                      e.stopPropagation()
+                      handleClose(item.path)
+                    }}
+                  >
+                    <NIcon component={Close} />
+                  </span>
+                )}
+              </div>
+            )
+          },
         }}
       </Draggable>
     )

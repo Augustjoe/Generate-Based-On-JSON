@@ -1,4 +1,4 @@
-import { defineComponent, watch } from 'vue'
+import { defineComponent, watch, onMounted, ref, type VNode } from 'vue'
 import {
   NDataTable,
   NFlex,
@@ -10,6 +10,7 @@ import {
 import FormEditorButton from './FormEditorButton'
 import { EditSettings24Regular, Settings32Regular, TableSettings24Regular } from '@vicons/fluent'
 import { extractRenderFns, restoreRenderFns } from '@/assets/render-fn-extractor'
+import { renderIconFromString } from '@/utils/iconMap'
 
 export default defineComponent({
   name: 'CustomTable',
@@ -49,10 +50,10 @@ export default defineComponent({
       default: () => ({}),
     },
   },
-  emits: ['update:tableButtons', 'update:columns', 'update:tableProps'],
+  emits: ['update:tableButtons', 'update:columns', 'update:tableProps', 'action'],
   setup(props, { emit }) {
     const columns = ref<DataTableColumns<Record<string, any>>>(props.columns || [])
-    const tableProps = ref<Partial<DataTableProps>>(props.tableProps || [])
+    const tableProps = ref<Partial<DataTableProps>>(props.tableProps || {})
     const editTableButtons = ref<tableButtonItem>([])
     let tempRender: Record<string, () => HTMLElement | VNode> = {}
 
@@ -61,6 +62,24 @@ export default defineComponent({
       editTableButtons.value = data
       tempRender = slots
     }
+
+    // 监控 columns 的变化
+    watch(
+      () => props.columns,
+      (newVal) => {
+        columns.value = newVal || []
+      },
+      { immediate: true }
+    )
+
+    // 监控 tableProps 的变化
+    watch(
+      () => props.tableProps,
+      (newVal) => {
+        tableProps.value = newVal || {}
+      },
+      { immediate: true }
+    )
 
     // 监控 tableButtons 的变化
     watch(() => props.tableButtons, getTempRenderMap)
@@ -91,7 +110,25 @@ export default defineComponent({
               if (item.type === 'custom' && item.render) {
                 return item.render()
               } else if (item.type !== 'custom') {
-                return <NButton {...item}>{item.buttonText}</NButton>
+                const { icon, actionType, onClick, ...btnProps } = item
+                const finalRenderIcon = icon ? renderIconFromString(icon) : btnProps.renderIcon
+                const handleClick = (e: MouseEvent) => {
+                  if (onClick) {
+                    if (Array.isArray(onClick)) {
+                      onClick.forEach((fn: any) => fn(e))
+                    } else {
+                      (onClick as any)(e)
+                    }
+                  }
+                  if (actionType) {
+                    emit('action', actionType, null) // Table level action, no row data context here
+                  }
+                }
+                return (
+                  <NButton {...btnProps} renderIcon={finalRenderIcon} onClick={handleClick}>
+                    {item.buttonText}
+                  </NButton>
+                )
               }
             })}
             {props.isEdit && (

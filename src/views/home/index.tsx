@@ -1,4 +1,4 @@
-import { defineComponent, VNode } from 'vue'
+import { defineComponent, VNode, type Component } from 'vue'
 import { NCard, NIcon, NProgress } from 'naive-ui'
 import { titleDefaultRender, titleHeaderExtra, titleFooter } from './renderFunction'
 import {
@@ -141,21 +141,24 @@ export const Home = defineComponent({
 
     return () => {
       return (
-        <div style={{}}>
+        <div style={{ padding: '20px' }}>
           <div class={'heardCard'}>
-            <n-grid cols="1 s:2 m:3 l:4 xl:4 2xl:4" responsive="screen" x-gap={12} y-gap={8}>
+            <n-grid cols="1 s:2 m:3 l:4 xl:4 2xl:4" responsive="screen" x-gap={16} y-gap={16}>
               {titleCards.map((card) => (
                 <n-grid-item>
                   <NCard
+                    bordered={false}
                     contentStyle={{
-                      padding: '15px 20px',
-                      borderTop: '1px solid #e8e8e8',
+                      padding: '20px',
                     }}
                     footerStyle={{
-                      padding: '15px 20px',
-                      borderTop: '1px solid #e8e8e8',
+                      padding: '16px 20px',
+                      background: 'var(--tag-bg-color, #fafafa)',
                       fontSize: '14px',
+                      borderBottomLeftRadius: '12px',
+                      borderBottomRightRadius: '12px',
                     }}
+                    style={{ borderRadius: '12px', boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)' }}
                     v-slots={card}
                   ></NCard>
                 </n-grid-item>
@@ -163,16 +166,16 @@ export const Home = defineComponent({
             </n-grid>
           </div>
 
-          <div class={'iconList'} style={{ marginTop: '10px' }}>
-            <n-grid cols="1 s:2 m:3 l:8 xl:8 2xl:8" responsive="screen" x-gap="16" y-gap="8">
+          <div class={'iconList'} style={{ marginTop: '20px' }}>
+            <n-grid cols="2 s:4 m:4 l:8 xl:8 2xl:8" responsive="screen" x-gap="16" y-gap="16">
               {iconList.map((item) => (
                 <n-grid-item>
-                  <NCard content-style="padding-top: 0;" size="small" bordered={false}>
+                  <NCard content-style="padding: 16px 0;" size="small" bordered={false} style={{ borderRadius: '12px', boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)', cursor: 'pointer', transition: 'transform 0.2s' }} hoverable>
                     <div onClick={item.click}>
-                      <p style={{ ...cssIconCard, padding: '12px' }}>
-                        <NIcon component={item.icon} size="32" color={item.color} />
+                      <p style={{ ...cssIconCard, paddingBottom: '8px' }}>
+                        <NIcon component={item.icon} size="36" color={item.color} />
                       </p>
-                      <p style={cssIconCard}>{item.title}</p>
+                      <p style={{...cssIconCard, fontWeight: 500, color: '#555'}}>{item.title}</p>
                     </div>
                   </NCard>
                 </n-grid-item>
@@ -181,13 +184,15 @@ export const Home = defineComponent({
           </div>
 
           <NCard
+            bordered={false}
             style={{
               width: '100%',
-
-              marginTop: '10px',
+              marginTop: '20px',
+              borderRadius: '12px',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
             }}
           >
-            <n-tabs type="line" animated pane-style={{ height: '400px' }}>
+            <n-tabs type="line" animated pane-style={{ height: '400px', paddingTop: '20px' }}>
               <n-tab-pane name="流量趋势" tab="流量趋势">
                 <DailyTraffic />
               </n-tab-pane>

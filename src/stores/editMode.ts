@@ -1,17 +1,21 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { useAppSettingsStore } from './appSettings'
 
 export const useEditMode = defineStore('editMode', {
-  state: () => {
-    const isEdit = ref(false)
-    return { isEdit }
+  getters: {
+    isEdit: () => {
+      const appSettings = useAppSettingsStore()
+      return appSettings.isEdit
+    }
   },
   actions: {
     getEditMode() {
-      return this.isEdit
+      const appSettings = useAppSettingsStore()
+      return appSettings.isEdit
     },
     setEditMode(mode: boolean) {
-      this.isEdit = mode as boolean
+      const appSettings = useAppSettingsStore()
+      appSettings.isEdit = mode
     },
   },
 })

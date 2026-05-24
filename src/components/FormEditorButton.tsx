@@ -1,3 +1,4 @@
+import { defineComponent, ref, markRaw, type PropType } from 'vue'
 import { NButton, NIcon, NPopover } from 'naive-ui'
 import CardCodeEditor from './CardCodeEditor'
 import { SettingOutlined } from '@vicons/antd'

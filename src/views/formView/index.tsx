@@ -1,3 +1,4 @@
+import { defineComponent, ref, reactive } from 'vue'
 import From from '@/components/Form'
 import { FormProps, NFlex, NCard, NRadio, NButton, FormValidationError } from 'naive-ui'
 import { useEditMode } from '@/stores/editMode'
@@ -36,8 +37,8 @@ export const FromView = defineComponent({
         path: 'isEmployed',
         props: {},
         slots: {
-          checked: () => '是',
-          unchecked: () => '否',
+          checked: '是',
+          unchecked: '否',
         },
         itemGiProps: { span: 24, label: '是否入职:' },
       },
