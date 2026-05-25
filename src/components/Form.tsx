@@ -1,4 +1,14 @@
-import { defineComponent, ref, onMounted, watch, reactive, toRaw, type Component, type VNode } from 'vue'
+import {
+  defineAsyncComponent,
+  defineComponent,
+  ref,
+  onMounted,
+  watch,
+  reactive,
+  toRaw,
+  type Component,
+  type VNode,
+} from 'vue'
 import {
   NForm,
   NFormItemGi,
@@ -8,10 +18,11 @@ import {
 } from 'naive-ui'
 import { getNaiveComponent } from '@/utils/dynamicComponent'
 import type { FormProps, RowProps, GridProps, FormInst } from 'naive-ui'
-import FormEditorButton from './FormEditorButton'
 import { DisplaySettingsFilled } from '@vicons/material'
 import { CalendarSettings16Regular } from '@vicons/fluent'
 import { extractRenderFns, restoreRenderFns } from '@/assets/render-fn-extractor'
+
+const FormEditorButton = defineAsyncComponent(() => import('./FormEditorButton'))
 
 type renderItem = {
   item?: Component | HTMLElement

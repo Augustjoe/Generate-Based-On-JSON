@@ -1,10 +1,93 @@
-import { defineComponent, ref, markRaw, type PropType } from 'vue'
+import {
+  defineAsyncComponent,
+  defineComponent,
+  ref,
+  markRaw,
+  type PropType,
+  type CSSProperties,
+} from 'vue'
 import { NButton, NIcon, NPopover } from 'naive-ui'
-import CardCodeEditor from './CardCodeEditor'
+import type { ButtonProps, FormProps } from 'naive-ui'
 import { SettingOutlined } from '@vicons/antd'
 import { useAppDrawerStore } from '@/stores/appDrawerStore'
-import { CSSProperties } from 'vue'
-import type { ButtonProps, FormProps } from 'naive-ui'
+
+const FUNCTION_SLOT_PREFIX = '__function_slot__'
+const CardCodeEditor = defineAsyncComponent(() => import('./CardCodeEditor'))
+
+type EditableSlots = Record<string, (...args: any[]) => any>
+
+function extractFunctions(input: any) {
+  const slots: EditableSlots = {}
+  let index = 0
+
+  const clone = (value: any): any => {
+    if (Array.isArray(value)) {
+      return value.map(clone)
+    }
+
+    if (value && typeof value === 'object') {
+      return Object.fromEntries(
+        Object.entries(value).map(([key, entry]) => {
+          if (typeof entry === 'function') {
+            const slotKey = `${FUNCTION_SLOT_PREFIX}${++index}`
+            slots[slotKey] = entry as (...args: any[]) => any
+            return [key, slotKey]
+          }
+
+          return [key, clone(entry)]
+        }),
+      )
+    }
+
+    return value
+  }
+
+  return {
+    data: clone(input),
+    slots,
+  }
+}
+
+function restoreFunctions(input: any, slots: EditableSlots): any {
+  if (Array.isArray(input)) {
+    return input.map((item) => restoreFunctions(item, slots))
+  }
+
+  if (input && typeof input === 'object') {
+    return Object.fromEntries(
+      Object.entries(input).map(([key, value]) => [key, restoreFunctions(value, slots)]),
+    )
+  }
+
+  if (typeof input === 'string') {
+    if (input.startsWith(FUNCTION_SLOT_PREFIX)) {
+      if (input in slots) {
+        return slots[input]
+      }
+
+      throw new Error(`Unknown function slot: ${input}`)
+    }
+
+    if (/^\s*(function\b|\(?[\w\s,]*\)?\s*=>)/.test(input)) {
+      throw new Error('Function source is not supported in JSON config.')
+    }
+  }
+
+  return input
+}
+
+function createEditableConfig(input: { [key: string]: any } | { [key: string]: any }[]) {
+  const { data, slots } = extractFunctions(input)
+
+  return {
+    code: JSON.stringify(data, null, 2),
+    slots,
+  }
+}
+
+function parseEditableConfig(input: string, slots: EditableSlots): any {
+  return restoreFunctions(JSON.parse(input), slots)
+}
 
 export const FormEditorButton = defineComponent({
   props: {
@@ -24,7 +107,6 @@ export const FormEditorButton = defineComponent({
     style: {
       type: Object as () => CSSProperties,
       required: false,
-      // default: () => ({}),
     },
     propoverTitle: {
       type: String,
@@ -43,49 +125,6 @@ export const FormEditorButton = defineComponent({
     const { element } = props
     const formItems = ref(props.formItems)
     const formProps = ref(props.formProps)
-
-    function convertFunctionsToStrings(input: any): any {
-      // 如果是数组，递归处理每个元素
-      if (Array.isArray(input)) {
-        return input.map(convertFunctionsToStrings)
-      }
-
-      // 如果是对象，递归处理每个属性
-      if (input && typeof input === 'object') {
-        return Object.fromEntries(
-          Object.entries(input).map(([key, value]) => [
-            key,
-            typeof value === 'function'
-              ? value.toString().replace(/\n/g, '')
-              : convertFunctionsToStrings(value),
-          ]),
-        )
-      }
-
-      // 其他类型直接返回
-      return input
-    }
-
-    //  处理字符串 使其变成可读性更强的字符串
-    function customStringify(input: { [key: string]: any } | { [key: string]: any }[]): string {
-      return JSON.stringify(convertFunctionsToStrings(input), null, 2)
-    }
-
-    function parseCustomStringified(input: string): any {
-      return JSON.parse(input, (key, value) => {
-        if (
-          typeof value === 'string' &&
-          (value.startsWith('function') || value.startsWith('() =>'))
-        ) {
-          try {
-            return eval(value)
-          } catch (e) {
-            console.error('无法还原函数:', e)
-          }
-        }
-        return value
-      })
-    }
 
     return () => (
       <div
@@ -114,14 +153,19 @@ export const FormEditorButton = defineComponent({
                       setDrawerProps({ show: value })
                     },
                   })
+
+                  const editableConfig = createEditableConfig(
+                    element || formItems.value || formProps.value,
+                  )
+
                   setDrawSlots({
                     default: () =>
                       markRaw(
                         <CardCodeEditor
-                          codeValue={customStringify(element || formItems.value || formProps.value)}
+                          codeValue={editableConfig.code}
                           onUpdate:codeValue={(val: string) => {
                             try {
-                              const obj = parseCustomStringified(val)
+                              const obj = parseEditableConfig(val, editableConfig.slots)
                               if (formItems.value) {
                                 if (element) {
                                   formItems.value.splice(

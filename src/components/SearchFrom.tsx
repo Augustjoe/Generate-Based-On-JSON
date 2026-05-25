@@ -1,12 +1,12 @@
-import { defineComponent, ref, onMounted, reactive, toRef } from 'vue'
+import { defineAsyncComponent, defineComponent, ref, onMounted, reactive, toRef } from 'vue'
 import { NCard, NButton, NGrid, NGi, NIcon, NFlex } from 'naive-ui'
 import type { FormProps, RowProps } from 'naive-ui'
-import FormEditorButton from './FormEditorButton'
 import { EditSettings24Regular } from '@vicons/fluent'
 import { renderIconFromString } from '@/utils/iconMap'
 
 import Form from './Form'
 
+const FormEditorButton = defineAsyncComponent(() => import('./FormEditorButton'))
 
 export default defineComponent({
   name: 'Form',

@@ -4,6 +4,27 @@ import { mount } from '@vue/test-utils'
 import { useAppSettingsStore } from '../stores/appSettings'
 import ProTable from '../components/ProTable'
 
+vi.mock('../components/SearchFrom', () => ({
+  default: {
+    name: 'SearchFrom',
+    render: () => null,
+  },
+}))
+
+vi.mock('../components/CustomTable', () => ({
+  default: {
+    name: 'CustomTable',
+    render: () => null,
+  },
+}))
+
+vi.mock('../utils/dynamicComponent', () => ({
+  getNaiveComponent: vi.fn(() => ({
+    name: 'MockNaiveComponent',
+    render: () => null,
+  })),
+}))
+
 describe('Admin Layout & Settings Store', () => {
   beforeEach(() => {
     setActivePinia(createPinia())

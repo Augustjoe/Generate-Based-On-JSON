@@ -1,7 +1,14 @@
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent, type Component } from 'vue'
 
-// 将 PascalCase（例如 "NInput"）转换为 kebab-case（例如 "input"）
-// 也支持像 "NDatePicker" 转换为 "date-picker"
+type NaiveModule = Record<string, Component | undefined> & {
+  default?: Component
+}
+
+// Vite will expand this glob at build time into a path -> loader map.
+const naiveComponentModules = import.meta.glob<NaiveModule>(
+  '../../node_modules/naive-ui/es/*/index.mjs',
+)
+
 function toKebabCase(str: string) {
   return str
     .replace(/^N/, '')
@@ -10,12 +17,11 @@ function toKebabCase(str: string) {
     .replace(/^-/, '')
 }
 
-// 缓存已创建的组件包装器，防止组件在重新 render 时被销毁重装导致失去焦点
-const componentCache = new Map<string, any>()
+const componentCache = new Map<string, Component>()
 
 /**
- * 动态获取 Naive UI 异步组件
- * @param name 组件名称 (例如 "NInput", "NSelect")
+ * Dynamically resolve a Naive UI async component by component name.
+ * @param name Component name, for example "NInput" or "NDatePicker".
  */
 export function getNaiveComponent(name: string) {
   if (componentCache.has(name)) {
@@ -23,13 +29,25 @@ export function getNaiveComponent(name: string) {
   }
 
   const kebabName = toKebabCase(name)
-  const component = defineAsyncComponent(() =>
-    import(`../../node_modules/naive-ui/es/${kebabName}/index.mjs`).then(
-      (m) => m[name] || m.default
-    )
-  )
-  
+  const modulePath = `../../node_modules/naive-ui/es/${kebabName}/index.mjs`
+  const loader = naiveComponentModules[modulePath]
+
+  if (!loader) {
+    console.warn(`[dynamicComponent] Naive UI component "${name}" was not found.`)
+    return null
+  }
+
+  const component = defineAsyncComponent(async () => {
+    const module = await loader()
+    const resolved = module[name] || module.default
+
+    if (!resolved) {
+      throw new Error(`[dynamicComponent] Naive UI module found, but "${name}" is not exported.`)
+    }
+
+    return resolved
+  })
+
   componentCache.set(name, component)
   return component
 }
-

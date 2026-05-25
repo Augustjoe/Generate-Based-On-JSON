@@ -31,6 +31,10 @@ export const indexComponent = defineComponent({
     const layoutContentStyle: CSSProperties = {
       height: '100%',
       padding: '0px 0px 10px 10px',
+      boxSizing: 'border-box',
+      overflowX: 'hidden',
+      overflowY: 'auto',
+      position: 'relative',
     }
     const collapsed = ref(false)
 
@@ -170,6 +174,7 @@ export const indexComponent = defineComponent({
           style={{
             height: 'calc(100% - 104px)',
             background: appSettings.theme === 'dark' ? '#18181c' : '#f5f7f9',
+            overflow: 'hidden',
           }}
           content-style={layoutContentStyle}
         >
@@ -240,6 +245,7 @@ export const indexComponent = defineComponent({
           style={{
             height: 'calc(100% - 104px)',
             background: appSettings.theme === 'dark' ? '#18181c' : '#f5f7f9',
+            overflow: 'hidden',
           }}
           content-style={layoutContentStyle}
         >

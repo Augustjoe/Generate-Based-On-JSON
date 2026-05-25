@@ -27,6 +27,11 @@ export const config = {
           component: TableView,
         },
         {
+          path: '/proTable',
+          name: 'ProTable',
+          component: () => import('./proTable'),
+        },
+        {
           path: '/formView',
           name: '基本表单',
           component: () => import('./formView'),

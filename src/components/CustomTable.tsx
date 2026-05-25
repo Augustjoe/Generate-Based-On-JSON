@@ -1,4 +1,4 @@
-import { defineComponent, watch, onMounted, ref, type VNode } from 'vue'
+import { defineAsyncComponent, defineComponent, watch, onMounted, ref, type VNode } from 'vue'
 import {
   NDataTable,
   NFlex,
@@ -7,10 +7,11 @@ import {
   type DataTableColumns,
   type DataTableProps,
 } from 'naive-ui'
-import FormEditorButton from './FormEditorButton'
 import { EditSettings24Regular, Settings32Regular, TableSettings24Regular } from '@vicons/fluent'
 import { extractRenderFns, restoreRenderFns } from '@/assets/render-fn-extractor'
 import { renderIconFromString } from '@/utils/iconMap'
+
+const FormEditorButton = defineAsyncComponent(() => import('./FormEditorButton'))
 
 export default defineComponent({
   name: 'CustomTable',

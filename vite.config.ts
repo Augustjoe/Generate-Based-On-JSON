@@ -13,8 +13,8 @@ export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
-    vueDevTools(),
-    // 自动引入naive ui
+    process.env.NODE_ENV !== 'production' && vueDevTools(),
+    // 自动引入 Naive UI
     AutoImport({
       imports: ['vue'],
       dts: 'src/auto-imports.d.ts',

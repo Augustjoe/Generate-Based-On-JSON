@@ -1,5 +1,5 @@
 import { MenuOption } from 'naive-ui'
-import { ControlOutlined } from '@vicons/antd'
+import { ControlOutlined, ProfileOutlined } from '@vicons/antd'
 import { TableChartOutlined } from '@vicons/material'
 import { BookInformation20Regular } from '@vicons/fluent'
 
@@ -23,6 +23,11 @@ export const MenuOptions: MenuOption[] = [
     label: '基本表格',
     key: 'tableView',
     icon: () => <TableChartOutlined />,
+  },
+  {
+    label: 'ProTable',
+    key: 'proTable',
+    icon: () => <ProfileOutlined />,
   },
   {
     label: '基本表单',
