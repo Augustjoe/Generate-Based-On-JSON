@@ -1,21 +1,13 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
-
 export type MenuPosition = 'left' | 'right' | 'top'
 export type AppTheme = 'light' | 'dark'
 
 export const useAppSettingsStore = defineStore('appSettings', {
-  state: () => {
-    const menuPosition = ref<MenuPosition>('left')
-    const isEdit = ref(false)
-    const theme = ref<AppTheme>('light')
-    
-    return {
-      menuPosition,
-      isEdit,
-      theme,
-    }
-  },
+  state: () => ({
+    menuPosition: 'left' as MenuPosition,
+    isEdit: false,
+    theme: 'light' as AppTheme,
+  }),
   actions: {
     setMenuPosition(position: MenuPosition) {
       this.menuPosition = position

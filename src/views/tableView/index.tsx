@@ -1,11 +1,12 @@
 import ProTable from '@/components/ProTable'
-import useEditMode from '@/stores/editMode'
-import { storeToRefs } from 'pinia'
-import { reactive, ref, defineComponent } from 'vue'
+import { useAppSettingsStore } from '@/stores/appSettings'
+import { computed, reactive, ref, defineComponent } from 'vue'
 
 export const TableView = defineComponent({
   name: 'TableView',
   setup: () => {
+    const appSettings = useAppSettingsStore()
+    const isEdit = computed(() => appSettings.isEdit)
     const FormItems = ref<FormItem[]>([
       {
         itemType: 'NInput',
@@ -85,7 +86,6 @@ export const TableView = defineComponent({
         key: 'address',
       },
     ])
-    const { isEdit } = storeToRefs(useEditMode())
     const tableButtons = ref<tableButtonItem>([
       {
         type: 'primary',

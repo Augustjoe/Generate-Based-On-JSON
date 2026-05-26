@@ -1,4 +1,4 @@
-import { defineAsyncComponent, defineComponent, ref, onMounted, reactive, toRef, nextTick, watch } from 'vue'
+import { computed, defineAsyncComponent, defineComponent, ref, onMounted, reactive, toRef, nextTick, watch } from 'vue'
 import { NCard, NButton, NIcon, NFlex } from 'naive-ui'
 import type { FormProps, RowProps } from 'naive-ui'
 import { EditSettings24Regular } from '@vicons/fluent'
@@ -52,6 +52,15 @@ export default defineComponent({
     const showExpandButton = ref(false)
     const formRef = ref()
     const formAreaRef = ref<HTMLElement | null>(null)
+    const displayFormItems = computed(() =>
+      formItems.value.map((item) => ({
+        ...item,
+        itemGiProps: {
+          ...(item.itemGiProps || {}),
+          showFeedback: item.itemGiProps?.showFeedback ?? false,
+        },
+      })),
+    )
     const collapsedStyle = reactive({
       height: '40px',
     })
@@ -100,7 +109,7 @@ export default defineComponent({
         <div
           style={{
             display: 'flex',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             gap: '24px',
             width: '100%',
           }}
@@ -119,7 +128,7 @@ export default defineComponent({
               isEdit={isEdit.value}
               ref={formRef}
               formData={formData}
-              formItems={formItems.value}
+              formItems={displayFormItems.value}
               formProps={formProps.value}
               onUpdate:formItems={(val: FormItem[]) => {
                 formItems.value = val
@@ -135,11 +144,10 @@ export default defineComponent({
             size={8}
             style={{
               flex: '0 0 auto',
-              minHeight: '34px',
-              paddingTop: '0px',
+              minHeight: isHidden.value ? collapsedStyle.height : '34px',
             }}
             justify="end"
-            align="start"
+            align="center"
           >
             {ButtonItems.value.map((item) => {
               if (item.type === 'expand') {

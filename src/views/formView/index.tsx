@@ -1,13 +1,13 @@
-import { defineComponent, ref, reactive } from 'vue'
+import { computed, defineComponent, ref, reactive } from 'vue'
 import From from '@/components/Form'
 import { FormProps, NFlex, NCard, NRadio, NButton, FormValidationError } from 'naive-ui'
-import { useEditMode } from '@/stores/editMode'
-import { storeToRefs } from 'pinia'
+import { useAppSettingsStore } from '@/stores/appSettings'
 
 export const FromView = defineComponent({
   name: 'FromView',
   setup: () => {
-    const { isEdit } = storeToRefs(useEditMode())
+    const appSettings = useAppSettingsStore()
+    const isEdit = computed(() => appSettings.isEdit)
     const formRef = ref<any>(null)
     const formData = reactive<Record<string, any>>({
       name: '张三',
@@ -140,7 +140,7 @@ export const FromView = defineComponent({
       <div
         style={{
           height: '100%',
-          background: '#fff',
+          background: 'var(--app-bg-color, #f5f7f9)',
           display: 'flex',
           justifyContent: 'center',
           padding: '20px',

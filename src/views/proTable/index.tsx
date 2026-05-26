@@ -1,7 +1,6 @@
 import ProTable from '@/components/ProTable'
-import useEditMode from '@/stores/editMode'
-import { storeToRefs } from 'pinia'
-import { defineComponent, h, ref } from 'vue'
+import { useAppSettingsStore } from '@/stores/appSettings'
+import { computed, defineComponent, h, ref } from 'vue'
 import { NButton, NSpace, NTag, type DataTableColumns } from 'naive-ui'
 
 type OrderStatus = 'success' | 'pending' | 'failed'
@@ -46,7 +45,8 @@ const allOrders: OrderRecord[] = Array.from({ length: 67 }).map((_, index) => {
 export const ProTableView = defineComponent({
   name: 'ProTableView',
   setup: () => {
-    const { isEdit } = storeToRefs(useEditMode())
+    const appSettings = useAppSettingsStore()
+    const isEdit = computed(() => appSettings.isEdit)
 
     const formItems = ref<FormItem[]>([
       {

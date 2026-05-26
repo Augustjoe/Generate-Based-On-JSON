@@ -43,10 +43,9 @@ export default defineComponent({
             <h3 style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: 600 }}>系统主题</h3>
             <NSpace justify="space-between" align="center" style={{ width: '100%' }}>
               <span>深色主题</span>
-              <NSwitch
-                value={appSettings.theme === 'dark'}
-                onUpdateValue={changeTheme}
-              />
+              <span onClick={() => changeTheme(appSettings.theme !== 'dark')}>
+                <NSwitch value={appSettings.theme === 'dark'} />
+              </span>
             </NSpace>
 
             <NDivider style={{ margin: '20px 0' }} />
@@ -55,14 +54,15 @@ export default defineComponent({
             <h3 style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: 600 }}>运行模式</h3>
             <NSpace justify="space-between" align="center" style={{ width: '100%' }}>
               <span>编辑模式</span>
+              <span onClick={() => changeEditMode(!appSettings.isEdit)}>
               <NSwitch
                 value={appSettings.isEdit}
-                onUpdateValue={changeEditMode}
                 v-slots={{
                   checked: () => '编辑',
                   unchecked: () => '预览'
                 }}
               />
+              </span>
             </NSpace>
 
             <NDivider style={{ margin: '20px 0' }} />
@@ -72,7 +72,7 @@ export default defineComponent({
             <NSpace vertical style={{ width: '100%' }}>
               <NRadioGroup
                 value={appSettings.menuPosition}
-                onUpdateValue={changeMenuPosition}
+                {...{ 'onUpdate:value': changeMenuPosition }}
                 name="menuPosition"
                 style={{ width: '100%' }}
               >
