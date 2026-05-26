@@ -1,0 +1,223 @@
+{
+  "url": "http://localhost:5173/tableView",
+  "searchCard": {
+    "x": 221,
+    "y": 115,
+    "width": 1024,
+    "height": 90,
+    "right": 1245,
+    "bottom": 205
+  },
+  "formItems": [
+    {
+      "text": "名称:\n请输入名称",
+      "x": 237,
+      "y": 131,
+      "width": 256.65625,
+      "height": 58,
+      "right": 493.65625,
+      "bottom": 189
+    },
+    {
+      "text": "工号:\n请输入工号",
+      "x": 501.65625,
+      "y": 131,
+      "width": 256.671875,
+      "height": 58,
+      "right": 758.328125,
+      "bottom": 189
+    },
+    {
+      "text": "职务:\n请输入职务",
+      "x": 766.328125,
+      "y": 131,
+      "width": 256.671875,
+      "height": 58,
+      "right": 1023,
+      "bottom": 189
+    },
+    {
+      "text": "类型:\n请选择类型",
+      "x": 237,
+      "y": 189,
+      "width": 256.65625,
+      "height": 58,
+      "right": 493.65625,
+      "bottom": 247
+    },
+    {
+      "text": "性别:\n请选择性别",
+      "x": 501.65625,
+      "y": 189,
+      "width": 256.671875,
+      "height": 58,
+      "right": 758.328125,
+      "bottom": 247
+    }
+  ],
+  "inputs": [
+    {
+      "text": "请输入名称",
+      "className": "n-input n-input--resizable n-input--stateful",
+      "x": 280.046875,
+      "y": 131,
+      "width": 213.609375,
+      "height": 34,
+      "right": 493.65625,
+      "bottom": 165
+    },
+    {
+      "text": "请输入工号",
+      "className": "n-input n-input--resizable n-input--stateful",
+      "x": 544.703125,
+      "y": 131,
+      "width": 213.625,
+      "height": 34,
+      "right": 758.328125,
+      "bottom": 165
+    },
+    {
+      "text": "请输入职务",
+      "className": "n-input n-input--resizable n-input--stateful",
+      "x": 809.375,
+      "y": 131,
+      "width": 213.625,
+      "height": 34,
+      "right": 1023,
+      "bottom": 165
+    },
+    {
+      "text": "请选择类型",
+      "className": "n-base-selection",
+      "x": 280.046875,
+      "y": 189,
+      "width": 213.609375,
+      "height": 34,
+      "right": 493.65625,
+      "bottom": 223
+    },
+    {
+      "text": "请选择性别",
+      "className": "n-base-selection",
+      "x": 544.703125,
+      "y": 189,
+      "width": 213.625,
+      "height": 34,
+      "right": 758.328125,
+      "bottom": 223
+    }
+  ],
+  "buttons": [
+    {
+      "text": "查询",
+      "x": 1047,
+      "y": 143,
+      "width": 56,
+      "height": 34,
+      "right": 1103,
+      "bottom": 177
+    },
+    {
+      "text": "重置",
+      "x": 1111,
+      "y": 143,
+      "width": 56,
+      "height": 34,
+      "right": 1167,
+      "bottom": 177
+    },
+    {
+      "text": "展开",
+      "x": 1177,
+      "y": 143,
+      "width": 52,
+      "height": 34,
+      "right": 1229,
+      "bottom": 177
+    }
+  ],
+  "logs": [
+    {
+      "type": "debug",
+      "args": [
+        "[vite] connecting..."
+      ]
+    },
+    {
+      "type": "debug",
+      "args": [
+        "[vite] connected."
+      ]
+    },
+    {
+      "type": "debug",
+      "args": [
+        "[Router Guard]",
+        "Object"
+      ]
+    },
+    {
+      "type": "log",
+      "args": [
+        "🍍 \"auth\" store installed 🆕"
+      ]
+    },
+    {
+      "type": "debug",
+      "args": [
+        "[Router Guard]",
+        "Object"
+      ]
+    },
+    {
+      "type": "debug",
+      "args": [
+        "[vite] connecting..."
+      ]
+    },
+    {
+      "type": "debug",
+      "args": [
+        "[vite] connected."
+      ]
+    },
+    {
+      "type": "debug",
+      "args": [
+        "[Router Guard]",
+        "Object"
+      ]
+    },
+    {
+      "type": "log",
+      "args": [
+        "🍍 \"auth\" store installed 🆕"
+      ]
+    },
+    {
+      "type": "log",
+      "args": [
+        "ProTable 请求参数:",
+        "Object"
+      ]
+    },
+    {
+      "type": "log",
+      "args": [
+        "🍍 \"appSettings\" store installed 🆕"
+      ]
+    },
+    {
+      "type": "log",
+      "args": [
+        "🍍 \"editMode\" store installed 🆕"
+      ]
+    },
+    {
+      "type": "log",
+      "args": [
+        "🍍 \"appDrawer\" store installed 🆕"
+      ]
+    }
+  ]
+}

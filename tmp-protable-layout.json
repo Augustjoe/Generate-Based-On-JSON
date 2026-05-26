@@ -1,0 +1,60 @@
+{
+  "searchCard": {
+    "x": 221,
+    "y": 115,
+    "width": 649,
+    "height": 90,
+    "right": 870,
+    "bottom": 205
+  },
+  "formItems": [
+    {
+      "text": "订单编号:",
+      "x": 237,
+      "y": 131,
+      "width": 152.328125,
+      "height": 58,
+      "right": 389.328125,
+      "bottom": 189
+    },
+    {
+      "text": "客户名称:",
+      "x": 397.328125,
+      "y": 131,
+      "width": 152.328125,
+      "height": 58,
+      "right": 549.65625,
+      "bottom": 189
+    },
+    {
+      "text": "订单状态:",
+      "x": 557.65625,
+      "y": 131,
+      "width": 152.34375,
+      "height": 58,
+      "right": 710,
+      "bottom": 189
+    }
+  ],
+  "inputs": [],
+  "buttons": [
+    {
+      "text": "查询",
+      "x": 734,
+      "y": 131,
+      "width": 56,
+      "height": 34,
+      "right": 790,
+      "bottom": 165
+    },
+    {
+      "text": "重置",
+      "x": 798,
+      "y": 131,
+      "width": 56,
+      "height": 34,
+      "right": 854,
+      "bottom": 165
+    }
+  ]
+}

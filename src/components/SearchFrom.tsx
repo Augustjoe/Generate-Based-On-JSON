@@ -1,7 +1,8 @@
-import { defineAsyncComponent, defineComponent, ref, onMounted, reactive, toRef } from 'vue'
-import { NCard, NButton, NGrid, NGi, NIcon, NFlex } from 'naive-ui'
+import { defineAsyncComponent, defineComponent, ref, onMounted, reactive, toRef, nextTick, watch } from 'vue'
+import { NCard, NButton, NIcon, NFlex } from 'naive-ui'
 import type { FormProps, RowProps } from 'naive-ui'
 import { EditSettings24Regular } from '@vicons/fluent'
+import { ChevronDown, ChevronUp } from '@vicons/ionicons5'
 import { renderIconFromString } from '@/utils/iconMap'
 
 import Form from './Form'
@@ -9,7 +10,7 @@ import Form from './Form'
 const FormEditorButton = defineAsyncComponent(() => import('./FormEditorButton'))
 
 export default defineComponent({
-  name: 'Form',
+  name: 'SearchFrom',
   props: {
     isEdit: {
       type: Boolean,
@@ -28,12 +29,12 @@ export default defineComponent({
     formProps: {
       required: false,
       type: Object as () => FormProps,
-      default: () => {},
+      default: () => ({}),
     },
     RowProps: {
       required: false,
       type: Object as () => RowProps,
-      default: () => {},
+      default: () => ({}),
     },
     ButtonItems: {
       required: false,
@@ -48,42 +49,71 @@ export default defineComponent({
     const formProps = ref(props.formProps)
     const ButtonItems = ref(props.ButtonItems)
     const isHidden = ref(true)
+    const showExpandButton = ref(false)
     const formRef = ref()
-    const formNGiRef = ref()
-    const hiddenStyle = reactive({
-      height: '58px',
+    const formAreaRef = ref<HTMLElement | null>(null)
+    const collapsedStyle = reactive({
+      height: '40px',
     })
-    const notHiddenStyle = reactive({
-      height: '116px',
+    const expandedStyle = reactive({
+      height: 'auto',
     })
     const isEdit = toRef(props, 'isEdit')
 
-    onMounted(() => {
-      // 计算高度从而设计动画
+    const refreshExpandState = () => {
       const el = formRef.value?.$el as HTMLElement | undefined
-      const height = el?.getBoundingClientRect().height
+      const height = el?.getBoundingClientRect().height || 0
+      const firstItem = el?.querySelector('.n-form-item') as HTMLElement | null
+      const rowHeight = firstItem?.getBoundingClientRect().height || 0
 
-      const formNGiRefEl = formNGiRef.value?.$el as HTMLElement | undefined
-      const NGheight = formNGiRefEl?.getBoundingClientRect().height
-      if (el && height) {
-        notHiddenStyle.height = height + 'px'
+      if (rowHeight) {
+        collapsedStyle.height = `${rowHeight}px`
       }
-      if (formNGiRefEl && NGheight) {
-        hiddenStyle.height = NGheight + 'px'
+      if (height) {
+        expandedStyle.height = `${height}px`
       }
+
+      showExpandButton.value = Boolean(height && rowHeight && height - rowHeight > 8)
+      if (!showExpandButton.value) {
+        isHidden.value = false
+      }
+    }
+
+    onMounted(async () => {
+      await nextTick()
+      refreshExpandState()
     })
+
+    watch(
+      () => [props.formItems, props.formProps],
+      async () => {
+        formItems.value = props.formItems
+        formProps.value = props.formProps
+        await nextTick()
+        refreshExpandState()
+      },
+      { deep: true },
+    )
 
     return () => (
       <NCard bordered={false} contentStyle={{ padding: '16px' }}>
-        <NGrid cols="1 s:2 m:3 l:4 xl:5 2xl:5" responsive="screen">
-          <NGi
-            ref={formNGiRef}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '24px',
+            width: '100%',
+          }}
+        >
+          <div
+            ref={formAreaRef}
             style={{
-              ...(isHidden.value ? hiddenStyle : notHiddenStyle),
+              flex: '1 1 auto',
+              minWidth: 0,
+              ...(isHidden.value ? collapsedStyle : expandedStyle),
               transition: 'height 0.2s ease-out',
               overflow: 'hidden',
             }}
-            span="1 s:1 m:2 l:3 xl:4 2xl:4"
           >
             <Form
               isEdit={isEdit.value}
@@ -100,59 +130,72 @@ export default defineComponent({
                 emit('update:formProps', val)
               }}
             ></Form>
-          </NGi>
-          <NGi span="1">
-            <NFlex style={{ height: '100%' }} justify="center" align="center">
-              {ButtonItems.value.map((item) => {
-                if (item.type === 'expand') {
-                  return (
-                    <NButton
-                      text
-                      onClick={() => {
-                        isHidden.value = !isHidden.value
-                      }}
-                    >
-                      {isHidden.value ? '展开' : '收起'}
-                    </NButton>
-                  )
-                } else {
-                  const { icon, actionType, onClick, ...btnProps } = item
-                  const finalRenderIcon = icon ? renderIconFromString(icon) : btnProps.renderIcon
-                  const handleClick = (e: MouseEvent) => {
-                    if (onClick) {
-                      if (Array.isArray(onClick)) {
-                        onClick.forEach((fn: any) => fn(e))
-                      } else {
-                        (onClick as any)(e)
-                      }
-                    }
-                    if (actionType) emit('action', actionType, formData)
+          </div>
+          <NFlex
+            size={8}
+            style={{
+              flex: '0 0 auto',
+              minHeight: '34px',
+              paddingTop: '0px',
+            }}
+            justify="end"
+            align="start"
+          >
+            {ButtonItems.value.map((item) => {
+              if (item.type === 'expand') {
+                if (!showExpandButton.value) return null
+                return (
+                  <NButton
+                    text
+                    type="primary"
+                    renderIcon={() => (
+                      <NIcon component={isHidden.value ? ChevronDown : ChevronUp}></NIcon>
+                    )}
+                    style={{ height: '34px', marginLeft: '2px' }}
+                    onClick={() => {
+                      isHidden.value = !isHidden.value
+                    }}
+                  >
+                    {isHidden.value ? '展开' : '收起'}
+                  </NButton>
+                )
+              }
+
+              const { icon, actionType, onClick, ...btnProps } = item
+              const finalRenderIcon = icon ? renderIconFromString(icon) : btnProps.renderIcon
+              const handleClick = (e: MouseEvent) => {
+                if (onClick) {
+                  if (Array.isArray(onClick)) {
+                    onClick.forEach((fn: any) => fn(e))
+                  } else {
+                    ;(onClick as any)(e)
                   }
-                  return (
-                    <NButton {...btnProps} renderIcon={finalRenderIcon} onClick={handleClick}>
-                      {item.buttonText}
-                    </NButton>
-                  )
                 }
-              })}
-              {props.isEdit && (
-                <FormEditorButton
-                  style={{}}
-                  formItems={ButtonItems.value}
-                  buttonProps={{
-                    renderIcon: () => <NIcon component={<EditSettings24Regular />}></NIcon>,
-                    type: 'info',
-                  }}
-                  onUpdate:formItems={(items: searchButtonItem) => {
-                    ButtonItems.value = items
-                    emit('update:ButtonItems', ButtonItems.value)
-                  }}
-                  propoverTitle="按钮配置"
-                ></FormEditorButton>
-              )}
-            </NFlex>
-          </NGi>
-        </NGrid>
+                if (actionType) emit('action', actionType, formData)
+              }
+              return (
+                <NButton {...btnProps} renderIcon={finalRenderIcon} onClick={handleClick}>
+                  {item.buttonText}
+                </NButton>
+              )
+            })}
+            {props.isEdit && (
+              <FormEditorButton
+                style={{}}
+                formItems={ButtonItems.value}
+                buttonProps={{
+                  renderIcon: () => <NIcon component={<EditSettings24Regular />}></NIcon>,
+                  type: 'info',
+                }}
+                onUpdate:formItems={(items: searchButtonItem) => {
+                  ButtonItems.value = items
+                  emit('update:ButtonItems', ButtonItems.value)
+                }}
+                propoverTitle="按钮配置"
+              ></FormEditorButton>
+            )}
+          </NFlex>
+        </div>
       </NCard>
     )
   },

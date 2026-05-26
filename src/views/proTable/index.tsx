@@ -16,6 +16,12 @@ type OrderRecord = {
   createdAt: string
 }
 
+type TableActionPayload = {
+  source: 'search' | 'table'
+  actionType: string
+  data: Record<string, unknown> | null
+}
+
 const statusMeta: Record<OrderStatus, { label: string; type: 'success' | 'warning' | 'error' }> = {
   success: { label: '已完成', type: 'success' },
   pending: { label: '处理中', type: 'warning' },
@@ -77,7 +83,7 @@ export const ProTableView = defineComponent({
       },
     ])
 
-    const columns = ref<DataTableColumns<Record<string, any>>>([
+    const columns = ref<DataTableColumns<any>>([
       {
         title: '订单编号',
         key: 'orderNo',
@@ -93,7 +99,7 @@ export const ProTableView = defineComponent({
         key: 'status',
         width: 110,
         render: (row) => {
-          const meta = statusMeta[row.status as OrderStatus]
+          const meta = statusMeta[row.status as OrderStatus] ?? { label: String(row.status ?? 'Unknown'), type: 'warning' as const }
           return <NTag type={meta.type}>{meta.label}</NTag>
         },
       },
@@ -162,7 +168,7 @@ export const ProTableView = defineComponent({
       },
     ])
 
-    const request = async (params: Record<string, any>) => {
+    const request = async (params: Record<string, unknown>) => {
       await new Promise((resolve) => setTimeout(resolve, 300))
 
       const filtered = allOrders.filter((item) => {
@@ -178,8 +184,10 @@ export const ProTableView = defineComponent({
         return true
       })
 
-      const start = (params.page - 1) * params.pageSize
-      const end = start + params.pageSize
+      const page = Number(params.page || 1)
+      const pageSize = Number(params.pageSize || 10)
+      const start = (page - 1) * pageSize
+      const end = start + pageSize
 
       return {
         data: filtered.slice(start, end),
@@ -187,14 +195,7 @@ export const ProTableView = defineComponent({
       }
     }
 
-    const handleAction = ({
-      source,
-      actionType,
-    }: {
-      source: string
-      actionType: string
-      data: any
-    }) => {
+    const handleAction = ({ source, actionType }: TableActionPayload) => {
       if (source === 'table' && actionType === 'add') {
         window.$message?.success('准备新增订单')
       }
@@ -222,7 +223,7 @@ export const ProTableView = defineComponent({
           tableButtons={tableButtons.value}
           request={request}
           tableProps={{
-            rowKey: (row: Record<string, any>) => row.id,
+            rowKey: (row: OrderRecord) => row.id,
             striped: true,
             singleLine: false,
           }}

@@ -164,7 +164,13 @@ export default defineComponent({
     })
 
     return () => (
-      <NForm ref={nFormRef} model={formData} {...(formProps as FormProps)} inline={false}>
+      <NForm
+        ref={nFormRef}
+        model={formData}
+        {...(formProps as FormProps)}
+        inline={false}
+        labelPlacement={(formProps as FormProps).labelPlacement ?? 'left'}
+      >
         {props.isEdit && (
           <NFlex style={{ position: 'absolute', top: '5px', right: '5px', zIndex: 1 }}>
             <FormEditorButton

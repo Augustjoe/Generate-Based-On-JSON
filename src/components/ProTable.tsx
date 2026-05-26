@@ -3,6 +3,24 @@ import { NCard, NSpin, type DataTableColumns, type DataTableProps, type FormProp
 import SearchFrom from './SearchFrom'
 import CustomTable from './CustomTable'
 
+type ProTableRequestParams = {
+  page: number
+  pageSize: number
+} & Record<string, unknown>
+
+type ProTableRequestResult = {
+  data: Record<string, unknown>[]
+  total: number
+}
+
+type ProTableRequest = (params: ProTableRequestParams) => Promise<ProTableRequestResult>
+
+type ProTableActionPayload = {
+  source: 'search' | 'table'
+  actionType: string
+  data: Record<string, unknown> | null
+}
+
 export default defineComponent({
   name: 'ProTable',
   props: {
@@ -47,12 +65,12 @@ export default defineComponent({
     },
     // 静态数据（如果不提供 request，使用此静态数据）
     data: {
-      type: Array as () => Record<string, any>[],
+      type: Array as () => Record<string, unknown>[],
       default: () => [],
     },
     // 数据加载 API
     request: {
-      type: Function as unknown as () => (params: any) => Promise<{ data: any[]; total: number }>,
+      type: Function as unknown as () => ProTableRequest,
       required: false,
     },
   },
@@ -60,8 +78,8 @@ export default defineComponent({
   setup(props, { emit }) {
     const isEdit = toRef(props, 'isEdit')
     const loading = ref(false)
-    const tableData = ref<Record<string, any>[]>([])
-    const formData = reactive<Record<string, any>>({})
+    const tableData = ref<Record<string, unknown>[]>([])
+    const formData = reactive<Record<string, unknown>>({})
 
     // 初始化分页状态
     const pagination = reactive({
@@ -90,7 +108,7 @@ export default defineComponent({
 
       loading.value = true
       try {
-        const params = {
+        const params: ProTableRequestParams = {
           page: pagination.page,
           pageSize: pagination.pageSize,
           ...formData,
@@ -100,6 +118,9 @@ export default defineComponent({
         pagination.itemCount = res.total || 0
       } catch (err) {
         console.error('ProTable 加载数据失败:', err)
+        tableData.value = []
+        pagination.itemCount = 0
+        window.$message?.error('数据加载失败，请稍后重试')
       } finally {
         loading.value = false
       }
@@ -129,12 +150,14 @@ export default defineComponent({
         pagination.page = 1
         loadData()
       }
-      emit('action', { source: 'search', actionType, data: formData })
+      const payload: ProTableActionPayload = { source: 'search', actionType, data: formData }
+      emit('action', payload)
     }
 
     // 处理 CustomTable 的操作
-    const handleTableAction = (actionType: string, row: any) => {
-      emit('action', { source: 'table', actionType, data: row })
+    const handleTableAction = (actionType: string, row: Record<string, unknown> | null) => {
+      const payload: ProTableActionPayload = { source: 'table', actionType, data: row }
+      emit('action', payload)
     }
 
     onMounted(() => {
