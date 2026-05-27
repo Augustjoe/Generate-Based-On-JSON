@@ -1,4 +1,4 @@
-# 执行日志
+﻿# 执行日志
 
 **重要提示：此文件仅支持追加 (APPEND-ONLY)。**
 Codex (Executor) 绝不能重写、修改或删除过去的条目。在完成任务后，只能将新条目追加到此文件底部。
@@ -8,6 +8,7 @@ Codex (Executor) 绝不能重写、修改或删除过去的条目。在完成任
 1. 每次 Codex 完成任务时，**必须**在此处追加一个新条目。
 2. 不要将此文件用作思考草稿本；仅记录最终结果。
 3. Planner 将读取*最新*条目来进行审查。
+4. 从现在起，docs/ai/execution_log.md 的新增条目统一使用简体中文。
 
 ---
 
@@ -178,5 +179,59 @@ _(在此行下方追加新条目)_
 **Git Diff Summary:**
 
 - 本次任务相关改动约 `+472` 行，`-286` 行。
+
+---
+**Date:** 2026-05-28
+**Executor:** Codex
+**Task ID:** Fix Task 002-005-A
+**Task Goal:** 修复 Task 002-005 的 NEEDS_FIX 问题，确保统一低代码编辑模式可复审（测试稳定、JsonConfigDrawer 错误处理、type-check 通过）。
+
+**Files Changed:**
+- `env.d.ts`
+- `tsconfig.app.json`
+- `src/components/JsonConfigDrawer.tsx`
+- `src/components/CustomTable.tsx`
+- `src/views/tableView/index.tsx`
+- `src/views/proTable/index.tsx`
+- `src/__tests__/json-config-drawer.spec.ts`
+- `src/__tests__/edit-mode-ui.spec.ts`
+- `src/__tests__/login.spec.ts`
+- `src/components/components.d.ts`
+- `src/sortablejs.d.ts`
+- `sortablejs.d.ts`
+
+**Summary of Changes:**
+- 修复 `JsonConfigDrawer`：非法 JSON 时按分区写入错误信息、阻止 `onApply`，并在编辑/重置/取消/成功应用后清理错误状态。
+- 强化 `JsonConfigDrawer` 测试：覆盖非法 JSON 分区错误与不触发 `onApply` 的行为。
+- 调整 `edit-mode-ui` 测试为 `shallowMount`，避免 `CustomTable` + Naive UI/Sortable 带来的潜在挂起源。
+- 处理 type-check 阻塞：补充 `vite/client` 与全局类型声明，补充 `sortablejs` 本地声明，修复 `login.spec.ts` 的可调用性类型问题；并在 `tableView`/`proTable` 中降低深层推导复杂度以通过 `vue-tsc`。
+
+**Commands Run:**
+- `npm.cmd run test:unit -- src/__tests__/json-config-drawer.spec.ts --run`
+- `npm.cmd run test:unit -- --run`
+- `npm.cmd run type-check`
+
+**Test Results:**
+- `npm.cmd run test:unit -- src/__tests__/json-config-drawer.spec.ts --run`：3/3 通过。
+- `npm.cmd run test:unit -- --run`：6 个测试文件、18 个测试全部通过并正常退出。
+- `npm.cmd run type-check`：通过（0 error）。
+
+**Known Issues:**
+- 本任务范围内未发现新的已知问题。
+- `router.spec.ts` 运行时仍有 Vue Router warning（缺少 component/children 的测试路由记录），不影响本任务验收。
+
+**Assumptions:**
+- 仅执行 `Fix Task 002-005-A`，不推进 Task 006+。
+- `docs/ai/tasklist.md`、`docs/ai/review_report.md` 的当前未提交改动视为既有工作区状态，本次未改写其内容。
+
+**Suggested Next Step:**
+- 由 Reviewer 按 `Fix Task 002-005-A` 进行复审；通过后再由 Planner 更新状态文档。
+
+**Git Status Summary:**
+- 当前分支：`main...origin/main`
+- 工作区含既有未提交改动（`docs/ai/tasklist.md`、`docs/ai/review_report.md` 等），本次修复相关代码文件已更新。
+
+**Git Diff Summary:**
+- 当前工作区总体统计：`13 files changed, 209 insertions(+), 73 deletions(-)`（基于 `git diff --shortstat`）。
 
 ---

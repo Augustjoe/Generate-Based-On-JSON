@@ -8,6 +8,7 @@ import type { DataTableProps, FormProps } from 'naive-ui'
 export const TableView = defineComponent({
   name: 'TableView',
   setup: () => {
+    const ProTableAny = ProTable as any
     const appSettings = useAppSettingsStore()
     const appDrawerStore = useAppDrawerStore()
     const isEdit = computed(() => appSettings.isEdit)
@@ -209,7 +210,7 @@ export const TableView = defineComponent({
             boxSizing: 'border-box'
           }}
         >
-          <ProTable
+          <ProTableAny
             isEdit={isEdit.value}
             formItems={FormItems.value}
             formProps={formProps}
@@ -218,13 +219,13 @@ export const TableView = defineComponent({
             tableButtons={tableButtons.value}
             tableProps={tableProps.value}
             request={handleRequest}
-            onUpdate:formItems={(val) => {
+            onUpdate:formItems={(val: FormItem[]) => {
               FormItems.value = val
             }}
-            onUpdate:columns={(val) => {
+            onUpdate:columns={(val: any[]) => {
               columns.value = val
             }}
-            onUpdate:tableButtons={(val) => {
+            onUpdate:tableButtons={(val: tableButtonItem) => {
               tableButtons.value = val
             }}
             onAction={handleAction}

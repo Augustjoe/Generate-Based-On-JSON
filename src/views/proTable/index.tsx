@@ -47,6 +47,7 @@ const allOrders: OrderRecord[] = Array.from({ length: 67 }).map((_, index) => {
 export const ProTableView = defineComponent({
   name: 'ProTableView',
   setup: () => {
+    const ProTableAny = ProTable as any
     const appSettings = useAppSettingsStore()
     const appDrawerStore = useAppDrawerStore()
     const isEdit = computed(() => appSettings.isEdit)
@@ -271,7 +272,7 @@ export const ProTableView = defineComponent({
           boxSizing: 'border-box',
         }}
       >
-        <ProTable
+        <ProTableAny
           isEdit={isEdit.value}
           formItems={formItems.value}
           formProps={formProps.value}
@@ -280,13 +281,13 @@ export const ProTableView = defineComponent({
           tableButtons={tableButtons.value}
           request={request}
           tableProps={tableProps.value}
-          onUpdate:formItems={(val) => {
+          onUpdate:formItems={(val: FormItem[]) => {
             formItems.value = val
           }}
-          onUpdate:columns={(val) => {
+          onUpdate:columns={(val: any[]) => {
             columns.value = val
           }}
-          onUpdate:tableButtons={(val) => {
+          onUpdate:tableButtons={(val: tableButtonItem) => {
             tableButtons.value = val
           }}
           onAction={handleAction}

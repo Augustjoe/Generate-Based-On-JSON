@@ -1,4 +1,4 @@
-import { defineComponent, reactive, watch } from 'vue'
+﻿import { defineComponent, reactive, watch } from 'vue'
 import { NAlert, NButton, NCard, NFlex, NText } from 'naive-ui'
 import { Codemirror } from 'vue-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
@@ -16,10 +16,14 @@ type ParsedSection = {
   value: unknown
 }
 
+type ParseResult =
+  | { ok: true; sections: ParsedSection[] }
+  | { ok: false; error: string; sectionKey: string }
+
 export const parseJsonDrafts = (
   drafts: Record<string, string>,
   sectionSlots: Record<string, Record<string, RenderLikeFn>>,
-): { ok: true; sections: ParsedSection[] } | { ok: false; error: string } => {
+): ParseResult => {
   const parsed: ParsedSection[] = []
   for (const [key, raw] of Object.entries(drafts)) {
     try {
@@ -28,8 +32,8 @@ export const parseJsonDrafts = (
         key,
         value: restoreRenderFns(jsonData, sectionSlots[key] || {}),
       })
-    } catch (error) {
-      return { ok: false, error: `分区 ${key} JSON 解析失败` }
+    } catch {
+      return { ok: false, error: `Section ${key} JSON parse failed`, sectionKey: key }
     }
   }
   return { ok: true, sections: parsed }
@@ -40,7 +44,7 @@ const JsonConfigDrawer = defineComponent({
   props: {
     title: {
       type: String,
-      default: '配置面板',
+      default: 'Config Panel',
     },
     sections: {
       type: Array as () => JsonConfigSection[],
@@ -58,11 +62,15 @@ const JsonConfigDrawer = defineComponent({
     const sectionSlots = reactive<Record<string, Record<string, RenderLikeFn>>>({})
     const errors = reactive<Record<string, string>>({})
 
+    const clearAllErrors = () => {
+      Object.keys(errors).forEach((key) => delete errors[key])
+    }
+
     const syncDrafts = () => {
       Object.keys(drafts).forEach((key) => delete drafts[key])
       Object.keys(sourceDrafts).forEach((key) => delete sourceDrafts[key])
       Object.keys(sectionSlots).forEach((key) => delete sectionSlots[key])
-      Object.keys(errors).forEach((key) => delete errors[key])
+      clearAllErrors()
 
       props.sections.forEach((section) => {
         const { data, slots } = extractRenderFns(section.value)
@@ -74,13 +82,16 @@ const JsonConfigDrawer = defineComponent({
     }
 
     const applyChanges = () => {
+      clearAllErrors()
       const result = parseJsonDrafts(drafts, sectionSlots)
       if (!result.ok) {
+        errors[result.sectionKey] = result.error
         window.$message?.error(result.error)
         return
       }
       props.onApply(result.sections)
-      window.$message?.success('配置已应用')
+      clearAllErrors()
+      window.$message?.success('Config applied')
     }
 
     watch(
@@ -92,7 +103,7 @@ const JsonConfigDrawer = defineComponent({
     return () => (
       <div style={{ padding: '12px', height: '100%', overflowY: 'auto' }}>
         <NAlert type="info" style={{ marginBottom: '12px' }}>
-          当前仅支持 JSON 编辑。点击“应用配置”前会校验所有分区 JSON。
+          JSON sections are validated before apply.
         </NAlert>
         <NFlex vertical size={12}>
           {props.sections.map((section) => (
@@ -106,6 +117,7 @@ const JsonConfigDrawer = defineComponent({
                 modelValue={drafts[section.key] || ''}
                 onUpdate:modelValue={(val: string) => {
                   drafts[section.key] = val
+                  delete errors[section.key]
                 }}
                 extensions={[javascript()]}
                 style={{ minHeight: '180px', border: '1px solid var(--n-border-color)' }}
@@ -123,7 +135,7 @@ const JsonConfigDrawer = defineComponent({
                     delete errors[section.key]
                   }}
                 >
-                  重置
+                  Reset
                 </NButton>
               </NFlex>
             </NCard>
@@ -135,13 +147,14 @@ const JsonConfigDrawer = defineComponent({
               props.sections.forEach((section) => {
                 drafts[section.key] = sourceDrafts[section.key]
               })
-              window.$message?.info('已恢复初始配置')
+              clearAllErrors()
+              window.$message?.info('Changes cancelled')
             }}
           >
-            取消修改
+            Cancel
           </NButton>
           <NButton type="primary" onClick={applyChanges}>
-            应用配置
+            Apply
           </NButton>
         </NFlex>
       </div>

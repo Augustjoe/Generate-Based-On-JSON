@@ -77,7 +77,7 @@ describe('LoginFrom', () => {
 
     expect(loginMock).toHaveBeenCalledTimes(1)
 
-    resolveLogin?.()
+    resolveLogin!()
     await Promise.resolve()
   })
 })

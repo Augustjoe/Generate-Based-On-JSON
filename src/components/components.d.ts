@@ -1,4 +1,7 @@
 import type { ButtonProps } from 'naive-ui'
+import type { VNode } from 'vue'
+
+export {}
 
 declare global {
   type DrawSlots = {

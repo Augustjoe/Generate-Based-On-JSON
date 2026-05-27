@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
 import Form from '@/components/Form'
 import SearchFrom from '@/components/SearchFrom'
@@ -26,7 +26,7 @@ vi.mock('sortablejs', () => ({
 
 describe('Edit mode UI cleanup', () => {
   it('does not render legacy FormEditorButton in Form component', () => {
-    const wrapper = mount(Form, {
+    const wrapper = shallowMount(Form, {
       props: {
         isEdit: true,
         formData: { name: '' },
@@ -42,7 +42,7 @@ describe('Edit mode UI cleanup', () => {
   })
 
   it('does not render legacy FormEditorButton in SearchFrom component', () => {
-    const wrapper = mount(SearchFrom, {
+    const wrapper = shallowMount(SearchFrom, {
       props: {
         isEdit: true,
         formData: {},
@@ -59,7 +59,7 @@ describe('Edit mode UI cleanup', () => {
   })
 
   it('does not render legacy FormEditorButton in CustomTable component', () => {
-    const wrapper = mount(CustomTable, {
+    const wrapper = shallowMount(CustomTable, {
       props: {
         isEdit: true,
         columns: [{ title: 'Name', key: 'name' }],

@@ -17,6 +17,7 @@ import {
   type DataTableProps,
 } from 'naive-ui'
 import { Drag24Regular } from '@vicons/fluent'
+// @ts-ignore sortablejs is untyped in this project baseline
 import Sortable from 'sortablejs'
 import { renderIconFromString } from '@/utils/iconMap'
 

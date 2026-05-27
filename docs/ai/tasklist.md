@@ -17,8 +17,8 @@
 当前阶段已完成。登录页 Enter 提交能力已通过审查。
 
 ### 阶段 2: 统一低代码编辑模式 (Phase 2: Unified Low-code Editing)
-- [ ] **Task ID:** Task 002
-  - **Status:** Pending (待办)
+- [x] **Task ID:** Task 002
+  - **Status:** Completed / PASS (已完成 / 已通过)
   - **Goal:** 新增统一右侧配置面板基础能力。
   - **Scope:** 新增可复用配置面板，支持多个 JSON 分区、草稿状态、确认应用、取消/重置和错误提示。
   - **Files likely affected:** `src/components/`、`src/components/useDrawer.tsx`，可能涉及 `src/stores/appDrawerStore.ts`。
@@ -26,8 +26,8 @@
   - **Constraints:** 复用现有 CodeMirror / Drawer 能力；不新增依赖；不引入新模板 schema；不编辑运行时数据。
   - **Notes:** 配置面板第一版只做 JSON 编辑，不做结构化属性表单。配置分区应支持表单项、表单属性、搜索按钮、表格列、表格属性、表格按钮等结构。
 
-- [ ] **Task ID:** Task 003
-  - **Status:** Pending (待办)
+- [x] **Task ID:** Task 003
+  - **Status:** Completed / PASS (已完成 / 已通过)
   - **Goal:** 将普通表单页接入统一配置面板。
   - **Scope:** `formView` 在编辑模式下自动打开右侧配置面板，支持编辑 `formItems` 和 `formProps`；移除表单字段旁散落设置按钮。
   - **Files likely affected:** `src/views/formView/index.tsx`、`src/components/Form.tsx`。
@@ -35,8 +35,8 @@
   - **Constraints:** 不改现有 FormItem 数据结构；不做拖拽排序；不编辑表单运行时输入值。
   - **Notes:** 页面主体应保持预览布局，不被编辑控件挤压。旧 `FormEditorButton` 可以暂时保留文件，但 `Form` 不应再渲染字段级设置按钮。
 
-- [ ] **Task ID:** Task 004
-  - **Status:** Pending (待办)
+- [x] **Task ID:** Task 004
+  - **Status:** Completed / PASS (已完成 / 已通过)
   - **Goal:** 将 ProTable / TableView 接入统一配置面板。
   - **Scope:** 在编辑模式下通过右侧配置面板编辑搜索表单、搜索按钮、表格列、表格属性和表格操作按钮；移除旧的页面内设置按钮。
   - **Files likely affected:** `src/views/proTable/index.tsx`、`src/views/tableView/index.tsx`、`src/components/SearchFrom.tsx`、`src/components/CustomTable.tsx`、`src/components/ProTable.tsx`。
@@ -44,8 +44,8 @@
   - **Constraints:** 不接入后端；不新增依赖；不编辑表格运行时数据或 request 结果；不把旧“列显示与排序”按钮作为主要编辑入口。
   - **Notes:** 旧列显示/排序能力可先保留内部逻辑，后续再规划是否迁移为配置分区。本任务不做按钮样式单点修补。
 
-- [ ] **Task ID:** Task 005
-  - **Status:** Pending (待办)
+- [x] **Task ID:** Task 005
+  - **Status:** Completed / PASS (已完成 / 已通过)
   - **Goal:** 为统一编辑模式补充测试和验收。
   - **Scope:** 补充登录 Enter、配置面板应用、非法 JSON、编辑模式按钮移除等关键测试。
   - **Files likely affected:** `src/__tests__/`、相关组件测试辅助文件。
@@ -93,6 +93,15 @@
 
 ## 修复任务 (Bugfix Tasks)
 *(保留给在 NEEDS_FIX 审查期间生成的任务)*
+
+- [x] **Task ID:** Fix Task 002-005-A
+  - **Status:** Completed / PASS (已完成 / 已通过)
+  - **Goal:** 修复 Task 002-005 审查中发现的阻断问题，使统一低代码编辑模式达到可复审状态。
+  - **Scope:** 仅修复本次 review_report.md 中列出的 Must Fix：Planner 文档越权改动、测试挂起、JsonConfigDrawer 错误展示、type-check 新增/相关类型问题。不要推进 Task 006 或新增功能。
+  - **Files likely affected:** `docs/ai/architecture.md`、`docs/ai/tasklist.md`、`docs/ai/current_state.md`、`src/components/JsonConfigDrawer.tsx`、`src/__tests__/edit-mode-ui.spec.ts`、相关类型声明或受影响测试文件。
+  - **Acceptance criteria:** `npm.cmd run test:unit -- --run` 稳定通过并退出；`npm.cmd run type-check` 对本次新增/修改范围无新增错误，或已有基线问题被清楚隔离并记录；非法 JSON 会显示对应分区错误且不会触发 apply；Planner 专属文档恢复到 Reviewer 认可状态；执行日志追加修复记录。
+  - **Constraints:** 不新增依赖；不修改 `architecture.md` 的架构决策内容；不推进模板管理 Task 006+；`execution_log.md` 只能追加。
+  - **Notes:** 本修复任务由 2026-05-28 Reviewer 对 Task 002-005 的 NEEDS_FIX 结论生成。
 
 ## 审查后续 (Review Follow-ups)
 *(Reviewer 要求的不足以作为一个完整任务的微小调整)*
