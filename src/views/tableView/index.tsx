@@ -1,11 +1,15 @@
 import ProTable from '@/components/ProTable'
 import { useAppSettingsStore } from '@/stores/appSettings'
-import { computed, reactive, ref, defineComponent } from 'vue'
+import { computed, reactive, ref, defineComponent, watch, onBeforeUnmount } from 'vue'
+import { openJsonConfigDrawer, type JsonConfigSection } from '@/components/JsonConfigDrawer'
+import { useAppDrawerStore } from '@/stores/appDrawerStore'
+import type { DataTableProps, FormProps } from 'naive-ui'
 
 export const TableView = defineComponent({
   name: 'TableView',
   setup: () => {
     const appSettings = useAppSettingsStore()
+    const appDrawerStore = useAppDrawerStore()
     const isEdit = computed(() => appSettings.isEdit)
     const FormItems = ref<FormItem[]>([
       {
@@ -52,9 +56,9 @@ export const TableView = defineComponent({
       },
     ])
 
-    const formProps = reactive({
+    const formProps = reactive<FormProps>({
       inline: true,
-      'label-placement': 'left',
+      labelPlacement: 'left',
     })
 
     const formButtonItems = ref<searchButtonItem>([
@@ -105,6 +109,10 @@ export const TableView = defineComponent({
         },
       },
     ])
+    const tableProps = ref<DataTableProps>({
+      striped: true,
+      singleLine: false,
+    })
 
     // 模拟服务端分页和搜索请求
     const handleRequest = (params: any) => {
@@ -146,6 +154,47 @@ export const TableView = defineComponent({
       }
     }
 
+    const openConfigPanel = () => {
+      const sections: JsonConfigSection[] = [
+        { key: 'formItems', title: '搜索表单项 (formItems)', value: FormItems.value },
+        { key: 'formProps', title: '搜索表单属性 (formProps)', value: formProps },
+        { key: 'formButtonItems', title: '搜索按钮 (formButtonItems)', value: formButtonItems.value },
+        { key: 'columns', title: '表格列 (columns)', value: columns.value },
+        { key: 'tableProps', title: '表格属性 (tableProps)', value: tableProps.value },
+        { key: 'tableButtons', title: '表格按钮 (tableButtons)', value: tableButtons.value },
+      ]
+      openJsonConfigDrawer({
+        title: 'TableView 配置面板',
+        sections,
+        onApply: (items) => {
+          items.forEach((item) => {
+            if (item.key === 'formItems') FormItems.value = item.value as FormItem[]
+            if (item.key === 'formProps') {
+              Object.keys(formProps).forEach((key) => delete formProps[key as keyof FormProps])
+              Object.assign(formProps, item.value as FormProps)
+            }
+            if (item.key === 'formButtonItems') formButtonItems.value = item.value as searchButtonItem
+            if (item.key === 'columns') columns.value = item.value as any[]
+            if (item.key === 'tableProps') tableProps.value = item.value as DataTableProps
+            if (item.key === 'tableButtons') tableButtons.value = item.value as tableButtonItem
+          })
+        },
+      })
+    }
+
+    watch(
+      isEdit,
+      (val) => {
+        if (val) openConfigPanel()
+        else appDrawerStore.setDrawerProps({ show: false })
+      },
+      { immediate: true },
+    )
+
+    onBeforeUnmount(() => {
+      appDrawerStore.setDrawerProps({ show: false })
+    })
+
     return () => {
       return (
         <div
@@ -167,6 +216,7 @@ export const TableView = defineComponent({
             formButtonItems={formButtonItems.value}
             columns={columns.value}
             tableButtons={tableButtons.value}
+            tableProps={tableProps.value}
             request={handleRequest}
             onUpdate:formItems={(val) => {
               FormItems.value = val

@@ -50,6 +50,10 @@ export const LoginFrom = defineComponent({
     })
 
     const handleLogin = async () => {
+      if (loading.value) {
+        return
+      }
+
       try {
         await formRef.value?.validate()
       } catch (errors) {
@@ -79,6 +83,11 @@ export const LoginFrom = defineComponent({
           flexDirection: 'column',
           justifyContent: 'center',
           padding: '16px 24px',
+        }}
+        onKeydown={(event) => {
+          if (event.key === 'Enter') {
+            void handleLogin()
+          }
         }}
       >
         <NFlex vertical align="center" style={{ marginBottom: '32px' }}>

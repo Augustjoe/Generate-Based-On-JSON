@@ -14,6 +14,7 @@ declare module 'vue' {
     CustomTable: typeof import('./components/CustomTable.tsx')['default']
     Form: typeof import('./components/Form.tsx')['default']
     FormEditorButton: typeof import('./components/FormEditorButton.tsx')['default']
+    JsonConfigDrawer: typeof import('./components/JsonConfigDrawer.tsx')['default']
     Menu: typeof import('./components/Menu.tsx')['default']
     NAvatar: typeof import('naive-ui')['NAvatar']
     NBackTop: typeof import('naive-ui')['NBackTop']

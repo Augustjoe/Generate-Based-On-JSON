@@ -12,6 +12,9 @@ export const useAppDrawerStore = defineStore('appDrawer', () => {
     })
   }
   const setDrawSlots = (obj: DrawSlots) => {
+    Object.keys(drawSlots).forEach((key) => {
+      delete drawSlots[key as keyof DrawSlots]
+    })
     ;(Object.keys(obj) as Array<keyof DrawSlots>).forEach((key) => {
       drawSlots[key] = obj[key]
     })

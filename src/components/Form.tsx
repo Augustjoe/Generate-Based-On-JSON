@@ -1,28 +1,18 @@
 import {
-  defineAsyncComponent,
   defineComponent,
   ref,
-  onMounted,
   watch,
   reactive,
   toRaw,
   type Component,
-  type VNode,
 } from 'vue'
 import {
   NForm,
   NFormItemGi,
   NGrid,
-  NIcon,
-  NFlex,
 } from 'naive-ui'
 import { getNaiveComponent } from '@/utils/dynamicComponent'
 import type { FormProps, RowProps, GridProps, FormInst } from 'naive-ui'
-import { DisplaySettingsFilled } from '@vicons/material'
-import { CalendarSettings16Regular } from '@vicons/fluent'
-import { extractRenderFns, restoreRenderFns } from '@/assets/render-fn-extractor'
-
-const FormEditorButton = defineAsyncComponent(() => import('./FormEditorButton'))
 
 type renderItem = {
   item?: Component | HTMLElement
@@ -68,13 +58,11 @@ export default defineComponent({
     },
   },
   emits: ['update:formItems', 'update:formProps'],
-  setup(props, { emit, expose }) {
+  setup(props, { expose }) {
     const { GridProps, formData } = props
     const formItems = ref(props.formItems)
-    const formProps = reactive(props.formProps)
+    const formProps = reactive(props.formProps || {})
     const nFormRef = ref<FormInst | null>(null)
-    const tempRenderFormItems = ref<Record<string, () => HTMLElement | VNode>>({})
-    const editFormItems = ref<FormItem[]>([])
 
       const getNaiveUiItems: (formItem: FormItem) => renderItem | null = (formItem: FormItem) => {
       const { itemType, props: itemProps, itemGiProps, path, slots, ...other } = formItem
@@ -145,15 +133,13 @@ export default defineComponent({
       }
     }
 
-    const getTempRenderMap = () => {
-      const { data, slots } = extractRenderFns(props.formItems || [])
-      editFormItems.value = data
-      tempRenderFormItems.value = slots
-    }
-
-    watch(() => props.formItems, getTempRenderMap)
-
-    onMounted(getTempRenderMap)
+    watch(
+      () => props.formItems,
+      (items) => {
+        formItems.value = items
+      },
+      { immediate: true },
+    )
 
     expose({
       validate: (...args: any[]) => nFormRef.value?.validate?.(...args),
@@ -171,37 +157,6 @@ export default defineComponent({
         inline={false}
         labelPlacement={(formProps as FormProps).labelPlacement ?? 'left'}
       >
-        {props.isEdit && (
-          <NFlex style={{ position: 'absolute', top: '5px', right: '5px', zIndex: 1 }}>
-            <FormEditorButton
-              style={{}}
-              formItems={editFormItems.value}
-              buttonProps={{
-                renderIcon: () => <NIcon component={<DisplaySettingsFilled />}></NIcon>,
-                type: 'success',
-              }}
-              onUpdate:formItems={(items: FormItem[]) => {
-                formItems.value = restoreRenderFns(items, tempRenderFormItems.value)
-                emit('update:formItems', formItems.value)
-              }}
-              propoverTitle="表单元素"
-            ></FormEditorButton>
-            <FormEditorButton
-              style={{}}
-              buttonProps={{
-                renderIcon: () => <NIcon component={<CalendarSettings16Regular />}></NIcon>,
-                type: 'info',
-              }}
-              formProps={formProps}
-              onUpdate:formProps={(items: FormProps) => {
-                Object.assign(formProps, items)
-                emit('update:formProps', items)
-              }}
-              propoverTitle="表单设置"
-            ></FormEditorButton>
-          </NFlex>
-        )}
-
         {/* Draggable */}
         {/* <NRow {...(RowProps as RowProps)}>
           <Draggable v-model={formItems.value} item-key="path" style={{ width: '100%' }}>
@@ -272,16 +227,6 @@ export default defineComponent({
               return (
                 <NFormItemGi span={24} key={other.path} {...itemGiProps}>
                   <Component {...props} v-slots={slots || undefined} />
-                  {props?.isEdit && (
-                    <FormEditorButton
-                      element={element}
-                      formItems={formItems.value}
-                      onUpdate:formItems={(items: FormItem[]) => {
-                        formItems.value = items
-                        emit('update:formItems', items)
-                      }}
-                    ></FormEditorButton>
-                  )}
                 </NFormItemGi>
               )
             }

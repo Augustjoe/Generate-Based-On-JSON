@@ -74,7 +74,15 @@ export default defineComponent({
       required: false,
     },
   },
-  emits: ['update:formItems', 'update:columns', 'update:tableButtons', 'action'],
+  emits: [
+    'update:formItems',
+    'update:formProps',
+    'update:formButtonItems',
+    'update:columns',
+    'update:tableButtons',
+    'update:tableProps',
+    'action',
+  ],
   setup(props, { emit }) {
     const isEdit = toRef(props, 'isEdit')
     const loading = ref(false)
@@ -203,6 +211,8 @@ export default defineComponent({
               formProps={props.formProps}
               ButtonItems={props.formButtonItems}
               onUpdate:formItems={(val) => emit('update:formItems', val)}
+              onUpdate:formProps={(val) => emit('update:formProps', val)}
+              onUpdate:ButtonItems={(val) => emit('update:formButtonItems', val)}
               onAction={handleSearchAction}
             />
           </div>
@@ -222,6 +232,7 @@ export default defineComponent({
                 tableProps={getMergedTableProps()}
                 onUpdate:columns={(val) => emit('update:columns', val)}
                 onUpdate:tableButtons={(val) => emit('update:tableButtons', val)}
+                onUpdate:tableProps={(val) => emit('update:tableProps', val)}
                 onAction={handleTableAction}
               />
             </NCard>

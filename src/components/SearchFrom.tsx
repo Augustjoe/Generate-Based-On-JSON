@@ -1,13 +1,10 @@
-import { computed, defineAsyncComponent, defineComponent, ref, onMounted, reactive, toRef, nextTick, watch } from 'vue'
+import { computed, defineComponent, ref, onMounted, reactive, toRef, nextTick, watch } from 'vue'
 import { NCard, NButton, NIcon, NFlex } from 'naive-ui'
 import type { FormProps, RowProps } from 'naive-ui'
-import { EditSettings24Regular } from '@vicons/fluent'
 import { ChevronDown, ChevronUp } from '@vicons/ionicons5'
 import { renderIconFromString } from '@/utils/iconMap'
 
 import Form from './Form'
-
-const FormEditorButton = defineAsyncComponent(() => import('./FormEditorButton'))
 
 export default defineComponent({
   name: 'SearchFrom',
@@ -187,21 +184,6 @@ export default defineComponent({
                 </NButton>
               )
             })}
-            {props.isEdit && (
-              <FormEditorButton
-                style={{}}
-                formItems={ButtonItems.value}
-                buttonProps={{
-                  renderIcon: () => <NIcon component={<EditSettings24Regular />}></NIcon>,
-                  type: 'info',
-                }}
-                onUpdate:formItems={(items: searchButtonItem) => {
-                  ButtonItems.value = items
-                  emit('update:ButtonItems', ButtonItems.value)
-                }}
-                propoverTitle="按钮配置"
-              ></FormEditorButton>
-            )}
           </NFlex>
         </div>
       </NCard>

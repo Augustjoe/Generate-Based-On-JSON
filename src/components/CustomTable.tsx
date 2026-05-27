@@ -1,6 +1,5 @@
 import {
   computed,
-  defineAsyncComponent,
   defineComponent,
   nextTick,
   onBeforeUnmount,
@@ -8,33 +7,18 @@ import {
   ref,
   shallowRef,
   watch,
-  type VNode,
 } from 'vue'
 import {
   NButton,
-  NCheckbox,
   NDataTable,
   NFlex,
   NIcon,
-  NScrollbar,
-  NTooltip,
   type DataTableColumns,
   type DataTableProps,
 } from 'naive-ui'
-import {
-  ColumnTripleEdit24Regular,
-  Drag24Regular,
-  EditSettings24Regular,
-  Settings32Regular,
-  TableSettings24Regular,
-} from '@vicons/fluent'
-import Draggable from 'vuedraggable'
+import { Drag24Regular } from '@vicons/fluent'
 import Sortable from 'sortablejs'
-import { extractRenderFns, restoreRenderFns } from '@/assets/render-fn-extractor'
 import { renderIconFromString } from '@/utils/iconMap'
-
-const FormEditorButton = defineAsyncComponent(() => import('./FormEditorButton'))
-const DraggableComponent = Draggable as any
 
 type ColumnKey = string | number
 type TableColumn = DataTableColumns<Record<string, any>>[number] & Record<string, any>
@@ -82,42 +66,16 @@ export default defineComponent({
     const tableRootRef = ref<HTMLElement | null>(null)
     const columns = ref<TableColumn[]>((props.columns || []) as TableColumn[])
     const tableProps = ref<Partial<DataTableProps>>(props.tableProps || {})
-    const editTableButtons = ref<tableButtonItem>([])
-    const hiddenColumnKeys = ref<ColumnKey[]>([])
-    const showColumnSettings = ref(false)
     const headerSortable = shallowRef<any>(null)
-    let tempRender: Record<string, () => HTMLElement | VNode> = {}
 
     const getColumnKey = (column: TableColumn) => column.key ?? column.type
-
-    const getColumnTitleText = (column: TableColumn) => {
-      const rawTitle = column.__rawTitle ?? column.title
-      if (typeof rawTitle === 'string') return rawTitle
-      return String(getColumnKey(column) ?? '未命名列')
-    }
 
     const syncColumns = (nextColumns: TableColumn[]) => {
       columns.value = nextColumns
       emit('update:columns', columns.value as DataTableColumns<Record<string, any>>)
     }
 
-    const toggleColumnVisible = (columnKey: ColumnKey, checked: boolean) => {
-      if (!checked && columns.value.length - hiddenColumnKeys.value.length <= 1) {
-        window.$message?.warning('至少保留一列展示')
-        return
-      }
-
-      hiddenColumnKeys.value = checked
-        ? hiddenColumnKeys.value.filter((key) => key !== columnKey)
-        : Array.from(new Set([...hiddenColumnKeys.value, columnKey]))
-    }
-
-    const visibleColumns = computed(() =>
-      columns.value.filter((column) => {
-        const columnKey = getColumnKey(column)
-        return columnKey === undefined || !hiddenColumnKeys.value.includes(columnKey)
-      }),
-    )
+    const visibleColumns = computed(() => columns.value)
 
     const moveVisibleColumn = (oldIndex: number, newIndex: number) => {
       if (oldIndex === newIndex || oldIndex < 0 || newIndex < 0) return
@@ -214,72 +172,6 @@ export default defineComponent({
       headerSortable.value = null
     }
 
-    const renderColumnSettings = () => (
-      <div style={{ width: '260px' }}>
-        <div style={{ fontWeight: 600, marginBottom: '10px' }}>列设置</div>
-        <NScrollbar style={{ maxHeight: '320px' }}>
-          <DraggableComponent
-            modelValue={columns.value}
-            itemKey={(column: TableColumn) => String(getColumnKey(column))}
-            handle=".column-setting-drag-handle"
-            animation={180}
-            ghostClass="column-setting-ghost"
-            chosenClass="column-setting-chosen"
-            dragClass="column-setting-drag"
-            {...{
-              'onUpdate:modelValue': (items: TableColumn[]) => syncColumns(items),
-            }}
-            v-slots={{
-              item: ({ element: column }: { element: TableColumn }) => {
-                const columnKey = getColumnKey(column)
-                if (columnKey === undefined) return null
-                return (
-                  <div
-                    key={String(columnKey)}
-                    class="column-setting-item"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      padding: '6px 8px',
-                      borderRadius: '6px',
-                      border: '1px solid var(--n-border-color)',
-                    }}
-                  >
-                    <span
-                      class="column-setting-drag-handle"
-                      data-column-setting-drag-handle="true"
-                      title="拖拽调整列顺序"
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        cursor: 'grab',
-                        color: 'var(--n-text-color-3)',
-                      }}
-                    >
-                      <NIcon size={16} component={Drag24Regular}></NIcon>
-                    </span>
-                    <NCheckbox
-                      checked={!hiddenColumnKeys.value.includes(columnKey)}
-                      onUpdate:checked={(checked: boolean) => toggleColumnVisible(columnKey, checked)}
-                    >
-                      {getColumnTitleText(column)}
-                    </NCheckbox>
-                  </div>
-                )
-              },
-            }}
-          />
-        </NScrollbar>
-      </div>
-    )
-
-    const getTempRenderMap = () => {
-      const { data, slots } = extractRenderFns(props.tableButtons || [])
-      editTableButtons.value = data
-      tempRender = slots
-    }
-
     watch(
       () => props.columns,
       (newVal) => {
@@ -287,9 +179,6 @@ export default defineComponent({
           ...column,
           __rawTitle: (column as TableColumn).__rawTitle ?? column.title,
         }))
-        hiddenColumnKeys.value = hiddenColumnKeys.value.filter((key) =>
-          columns.value.some((column) => getColumnKey(column) === key),
-        )
       },
       { immediate: true },
     )
@@ -302,13 +191,11 @@ export default defineComponent({
       { immediate: true },
     )
 
-    watch(() => props.tableButtons, getTempRenderMap)
     watch(() => [props.isEdit, displayColumns.value.map(getColumnKey).join('|')], initHeaderSortable, {
       flush: 'post',
     })
 
     onMounted(() => {
-      getTempRenderMap()
       initHeaderSortable()
     })
 
@@ -361,84 +248,8 @@ export default defineComponent({
                 )
               }
             })}
-            {props.isEdit && (
-              <FormEditorButton
-                style={{}}
-                formItems={editTableButtons.value}
-                buttonProps={{
-                  renderIcon: () => <NIcon component={<EditSettings24Regular />}></NIcon>,
-                  type: 'info',
-                }}
-                onUpdate:formItems={(items: tableButtonItem) => {
-                  emit('update:tableButtons', restoreRenderFns(items, tempRender))
-                }}
-                propoverTitle="表格按钮配置"
-              ></FormEditorButton>
-            )}
           </NFlex>
-
-          {props.isEdit && (
-            <NFlex align="center">
-              <NTooltip trigger="hover" placement="bottom">
-                {{
-                  trigger: () => (
-                    <NButton
-                      circle
-                      type="info"
-                      renderIcon={() => <NIcon component={ColumnTripleEdit24Regular}></NIcon>}
-                      onClick={() => {
-                        showColumnSettings.value = !showColumnSettings.value
-                      }}
-                    />
-                  ),
-                  default: () => '列显示与排序',
-                }}
-              </NTooltip>
-              <FormEditorButton
-                style={{}}
-                formProps={tableProps.value}
-                buttonProps={{
-                  renderIcon: () => <NIcon component={<TableSettings24Regular />}></NIcon>,
-                  type: 'info',
-                }}
-                onUpdate:formProps={(items: DataTableProps) => {
-                  tableProps.value = items
-                  emit('update:tableProps', tableProps.value)
-                }}
-                propoverTitle="表格配置"
-              ></FormEditorButton>
-              <FormEditorButton
-                style={{}}
-                formItems={columns.value}
-                buttonProps={{
-                  renderIcon: () => <NIcon component={<Settings32Regular />}></NIcon>,
-                  type: 'info',
-                }}
-                onUpdate:formItems={(items: DataTableColumns<Record<string, any>>) => {
-                  syncColumns(items as TableColumn[])
-                }}
-                propoverTitle="列配置"
-              ></FormEditorButton>
-            </NFlex>
-          )}
         </div>
-        {props.isEdit && showColumnSettings.value && (
-          <div
-            style={{
-              position: 'absolute',
-              top: '52px',
-              right: '10px',
-              zIndex: 10,
-              padding: '12px',
-              background: 'var(--n-color)',
-              border: '1px solid var(--n-border-color)',
-              borderRadius: '8px',
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
-            }}
-          >
-            {renderColumnSettings()}
-          </div>
-        )}
         <div style={{ height: '100%', minHeight: 0, overflow: 'auto' }}>
           <NDataTable
             style={{ height: '100%' }}

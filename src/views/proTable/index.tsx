@@ -1,7 +1,9 @@
 import ProTable from '@/components/ProTable'
 import { useAppSettingsStore } from '@/stores/appSettings'
-import { computed, defineComponent, h, ref } from 'vue'
-import { NButton, NSpace, NTag, type DataTableColumns } from 'naive-ui'
+import { computed, defineComponent, h, ref, watch, onBeforeUnmount } from 'vue'
+import { NButton, NSpace, NTag, type DataTableColumns, type DataTableProps, type FormProps } from 'naive-ui'
+import { openJsonConfigDrawer, type JsonConfigSection } from '@/components/JsonConfigDrawer'
+import { useAppDrawerStore } from '@/stores/appDrawerStore'
 
 type OrderStatus = 'success' | 'pending' | 'failed'
 
@@ -46,6 +48,7 @@ export const ProTableView = defineComponent({
   name: 'ProTableView',
   setup: () => {
     const appSettings = useAppSettingsStore()
+    const appDrawerStore = useAppDrawerStore()
     const isEdit = computed(() => appSettings.isEdit)
 
     const formItems = ref<FormItem[]>([
@@ -167,6 +170,20 @@ export const ProTableView = defineComponent({
         actionType: 'export',
       },
     ])
+    const formProps = ref<FormProps>({
+      inline: true,
+      labelPlacement: 'left',
+    })
+    const formButtonItems = ref<searchButtonItem>([
+      { buttonText: '查询', type: 'primary', actionType: 'search' },
+      { buttonText: '重置', actionType: 'reset' },
+      { type: 'expand' },
+    ])
+    const tableProps = ref<DataTableProps>({
+      rowKey: (row: OrderRecord) => row.id,
+      striped: true,
+      singleLine: false,
+    })
 
     const request = async (params: Record<string, unknown>) => {
       await new Promise((resolve) => setTimeout(resolve, 300))
@@ -204,6 +221,44 @@ export const ProTableView = defineComponent({
       }
     }
 
+    const openConfigPanel = () => {
+      const sections: JsonConfigSection[] = [
+        { key: 'formItems', title: '搜索表单项 (formItems)', value: formItems.value },
+        { key: 'formProps', title: '搜索表单属性 (formProps)', value: formProps.value },
+        { key: 'formButtonItems', title: '搜索按钮 (formButtonItems)', value: formButtonItems.value },
+        { key: 'columns', title: '表格列 (columns)', value: columns.value },
+        { key: 'tableProps', title: '表格属性 (tableProps)', value: tableProps.value },
+        { key: 'tableButtons', title: '表格按钮 (tableButtons)', value: tableButtons.value },
+      ]
+      openJsonConfigDrawer({
+        title: 'ProTable 配置面板',
+        sections,
+        onApply: (items) => {
+          items.forEach((item) => {
+            if (item.key === 'formItems') formItems.value = item.value as FormItem[]
+            if (item.key === 'formProps') formProps.value = item.value as FormProps
+            if (item.key === 'formButtonItems') formButtonItems.value = item.value as searchButtonItem
+            if (item.key === 'columns') columns.value = item.value as DataTableColumns<any>
+            if (item.key === 'tableProps') tableProps.value = item.value as DataTableProps
+            if (item.key === 'tableButtons') tableButtons.value = item.value as tableButtonItem
+          })
+        },
+      })
+    }
+
+    watch(
+      isEdit,
+      (val) => {
+        if (val) openConfigPanel()
+        else appDrawerStore.setDrawerProps({ show: false })
+      },
+      { immediate: true },
+    )
+
+    onBeforeUnmount(() => {
+      appDrawerStore.setDrawerProps({ show: false })
+    })
+
     return () => (
       <div
         style={{
@@ -219,14 +274,12 @@ export const ProTableView = defineComponent({
         <ProTable
           isEdit={isEdit.value}
           formItems={formItems.value}
+          formProps={formProps.value}
+          formButtonItems={formButtonItems.value}
           columns={columns.value}
           tableButtons={tableButtons.value}
           request={request}
-          tableProps={{
-            rowKey: (row: OrderRecord) => row.id,
-            striped: true,
-            singleLine: false,
-          }}
+          tableProps={tableProps.value}
           onUpdate:formItems={(val) => {
             formItems.value = val
           }}
