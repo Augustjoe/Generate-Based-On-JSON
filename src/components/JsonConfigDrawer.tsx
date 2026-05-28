@@ -33,10 +33,29 @@ export const parseJsonDrafts = (
         value: restoreRenderFns(jsonData, sectionSlots[key] || {}),
       })
     } catch {
-      return { ok: false, error: `Section ${key} JSON parse failed`, sectionKey: key }
+      return { ok: false, error: `分区 ${key} 的 JSON 解析失败`, sectionKey: key }
     }
   }
   return { ok: true, sections: parsed }
+}
+
+export const parseSingleSectionDraft = (
+  sectionKey: string,
+  draft: string,
+  sectionSlots: Record<string, Record<string, RenderLikeFn>>,
+): { ok: true; section: ParsedSection } | { ok: false; error: string; sectionKey: string } => {
+  try {
+    const jsonData = JSON.parse(draft)
+    return {
+      ok: true,
+      section: {
+        key: sectionKey,
+        value: restoreRenderFns(jsonData, sectionSlots[sectionKey] || {}),
+      },
+    }
+  } catch {
+    return { ok: false, error: `分区 ${sectionKey} 的 JSON 解析失败`, sectionKey }
+  }
 }
 
 const JsonConfigDrawer = defineComponent({
@@ -44,7 +63,7 @@ const JsonConfigDrawer = defineComponent({
   props: {
     title: {
       type: String,
-      default: 'Config Panel',
+      default: '配置面板',
     },
     sections: {
       type: Array as () => JsonConfigSection[],
@@ -81,17 +100,18 @@ const JsonConfigDrawer = defineComponent({
       })
     }
 
-    const applyChanges = () => {
-      clearAllErrors()
-      const result = parseJsonDrafts(drafts, sectionSlots)
+    const applyOneSection = (sectionKey: string) => {
+      delete errors[sectionKey]
+      const result = parseSingleSectionDraft(sectionKey, drafts[sectionKey] || '', sectionSlots)
       if (!result.ok) {
-        errors[result.sectionKey] = result.error
+        errors[sectionKey] = result.error
         window.$message?.error(result.error)
         return
       }
-      props.onApply(result.sections)
-      clearAllErrors()
-      window.$message?.success('Config applied')
+      props.onApply([result.section])
+      delete errors[sectionKey]
+      sourceDrafts[sectionKey] = drafts[sectionKey]
+      window.$message?.success(`分区 ${sectionKey} 已应用`)
     }
 
     watch(
@@ -103,7 +123,7 @@ const JsonConfigDrawer = defineComponent({
     return () => (
       <div style={{ padding: '12px', height: '100%', overflowY: 'auto' }}>
         <NAlert type="info" style={{ marginBottom: '12px' }}>
-          JSON sections are validated before apply.
+          每个分区可单独应用。应用前会校验当前分区 JSON。
         </NAlert>
         <NFlex vertical size={12}>
           {props.sections.map((section) => (
@@ -130,32 +150,25 @@ const JsonConfigDrawer = defineComponent({
               <NFlex justify="end" style={{ marginTop: '10px' }}>
                 <NButton
                   size="small"
+                  type="primary"
+                  onClick={() => {
+                    applyOneSection(section.key)
+                  }}
+                >
+                  应用
+                </NButton>
+                <NButton
+                  size="small"
                   onClick={() => {
                     drafts[section.key] = sourceDrafts[section.key]
                     delete errors[section.key]
                   }}
                 >
-                  Reset
+                  重置
                 </NButton>
               </NFlex>
             </NCard>
           ))}
-        </NFlex>
-        <NFlex justify="end" style={{ marginTop: '14px' }}>
-          <NButton
-            onClick={() => {
-              props.sections.forEach((section) => {
-                drafts[section.key] = sourceDrafts[section.key]
-              })
-              clearAllErrors()
-              window.$message?.info('Changes cancelled')
-            }}
-          >
-            Cancel
-          </NButton>
-          <NButton type="primary" onClick={applyChanges}>
-            Apply
-          </NButton>
         </NFlex>
       </div>
     )

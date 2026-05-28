@@ -235,3 +235,247 @@ _(在此行下方追加新条目)_
 - 当前工作区总体统计：`13 files changed, 209 insertions(+), 73 deletions(-)`（基于 `git diff --shortstat`）。
 
 ---
+### 执行日志条目
+**Date:** 2026-05-28
+**Executor:** Codex
+**Task ID:** Task 006 / Task 007 / Task 008
+**Task Goal:** 完成第三阶段最小模板管理闭环：模板列表、模板详情/预览、本地模板编辑与导入导出。
+
+**Files Changed:**
+- `src/types/template.ts`
+- `src/utils/templateSchema.ts`
+- `src/stores/templateStore.ts`
+- `src/views/templateList/index.tsx`
+- `src/views/templateDetail/index.tsx`
+- `src/views/menu.tsx`
+- `src/views/router.tsx`
+- `src/__tests__/template-schema.spec.ts`
+- `src/__tests__/template-store.spec.ts`
+
+**Summary of Changes:**
+- 新增模板类型定义与最小模板结构校验（支持 `form` / `proTable`）。
+- 新增模板存储 `templateStore`：本地初始化 mock 模板、按 id 查询、更新配置、导入/导出 JSON。
+- 实现模板列表页（Task 006）：可从菜单进入，展示名称/类型/更新时间/描述，并支持进入详情。
+- 实现模板详情与预览页（Task 007）：可查看模板 JSON，基于现有 `Form/ProTable` 进行预览，非法状态有可见提示。
+- 实现本地编辑与导入导出（Task 008）：支持应用 JSON 更新、导出 JSON 文件、从本地 JSON 导入并校验。
+- 接入路由与菜单入口，不涉及后端、不新增依赖。
+- 新增测试覆盖模板 schema 校验与 store 导入/导出关键路径。
+
+**Commands Run:**
+- `git -c safe.directory=C:/Users/陈庆艳/Desktop/code/Generate-Based-On-JSON pull`
+- `npm run test:unit -- --run`
+- `npm run type-check`
+
+**Test Results:**
+- `npm run test:unit -- --run`：8 个测试文件通过，23 个测试通过。
+- `npm run type-check`：通过。
+
+**Known Issues:**
+- `src/components.d.ts` 在当前工作区显示为已修改状态（未出现内容差异，疑似行尾符差异）。
+
+**Assumptions:**
+- 按用户要求一次性执行 Task 006~008，且不执行 Task 009 及后续任务。
+- 模板导入仅接受单个模板 JSON 对象，字段校验维持最小集合（`id/name/type/description/config` 与必要子字段）。
+- 模板预览使用本地静态演示数据，不接入后端请求。
+
+**Suggested Next Step:**
+- 由 Reviewer 审查 Task 006~008 改动并决定是否推进 Task 009（UI 打磨与一致性优化）。
+
+**Git Status Summary:**
+- 新增：`src/types/template.ts`、`src/utils/templateSchema.ts`、`src/stores/templateStore.ts`、`src/views/templateList/index.tsx`、`src/views/templateDetail/index.tsx`、`src/__tests__/template-schema.spec.ts`、`src/__tests__/template-store.spec.ts`。
+- 修改：`src/views/menu.tsx`、`src/views/router.tsx`。
+
+**Git Diff Summary:**
+- 本次任务相关改动约 `+447` 行，`-0` 行。
+
+---
+### 执行日志条目
+**Date:** 2026-05-28
+**Executor:** Codex
+**Task ID:** Task 009
+**Task Goal:** 对低代码模板管理系统进行 UI 一致性与可用性打磨（导航文案、状态提示、响应式细节）。
+
+**Files Changed:**
+- `src/views/templateList/index.tsx`
+- `src/views/templateDetail/index.tsx`
+- `src/views/layout/less/index.less`
+- `src/views/layout/components/SettingsDrawer.tsx`
+
+**Summary of Changes:**
+- 模板列表页优化：统一副标题说明、模板类型使用标签化展示、空状态文案更明确。
+- 模板详情页优化：增加返回模板列表入口、顶部信息与说明提示、按钮区换行适配、编辑/预览双栏改为响应式栅格。
+- 全局样式补充：新增模板页容器与详情页响应式样式（小屏自动单列，避免溢出）。
+- 系统设置提示文案同步更新为“右侧 JSON 配置面板 + 模板详情导入导出”描述，保持交互口径一致。
+
+**Commands Run:**
+- `npm run test:unit -- --run`
+- `npm run type-check`
+
+**Test Results:**
+- `npm run test:unit -- --run`：8 个测试文件通过，23 个测试通过。
+- `npm run type-check`：通过（0 error）。
+
+**Known Issues:**
+- `router.spec.ts` 仍有测试路由缺少 `component/children` 的 Vue Router warning（既有测试警告，不影响本任务验收）。
+
+**Assumptions:**
+- 仅做 UI 一致性与可用性打磨，不新增后端、依赖、模板 schema 扩展或业务功能。
+- 当前工作区包含阶段 3 的未提交文件，本次仅在其基础上做界面层改动并复测。
+
+**Suggested Next Step:**
+- 由 Reviewer 审查 Task 009，确认阶段 4 的 UI 打磨通过后再决定是否进入 backlog 清理项。
+
+**Git Status Summary:**
+- 本任务直接修改 4 个文件：模板列表页、模板详情页、布局样式、系统设置提示文案。
+- 工作区同时存在此前阶段未提交文件（模板管理新增文件及 docs 变更）。
+
+**Git Diff Summary:**
+- 本任务可见增量约 `+45` 行，`-1` 行（样式与文案/UI 结构为主）。
+
+---
+### 执行日志条目
+**Date:** 2026-05-28
+**Executor:** Codex
+**Task ID:** Task 010 / Task 011 / Task 012
+**Task Goal:** 修正编辑体验：配置面板改为分区级应用、编辑模式改为显式“编辑当前页面”入口，并完成编辑相关文案中文化。
+
+**Files Changed:**
+- `src/components/JsonConfigDrawer.tsx`
+- `src/views/formView/index.tsx`
+- `src/views/tableView/index.tsx`
+- `src/views/proTable/index.tsx`
+- `src/__tests__/json-config-drawer.spec.ts`
+- `src/__tests__/edit-mode-ui.spec.ts`
+
+**Summary of Changes:**
+- `JsonConfigDrawer` 改为分区级操作：每个 JSON 分区下提供“应用/重置”按钮；取消底部全局 `Apply/Cancel`。
+- 新增单分区解析函数 `parseSingleSectionDraft`，点击某分区“应用”仅解析并应用该分区。
+- 分区级错误提示与成功提示改为中文（例如“分区 xxx 的 JSON 解析失败”“分区 xxx 已应用”）。
+- `formView` / `tableView` / `proTable` 编辑模式不再自动弹出右侧配置面板，改为显示“编辑当前页面”按钮，点击后再打开。
+- 关闭编辑模式时保持自动关闭抽屉逻辑。
+- 更新与新增测试：覆盖单分区解析、中文错误提示，以及“编辑模式下不自动弹出配置面板”行为。
+
+**Commands Run:**
+- `npm run test:unit -- --run`
+- `npm run type-check`
+
+**Test Results:**
+- `npm run test:unit -- --run`：8 个测试文件通过，26 个测试通过。
+- `npm run type-check`：通过（0 error）。
+
+**Known Issues:**
+- `router.spec.ts` 仍有测试路由缺少 `component/children` 的 Vue Router warning（既有警告，不影响本任务验收）。
+
+**Assumptions:**
+- 按用户要求一次性执行 Task 010~012。
+- 页面字段 key（如 `formItems`、`columns`）允许保留英文标识；用户可见动词、提示、错误信息优先中文。
+
+**Suggested Next Step:**
+- 由 Reviewer 审查 Task 010~012；若通过，可回到 Backlog（README 与临时调试产物整理）或规划下一阶段需求。
+
+**Git Status Summary:**
+- 本任务直接修改 6 个文件（3 个页面 + 1 个配置面板 + 2 个测试文件）。
+- 工作区存在此前阶段已改但未提交文件（模板管理与 UI 打磨相关）。
+
+**Git Diff Summary:**
+- 本任务相关改动约 `+143` 行，`-38` 行。
+
+---
+### 执行日志条目
+**Date:** 2026-05-28
+**Executor:** Codex
+**Task ID:** Task 001 / Task 002 / Task 003
+**Task Goal:** 完成阶段一公共可编辑基础设施与 Form/SearchFrom/CustomTable 的统一接入，移除页面内手写配置面板打开逻辑。
+
+**Files Changed:**
+- `src/stores/editableRegistryStore.ts`
+- `src/composables/useEditableRegistry.ts`
+- `src/stores/appSettings.ts`
+- `src/views/layout/components/SettingsDrawer.tsx`
+- `src/components/Form.tsx`
+- `src/components/SearchFrom.tsx`
+- `src/components/CustomTable.tsx`
+- `src/views/formView/index.tsx`
+- `src/views/tableView/index.tsx`
+- `src/views/proTable/index.tsx`
+- `src/__tests__/edit-mode-ui.spec.ts`
+
+**Summary of Changes:**
+- 新增可编辑注册中心（registry store）与统一 composable，支持组件挂载时注册、卸载时注销、按路由路径聚合可编辑分区。
+- 新增统一面板打开逻辑：设置抽屉在编辑模式下根据当前页是否存在可编辑分区，显示“编辑当前页面”按钮或“当前页面暂无可编辑组件”提示。
+- 删除旧的全局触发方案：移除 `appSettings` 中 `editPanelTrigger` 与 `triggerEditPanelOpen`。
+- `Form` 组件支持自动注册 `formItems` / `formProps` 分区，并通过既有 `update:formItems`、`update:formProps` 回写。
+- `SearchFrom` 自动注册 `formItems` / `formProps` / `ButtonItems`；`CustomTable` 自动注册 `columns` / `tableProps` / `tableButtons`。
+- `formView`、`tableView`、`proTable` 移除手写 `openConfigPanel` 与全局 trigger watch，仅保留编辑模式关闭时自动关闭抽屉。
+- 补充测试初始化 pinia，确保新的 registry 方案在单测中稳定可运行。
+
+**Commands Run:**
+- `npm run test:unit -- --run`
+- `npm run type-check`
+
+**Test Results:**
+- `npm run test:unit -- --run`：8 个测试文件通过，26 个测试通过。
+- `npm run type-check`：通过（0 error）。
+
+**Known Issues:**
+- `router.spec.ts` 仍存在既有 Vue Router warning（测试路由缺少 `component/children`），不影响本任务验收。
+
+**Assumptions:**
+- 阶段一仅实现通用注册与三个基础组件（Form/SearchFrom/CustomTable）接入，不提前实现后续模板管理或详情页能力。
+- JSON 配置编辑范围仅限模板结构配置，不涉及运行时业务数据编辑。
+
+**Suggested Next Step:**
+- 由 Reviewer 审查 Task 001~003，并在通过后推进阶段二任务。
+
+**Git Status Summary:**
+- 本任务新增 2 个文件（registry store + composable），并修改 9 个组件/页面/测试文件完成接入与清理。
+- 工作区还存在其它阶段历史改动文件（由先前任务产生），本条仅记录阶段一相关交付。
+
+**Git Diff Summary:**
+- 阶段一相关改动以注册接入和旧触发逻辑移除为主，约为中等规模改动（新增注册基础设施 + 页面接线清理 + 测试修复）。
+
+---
+### 执行日志条目
+**Date:** 2026-05-28
+**Executor:** Codex
+**Task ID:** Fix Task 002-003-A
+**Task Goal:** 补齐 Form/TableView/ProTable 的 `update:*` 回写链路，确保 JSON 配置面板分区应用后页面状态即时更新。
+
+**Files Changed:**
+- `src/views/formView/index.tsx`
+- `src/views/tableView/index.tsx`
+- `src/views/proTable/index.tsx`
+- `src/__tests__/edit-mode-ui.spec.ts`
+
+**Summary of Changes:**
+- `formView`：为 `Form` 增加 `onUpdate:formItems`、`onUpdate:formProps` 回写；`formProps` 回写采用“先清空再 `Object.assign`”以保留 reactive 引用。
+- `tableView`：补齐 `onUpdate:formProps`、`onUpdate:formButtonItems`、`onUpdate:tableProps` 回写；其中 `formProps` 同样保留 reactive 引用。
+- `proTable`：补齐 `onUpdate:formProps`、`onUpdate:formButtonItems`、`onUpdate:tableProps` 回写，按 ref `.value` 替换。
+- 测试补充：在 `edit-mode-ui.spec.ts` 新增回写链路校验，覆盖 Form 场景与 Table/ProTable 场景的关键 `update:*` 事件落地。
+
+**Commands Run:**
+- `npm run test:unit -- --run`
+- `npm run type-check`
+
+**Test Results:**
+- `npm run test:unit -- --run`：8 个测试文件通过，28 个测试通过。
+- `npm run type-check`：通过（0 error）。
+
+**Known Issues:**
+- `router.spec.ts` 仍存在既有 Vue Router warning（测试路由缺少 `component/children`），不影响本次修复验收。
+
+**Assumptions:**
+- 本次仅执行 `Fix Task 002-003-A`，不推进阶段二及后续任务。
+- 编辑行为仍限定于模板结构配置回写，不涉及运行时业务数据编辑。
+
+**Suggested Next Step:**
+- 由 Reviewer 复审 Task 002/003，重点确认 `formProps` / `formButtonItems` / `tableProps` 分区应用后的页面即时回写行为。
+
+**Git Status Summary:**
+- 本次修复直接改动 4 个文件（3 个页面 + 1 个测试文件）。
+- 工作区存在其他历史阶段改动，本条仅记录 Fix Task 002-003-A 相关交付。
+
+**Git Diff Summary:**
+- 本次修复相关文件变更约 `+184` 行，`-118` 行。
+
+---

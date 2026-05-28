@@ -1,6 +1,7 @@
 import {
   computed,
   defineComponent,
+  getCurrentInstance,
   nextTick,
   onBeforeUnmount,
   onMounted,
@@ -20,6 +21,7 @@ import { Drag24Regular } from '@vicons/fluent'
 // @ts-ignore sortablejs is untyped in this project baseline
 import Sortable from 'sortablejs'
 import { renderIconFromString } from '@/utils/iconMap'
+import { registerEditableSection } from '@/composables/useEditableRegistry'
 
 type ColumnKey = string | number
 type TableColumn = DataTableColumns<Record<string, any>>[number] & Record<string, any>
@@ -68,6 +70,8 @@ export default defineComponent({
     const columns = ref<TableColumn[]>((props.columns || []) as TableColumn[])
     const tableProps = ref<Partial<DataTableProps>>(props.tableProps || {})
     const headerSortable = shallowRef<any>(null)
+    const instanceUid = String(getCurrentInstance()?.uid ?? Math.random())
+    const unregisterList: Array<() => void> = []
 
     const getColumnKey = (column: TableColumn) => column.key ?? column.type
 
@@ -198,9 +202,48 @@ export default defineComponent({
 
     onMounted(() => {
       initHeaderSortable()
+      unregisterList.push(
+        registerEditableSection({
+          id: `table-columns-${instanceUid}`,
+          key: `tableColumns-${instanceUid}`,
+          title: '表格列 (columns)',
+          order: 30,
+          getValue: () => columns.value,
+          apply: (value) => {
+            emit('update:columns', value as DataTableColumns<Record<string, any>>)
+          },
+        }),
+      )
+      unregisterList.push(
+        registerEditableSection({
+          id: `table-props-${instanceUid}`,
+          key: `tableProps-${instanceUid}`,
+          title: '表格属性 (tableProps)',
+          order: 31,
+          getValue: () => tableProps.value,
+          apply: (value) => {
+            emit('update:tableProps', value as DataTableProps)
+          },
+        }),
+      )
+      unregisterList.push(
+        registerEditableSection({
+          id: `table-buttons-${instanceUid}`,
+          key: `tableButtons-${instanceUid}`,
+          title: '表格按钮 (tableButtons)',
+          order: 32,
+          getValue: () => props.tableButtons,
+          apply: (value) => {
+            emit('update:tableButtons', value as tableButtonItem)
+          },
+        }),
+      )
     })
 
-    onBeforeUnmount(destroyHeaderSortable)
+    onBeforeUnmount(() => {
+      destroyHeaderSortable()
+      unregisterList.forEach((fn) => fn())
+    })
 
     return () => (
       <div

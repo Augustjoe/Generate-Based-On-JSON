@@ -36,6 +36,16 @@ export const config = {
           name: '基本表单',
           component: () => import('./formView'),
         },
+        {
+          path: '/templateList',
+          name: '模板列表',
+          component: () => import('./templateList'),
+        },
+        {
+          path: '/templateDetail/:id',
+          name: '模板详情',
+          component: () => import('./templateDetail'),
+        },
       ],
     },
     {

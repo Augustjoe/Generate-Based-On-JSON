@@ -3,9 +3,9 @@
 *此文件是项目上下文的轻量级快照，**仅由** Planner (GPT-5.5) 在成功审查后更新。旨在最大限度地减少新上下文窗口的 token 消耗。*
 
 ## 当前摘要 (Current Summary)
-项目当前是一个 Vue 3 + TypeScript + Vite 的后台管理类单页应用雏形，目标正在收敛为“给前端开发者使用的低代码模板管理系统”。现有实现已经包含登录守卫、布局框架、菜单、工作台、仪表盘、表单示例、ProTable/SearchForm/CustomTable 等配置驱动组件，以及 CodeMirror 代码编辑器基础组件。
+项目当前是一个 Vue 3 + TypeScript + Vite 的低代码模板管理系统雏形。现有实现已经包含登录守卫、后台布局、工作台、仪表盘、配置驱动表单/表格组件、统一右侧 JSON 配置面板、模板列表、模板详情/预览、本地模板编辑、导入和导出能力。
 
-目前还不是完整模板管理系统：缺少模板列表、模板详情、模板保存/导入导出、配置 schema、真实持久化和正式模板编辑流程。后续应先巩固“模板配置模型”和“本地模板管理闭环”，再考虑后端或复杂功能。
+目前已经形成前端本地最小闭环，但仍未接入真实后端、数据库、多用户权限、版本管理或正式模板 schema 迁移机制。后续应先整理文档与类型技术债，再考虑更复杂的产品能力。
 
 ## 已完成工作 (Completed Work)
 - Vue 3 + Vite + TypeScript 项目基础已建立。
@@ -18,6 +18,9 @@
 - AI 协作文档在 Task 000 中完成项目上下文实装。
 - Task 001 已完成：登录页支持按 Enter 键触发登录，并添加 loading 防重复提交测试。
 - Task 002-005 已完成并通过复审：统一右侧 JSON 配置面板已接入 formView、ProTable 和 TableView，旧页面内编辑入口已移除，相关测试与 type-check 通过。
+- Task 006-008 已完成并通过审查：新增模板列表、模板详情/预览、本地模板编辑与导入导出，接入路由与菜单，并补充模板 schema/store 测试。
+- Task 009 已完成并通过审查：模板列表/详情页完成 UI 一致性、状态提示和响应式细节打磨，系统设置提示文案已同步。
+- Task 010-012 已完成并通过审查：右侧 JSON 配置面板支持分区级“应用/重置”，编辑模式不再自动弹出配置面板，“编辑当前页面”入口按产品要求放在“编辑模式”下方，编辑相关主要用户可见英文已中文化。
 
 ## 当前技术栈 (Current Tech Stack)
 - Vue 3、TypeScript、TSX、Vite。
@@ -39,8 +42,8 @@
 - 暂无正式 ADR；需要引入模板 schema、后端、数据库、插件机制或安全执行模型时再新增 ADR。
 
 ## 活动任务 (Active Task)
-**Task ID:** Task 006
-**Goal:** 实现最小模板列表页，用本地 mock 数据展示可管理的模板资产。
+**Task ID:** Backlog - README 与临时调试产物整理
+**Goal:** 清理项目入口文档与根目录 `tmp-*` 调试产物。
 **Assigned to:** Codex
 
 ## 已知问题 (Known Issues)
@@ -48,22 +51,22 @@
 - 仓库根目录存在多个 `tmp-*` 调试脚本、截图和 JSON 文件，是否应保留尚未明确。
 - mock 登录只适合本地演示，不具备真实安全性。
 - 低代码配置类型较分散，`FormItem`、按钮项、表格配置等全局类型来源需要进一步梳理。
-- 当前模板管理领域对象尚未建立，缺少“模板”的列表、创建、编辑、预览、保存和导入导出流程。
+- 当前已具备最小模板列表、详情、预览、编辑、导入和导出流程；尚未接入真实持久化、版本管理或正式 schema 迁移。
 - 部分页面仍偏后台模板示例内容，尚未完全服务于模板管理系统目标。
 
 ## 已知风险 (Known Risks)
 - 如果不先定义最小模板配置模型，后续功能容易变成页面示例堆叠。
 - 动态渲染函数和未来模板导入能力存在安全风险，不能直接执行不可信代码。
 - `src/utils/dynamicComponent.ts` 通过 Vite glob 解析 Naive UI 内部路径，依赖包结构变化可能影响稳定性。
-- 当前测试已覆盖 store/router/ProTable 基础行为、登录 Enter、JSON 配置解析、非法 JSON 与编辑模式旧按钮移除；后续模板管理页面仍需新增针对性测试。
+- 当前测试已覆盖 store/router/ProTable 基础行为、登录 Enter、JSON 配置解析、非法 JSON、编辑模式旧按钮移除、编辑模式不自动弹出配置面板、模板 schema 与模板 store；模板列表/详情组件级 UI 测试仍可在后续补充。
 - `npm run lint` 会自动修复文件，Executor 使用前需要注意工作区已有改动。
 - Task 002-005 修复中为了通过 type-check 暂时引入了重复的全局/模块声明与局部 `any`/`ts-ignore`，建议后续低优先级 cleanup 收敛。
 
 ## 测试状态 (Test Status)
 - **整体健康状况:** Passing (通过)
-- **最近运行命令:** `npm.cmd run test:unit -- --run`；`npm.cmd run type-check`
-- **最近结果:** 6 个测试文件通过，18 个测试通过；type-check 0 error。
-- **备注:** 最近一次测试在 Fix Task 002-005-A 复审期间运行通过。`router.spec.ts` 仍有测试路由缺少 component/children 的 Vue Router warning，不影响当前验收。
+- **最近运行命令:** `npm run test:unit -- --run`；`npm run type-check`
+- **最近结果:** 8 个测试文件通过，26 个测试通过；type-check 0 error。
+- **备注:** 最近一次测试在 Task 010-012 审查期间运行通过。`router.spec.ts` 仍有测试路由缺少 component/children 的 Vue Router warning，不影响当前验收。
 - **覆盖率:** 未配置覆盖率统计。
 
 ## 重要文件 (Important Files)
@@ -73,19 +76,23 @@
 - `src/views/router.tsx` - 页面路由配置。
 - `src/views/menu.tsx` - 菜单配置。
 - `src/stores/authStore.ts` - mock 登录状态。
-- `src/stores/appSettings.ts` - 菜单位置、主题、编辑模式。
+- `src/stores/appSettings.ts` - 菜单位置、主题、编辑模式和编辑面板触发状态。
 - `src/components/Form.tsx` - 配置驱动表单核心组件。
 - `src/components/ProTable.tsx` - 搜索表单 + 表格组合组件。
 - `src/components/CustomTable.tsx` - 表格渲染与操作组件。
 - `src/components/CardCodeEditor.tsx` - CodeMirror 编辑器卡片。
+- `src/stores/templateStore.ts` - 本地模板资产存储、导入和导出。
+- `src/views/templateList/index.tsx` - 模板列表页。
+- `src/views/templateDetail/index.tsx` - 模板详情、预览、编辑、导入和导出页。
+- `src/utils/templateSchema.ts` - 最小模板结构校验与 mock 模板。
 - `src/utils/dynamicComponent.ts` - Naive UI 动态组件解析。
 - `src/__tests__/` - 当前单元测试。
 
 ## 推荐的下一个任务 (Next Recommended Task)
-- Task 006
+- Backlog：README 与临时调试产物整理
 
 ## 给 GPT-5.5 的上下文笔记 (Context Notes for Planner/Reviewer)
-- 统一右侧配置面板及 formView / ProTable / TableView 接入已通过；后续进入模板管理核心能力时继续保持小步推进。
+- 统一右侧配置面板、模板管理最小闭环、UI 打磨和编辑体验修正均已通过；后续可先处理 README 与临时调试产物整理，再规划下一阶段能力。
 - 不要在没有 ADR 的情况下规划真实后端、数据库、多用户权限或插件执行沙箱。
 - 评审时重点看 Executor 是否只完成当前 Task，是否追加 execution_log，是否运行相关测试。
 
@@ -95,4 +102,4 @@
 - 修改代码后至少运行相关测试；通用变更优先运行 `npm run test:unit -- --run`。
 - 不要新增依赖，除非 Task 明确批准。
 - `execution_log.md` 只能追加，不能改历史。
-- 当前推荐分配任务是 Task 006；不要提前执行 Task 007 或后续任务。
+- 当前推荐分配任务是 Backlog 中的 README 与临时调试产物整理；不要新增后端、数据库或模板 schema 大改。

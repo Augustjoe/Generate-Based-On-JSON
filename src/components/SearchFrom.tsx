@@ -1,8 +1,9 @@
-import { computed, defineComponent, ref, onMounted, reactive, toRef, nextTick, watch } from 'vue'
+import { computed, defineComponent, ref, onMounted, reactive, toRef, nextTick, watch, getCurrentInstance, onBeforeUnmount } from 'vue'
 import { NCard, NButton, NIcon, NFlex } from 'naive-ui'
 import type { FormProps, RowProps } from 'naive-ui'
 import { ChevronDown, ChevronUp } from '@vicons/ionicons5'
 import { renderIconFromString } from '@/utils/iconMap'
+import { registerEditableSection } from '@/composables/useEditableRegistry'
 
 import Form from './Form'
 
@@ -65,6 +66,8 @@ export default defineComponent({
       height: 'auto',
     })
     const isEdit = toRef(props, 'isEdit')
+    const instanceUid = String(getCurrentInstance()?.uid ?? Math.random())
+    const unregisterList: Array<() => void> = []
 
     const refreshExpandState = () => {
       const el = formRef.value?.$el as HTMLElement | undefined
@@ -88,6 +91,46 @@ export default defineComponent({
     onMounted(async () => {
       await nextTick()
       refreshExpandState()
+      unregisterList.push(
+        registerEditableSection({
+          id: `search-form-items-${instanceUid}`,
+          key: `searchFormItems-${instanceUid}`,
+          title: '搜索表单项 (formItems)',
+          order: 20,
+          getValue: () => formItems.value,
+          apply: (value) => {
+            emit('update:formItems', value as FormItem[])
+          },
+        }),
+      )
+      unregisterList.push(
+        registerEditableSection({
+          id: `search-form-props-${instanceUid}`,
+          key: `searchFormProps-${instanceUid}`,
+          title: '搜索表单属性 (formProps)',
+          order: 21,
+          getValue: () => formProps.value,
+          apply: (value) => {
+            emit('update:formProps', value as FormProps)
+          },
+        }),
+      )
+      unregisterList.push(
+        registerEditableSection({
+          id: `search-button-items-${instanceUid}`,
+          key: `searchButtonItems-${instanceUid}`,
+          title: '搜索按钮 (formButtonItems)',
+          order: 22,
+          getValue: () => ButtonItems.value,
+          apply: (value) => {
+            emit('update:ButtonItems', value as searchButtonItem)
+          },
+        }),
+      )
+    })
+
+    onBeforeUnmount(() => {
+      unregisterList.forEach((fn) => fn())
     })
 
     watch(
@@ -123,6 +166,7 @@ export default defineComponent({
           >
             <Form
               isEdit={isEdit.value}
+              editable={false}
               ref={formRef}
               formData={formData}
               formItems={displayFormItems.value}

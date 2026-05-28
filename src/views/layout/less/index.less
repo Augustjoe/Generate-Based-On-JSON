@@ -202,3 +202,29 @@
   transform: scale(1.08);
 }
 
+.template-page-shell {
+  padding: 10px;
+  height: 100%;
+}
+
+.template-page-subtitle {
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.template-detail-grid {
+  height: calc(100% - 80px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 1100px) {
+  .template-detail-grid {
+    height: auto;
+    min-height: 0;
+    grid-template-columns: 1fr;
+  }
+}
+

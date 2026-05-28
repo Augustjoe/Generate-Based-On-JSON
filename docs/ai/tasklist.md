@@ -8,139 +8,133 @@
 - Reviewer (GPT-5.5) 审查 Executor 的执行日志、git diff 和测试结果，给出 PASS / NEEDS_FIX / REJECT。
 - 只有 Reviewer 给出 PASS 后，Planner 才推进 `current_state.md` 和下一个 Task。
 
-## 项目路线图 (Project Roadmap)
+## 已完成阶段归档 (Completed Roadmap Archive)
 
-### 阶段 0: 项目理解 (Phase 0: Project Understanding)
-当前阶段已完成。项目上下文、架构约束、任务路线图和审查报告已初始化。
+- **历史 Task 000-012:** PASS。已完成 AI 协作文档初始化、登录 Enter 提交、统一右侧 JSON 配置面板、模板列表/详情本地闭环、编辑模式入口、分区级应用/重置和编辑相关中文化。
+- **历史结论:** 当前项目已从“模板管理雏形”转向“给前端开发者使用的低代码基础组件库”。后续任务从新的阶段一重新编号。
 
-### 阶段 1: 交互基线修复 (Phase 1: Interaction Baseline)
-当前阶段已完成。登录页 Enter 提交能力已通过审查。
+## 当前路线图 (Active Roadmap)
 
-### 阶段 2: 统一低代码编辑模式 (Phase 2: Unified Low-code Editing)
-- [x] **Task ID:** Task 002
-  - **Status:** Completed / PASS (已完成 / 已通过)
-  - **Goal:** 新增统一右侧配置面板基础能力。
-  - **Scope:** 新增可复用配置面板，支持多个 JSON 分区、草稿状态、确认应用、取消/重置和错误提示。
-  - **Files likely affected:** `src/components/`、`src/components/useDrawer.tsx`，可能涉及 `src/stores/appDrawerStore.ts`。
-  - **Acceptance criteria:** 可以传入多个配置分区并在右侧抽屉展示；点击确认时解析 JSON；全部合法才触发应用回调；非法 JSON 不更新页面并显示错误；相关测试通过；执行日志已追加。
-  - **Constraints:** 复用现有 CodeMirror / Drawer 能力；不新增依赖；不引入新模板 schema；不编辑运行时数据。
-  - **Notes:** 配置面板第一版只做 JSON 编辑，不做结构化属性表单。配置分区应支持表单项、表单属性、搜索按钮、表格列、表格属性、表格按钮等结构。
+### 阶段一: 公共编辑能力基础设施
+- [x] **Task ID:** Task 001
+  - **Status:** PASS (已通过)
+  - **Goal:** 新增基础组件自动注册的公共编辑能力，让外层统一判断和打开 JSON 配置面板。
+  - **Scope:** 新增可编辑组件 registry/composable/store；支持注册、注销、读取当前页面可编辑配置、统一打开 `JsonConfigDrawer`；`SettingsDrawer` 根据 registry 显示“编辑当前页面”或“当前页面暂无可编辑组件”。
+  - **Files likely affected:** `src/stores/` 或 `src/composables/`、`src/views/layout/components/SettingsDrawer.tsx`、`src/components/JsonConfigDrawer.tsx`、相关测试文件。
+  - **Acceptance criteria:** 编辑模式关闭时不显示编辑入口和无组件提示；编辑模式开启且 registry 为空时显示“当前页面暂无可编辑组件”；registry 非空时显示“编辑当前页面”；点击后由公共逻辑打开 JSON 配置面板；页面不需要 watch 全局 trigger；相关测试通过；执行日志已追加。
+  - **Constraints:** 不新增依赖；不改模板 schema；不接入后端；不做业务页面重构；保留现有 `JsonConfigDrawer` 分区级应用/重置能力。
+  - **Notes:** 这是后续组件自动注册的基础任务。公共编辑能力应服务基础组件，不应绑定某个具体页面。
 
-- [x] **Task ID:** Task 003
-  - **Status:** Completed / PASS (已完成 / 已通过)
-  - **Goal:** 将普通表单页接入统一配置面板。
-  - **Scope:** `formView` 在编辑模式下自动打开右侧配置面板，支持编辑 `formItems` 和 `formProps`；移除表单字段旁散落设置按钮。
-  - **Files likely affected:** `src/views/formView/index.tsx`、`src/components/Form.tsx`。
-  - **Acceptance criteria:** 开启编辑模式后右侧显示表单配置分区；修改合法 JSON 并确认后表单动态更新；非法 JSON 不应用；表单页面不再出现字段旁设置按钮；预览模式表单行为保持不变；相关测试通过；执行日志已追加。
-  - **Constraints:** 不改现有 FormItem 数据结构；不做拖拽排序；不编辑表单运行时输入值。
-  - **Notes:** 页面主体应保持预览布局，不被编辑控件挤压。旧 `FormEditorButton` 可以暂时保留文件，但 `Form` 不应再渲染字段级设置按钮。
+- [ ] **Task ID:** Task 002
+  - **Status:** NEEDS_FIX (需修复)
+  - **Goal:** 让 `Form` 自动注册自己的可编辑配置，并验证基础表单页面可通过外层入口编辑。
+  - **Scope:** `Form` 挂载时注册 `formItems`、`formProps`；卸载时注销；应用 JSON 后通过已有 `update:formItems`、`update:formProps` 回写；移除 `formView` 中手写打开配置面板逻辑。
+  - **Files likely affected:** `src/components/Form.tsx`、`src/views/formView/index.tsx`、`src/__tests__/edit-mode-ui.spec.ts` 或新增 registry 测试。
+  - **Acceptance criteria:** 基本表单页使用 `Form` 后自动拥有编辑能力；点击外层“编辑当前页面”可编辑表单项和表单属性；应用单个分区后页面即时更新；关闭编辑模式关闭抽屉；相关测试通过；执行日志已追加。
+  - **Constraints:** 不恢复旧的 `FormEditorButton` 页面内散落入口；不新增依赖；不改 `Form` 现有主要使用方式。
+  - **Notes:** 可为组件增加 `editable?: boolean`、`editableTitle?: string`，默认开启；业务数据 `formData` 不纳入编辑面板。当前缺少 `formView` 对 `update:formItems` / `update:formProps` 的回写监听，请执行 Fix Task 002-003-A。
 
-- [x] **Task ID:** Task 004
-  - **Status:** Completed / PASS (已完成 / 已通过)
-  - **Goal:** 将 ProTable / TableView 接入统一配置面板。
-  - **Scope:** 在编辑模式下通过右侧配置面板编辑搜索表单、搜索按钮、表格列、表格属性和表格操作按钮；移除旧的页面内设置按钮。
-  - **Files likely affected:** `src/views/proTable/index.tsx`、`src/views/tableView/index.tsx`、`src/components/SearchFrom.tsx`、`src/components/CustomTable.tsx`、`src/components/ProTable.tsx`。
-  - **Acceptance criteria:** 开启编辑模式后右侧显示 ProTable 配置分区；确认合法 JSON 后页面动态更新；搜索表单按钮和表格按钮配置可更新；表格列配置可更新；页面内不再出现旧的表单/按钮/列设置按钮；预览模式查询、重置、分页和操作按钮保持原行为；相关测试通过；执行日志已追加。
-  - **Constraints:** 不接入后端；不新增依赖；不编辑表格运行时数据或 request 结果；不把旧“列显示与排序”按钮作为主要编辑入口。
-  - **Notes:** 旧列显示/排序能力可先保留内部逻辑，后续再规划是否迁移为配置分区。本任务不做按钮样式单点修补。
+- [ ] **Task ID:** Task 003
+  - **Status:** NEEDS_FIX (需修复)
+  - **Goal:** 让 `SearchFrom` 和 `CustomTable` 自动注册配置，并移除表格/ProTable 页面中的手写编辑逻辑。
+  - **Scope:** `SearchFrom` 注册 `formItems`、`formProps`、`ButtonItems`；`CustomTable` 注册 `columns`、`tableProps`、`tableButtons`；`tableView`、`proTable` 不再维护 `openConfigPanel` 或 trigger watcher。
+  - **Files likely affected:** `src/components/SearchFrom.tsx`、`src/components/CustomTable.tsx`、`src/views/tableView/index.tsx`、`src/views/proTable/index.tsx`、相关测试文件。
+  - **Acceptance criteria:** 基本表格页和 ProTable 页通过外层入口打开配置面板；搜索表单、搜索按钮、表格列、表格属性、表格按钮可分区编辑并回写；非可编辑页面显示“当前页面暂无可编辑组件”；相关测试通过；执行日志已追加。
+  - **Constraints:** `ProTable` 不重复注册整组配置，优先让内部 `SearchFrom` 和 `CustomTable` 自动注册；不新增依赖；不做样式大改。
+  - **Notes:** 同一页面可能存在多个可编辑组件，registry 需要能稳定区分分区标题和 key，避免重复覆盖。当前 `tableView` / `proTable` 缺少 `formProps`、`formButtonItems`、`tableProps` 等分区的父级回写监听，请执行 Fix Task 002-003-A。
 
-- [x] **Task ID:** Task 005
-  - **Status:** Completed / PASS (已完成 / 已通过)
-  - **Goal:** 为统一编辑模式补充测试和验收。
-  - **Scope:** 补充登录 Enter、配置面板应用、非法 JSON、编辑模式按钮移除等关键测试。
-  - **Files likely affected:** `src/__tests__/`、相关组件测试辅助文件。
-  - **Acceptance criteria:** `npm run test:unit -- --run` 通过；必要时 `npm run build` 通过；关键交互路径有测试覆盖；执行日志已追加。
-  - **Constraints:** 不做功能扩展；不大量 snapshot 化 UI；不依赖真实浏览器服务。
-  - **Notes:** 如果 Task 002-004 已分别补充足够测试，本任务可以作为整体验收和补漏任务。
+### 阶段二: 表单详情组件
+- [ ] **Task ID:** Task 004
+  - **Status:** Pending (待办)
+  - **Goal:** 删除模板列表入口，新增表单详情页面和菜单入口。
+  - **Scope:** 从菜单和路由中移除模板列表页面入口；新增“表单详情”菜单和示例页面；页面先使用静态示例数据展示只读详情。
+  - **Files likely affected:** `src/views/menu.tsx`、`src/views/router.tsx`、`src/views/templateList/`、`src/views/templateDetail/`、`src/views/formDetail/`、`src/views/layout/less/index.less`。
+  - **Acceptance criteria:** 侧边栏不再显示模板列表入口；访问新“表单详情”菜单可看到只读详情示例；现有主控台、基本表单、基本表格、ProTable 路由不受影响；相关测试或类型检查通过；执行日志已追加。
+  - **Constraints:** 先只移除菜单/路由入口；除非确认为未引用，否则不要大规模删除 template store/schema 代码；不接入后端。
+  - **Notes:** 用户目标已转向组件能力展示，模板列表不再作为当前主线。
 
-### 阶段 3: 模板管理核心能力 (Phase 3: Core Template Features)
+- [ ] **Task ID:** Task 005
+  - **Status:** Pending (待办)
+  - **Goal:** 封装 `FormDetail` 基础组件，用 `data + items + detailProps` 动态展示只读详情。
+  - **Scope:** 新增 `FormDetail` 组件和类型；支持 `data`、`items`、`detailProps`；支持列数、边框、标签宽度、空值展示、跨列、基础 valueType 和 enum/tag 展示。
+  - **Files likely affected:** `src/components/FormDetail.tsx`、`src/components/components.d.ts` 或类型声明文件、`src/views/formDetail/index.tsx`、相关测试文件。
+  - **Acceptance criteria:** `FormDetail` 可通过配置展示详情；`data` 只作为业务值不被编辑；`items` 控制字段、标签、路径、跨列和展示类型；`detailProps` 控制整体布局；示例页面使用该组件；相关测试通过；执行日志已追加。
+  - **Constraints:** 不允许 JSON 面板直接编辑或执行函数字符串；第一阶段 formatter 使用预设字符串或内置 valueType；不新增依赖。
+  - **Notes:** 建议类型包括 `label`、`path`、`span`、`valueType`、`emptyText`、`options`、`detailItemProps`。开发者代码中可传 render 函数，但 JSON 编辑只处理可序列化配置。
+
 - [ ] **Task ID:** Task 006
   - **Status:** Pending (待办)
-  - **Goal:** 实现最小模板列表页，用本地 mock 数据展示可管理的模板资产。
-  - **Scope:** 新增或改造一个页面展示模板列表、模板名称、类型、更新时间、描述和基础操作入口；不做持久化。
-  - **Files likely affected:** `src/views/`、`src/views/router.tsx`、`src/views/menu.tsx`，可能涉及 `src/stores/`。
-  - **Acceptance criteria:** 可从菜单进入模板列表；列表使用现有 Naive UI/ProTable 能力；空状态和 mock 数据清晰；单元测试或组件测试覆盖关键逻辑；执行日志已追加。
-  - **Constraints:** 不接入后端；不新增依赖；不破坏现有路由守卫。
-  - **Notes:** 优先复用 `ProTable`，不要为了列表页引入新表格库。应在统一编辑模式稳定后执行。
+  - **Goal:** 让 `FormDetail` 接入基础组件自动注册编辑能力。
+  - **Scope:** `FormDetail` 自动注册 `items` 和 `detailProps`；支持 `editable?: boolean`、`editableTitle?: string`；应用 JSON 后回写配置并更新展示。
+  - **Files likely affected:** `src/components/FormDetail.tsx`、`src/views/formDetail/index.tsx`、公共 editable registry、相关测试文件。
+  - **Acceptance criteria:** 表单详情页在编辑模式下显示“编辑当前页面”；点击后可编辑详情项配置和详情布局配置；应用后详情展示即时变化；无业务数据编辑入口；相关测试通过；执行日志已追加。
+  - **Constraints:** 不把 `data` 注册进编辑面板；不执行 JSON 中的函数；不影响 `Form`、`SearchFrom`、`CustomTable` 已有编辑能力。
+  - **Notes:** 这是验证“新基础组件接入编辑基础设施”的样板任务。
 
+### 阶段三: 异常页组件
 - [ ] **Task ID:** Task 007
   - **Status:** Pending (待办)
-  - **Goal:** 实现模板详情/预览的最小闭环。
-  - **Scope:** 从模板列表进入详情页，展示模板配置 JSON/代码和基于现有组件的预览区域；不做保存。
-  - **Files likely affected:** `src/views/`、`src/components/CardCodeEditor.tsx`、`src/views/router.tsx`。
-  - **Acceptance criteria:** 能查看一个 mock 模板的配置；能看到对应表单或表格预览；非法配置有用户可见提示；相关测试通过；执行日志已追加。
-  - **Constraints:** 不执行不可信远程代码；不引入后端；预览范围限制在现有 Form/ProTable 能力。
-  - **Notes:** 先支持一到两种模板类型即可。
+  - **Goal:** 新增异常页菜单、路由和 `ExceptionPage` 基础组件。
+  - **Scope:** 新增“异常页”父菜单及 403、404、500 子菜单；封装 `ExceptionPage`，通过配置展示状态码、标题、描述、图标/插画、操作按钮和扩展内容。
+  - **Files likely affected:** `src/components/ExceptionPage.tsx`、`src/views/exception/`、`src/views/menu.tsx`、`src/views/router.tsx`、`src/views/layout/less/index.less`、相关测试文件。
+  - **Acceptance criteria:** 403、404、500 三个页面可访问且展示美观；三页复用同一个基础组件；组件 props 可动态控制标题、描述、按钮和视觉状态；相关测试或类型检查通过；执行日志已追加。
+  - **Constraints:** 不新增图片依赖；可使用 Naive UI 和现有图标包；不要创建纯营销式页面；页面应是可复用组件示例。
+  - **Notes:** 异常页可先使用图标、状态码和布局样式实现，不要求外部图片资源。
 
 - [ ] **Task ID:** Task 008
   - **Status:** Pending (待办)
-  - **Goal:** 实现本地模板编辑与导入导出的最小能力。
-  - **Scope:** 支持编辑模板 JSON、校验基础字段、导出为 JSON 文件、从本地 JSON 导入；持久化可先使用 localStorage。
-  - **Files likely affected:** `src/views/`、`src/stores/`、`src/types/`、`src/components/CardCodeEditor.tsx`。
-  - **Acceptance criteria:** 用户可以编辑 mock 模板并在本地看到预览变化；导入非法 JSON 有明确错误；导出内容结构稳定；测试覆盖解析和错误分支；执行日志已追加。
-  - **Constraints:** 不上传文件到服务端；不执行导入内容中的任意函数；不新增依赖。
-  - **Notes:** 如果发现需要模板 schema 版本策略，先向 Planner 请求 ADR。
+  - **Goal:** 让 `ExceptionPage` 支持自动注册编辑配置。
+  - **Scope:** `ExceptionPage` 注册异常页配置，如 status、title、description、actions、visualType/layout 等；应用 JSON 后即时更新。
+  - **Files likely affected:** `src/components/ExceptionPage.tsx`、`src/views/exception/`、公共 editable registry、相关测试文件。
+  - **Acceptance criteria:** 异常页在编辑模式下可通过外层入口编辑当前异常页配置；非业务数据不被误编辑；无可编辑组件页面仍显示无组件提示；相关测试通过；执行日志已追加。
+  - **Constraints:** 不执行 JSON 函数字符串；按钮 action 第一阶段只允许预设动作或示例回调，不做动态代码执行。
+  - **Notes:** 可把按钮配置限制为 `text`、`type`、`actionType`、`to` 等可序列化字段。
 
-### 阶段 4: 打磨和发布 (Phase 4: Polish and Release)
+### 阶段四: 结果页组件
 - [ ] **Task ID:** Task 009
   - **Status:** Pending (待办)
-  - **Goal:** 做一次低代码模板管理系统的 UI 一致性和可用性打磨。
-  - **Scope:** 调整导航、页面标题、空状态、加载态、错误态、响应式细节；不新增大功能。
-  - **Files likely affected:** `src/views/`、`src/components/`、`src/assets/`。
-  - **Acceptance criteria:** 核心页面视觉一致；移动和桌面布局无明显溢出；测试通过；执行日志已追加。
-  - **Constraints:** 不换 UI 库；不引入新的设计系统；不做无关重构。
-  - **Notes:** 在核心模板管理闭环形成后再执行。
+  - **Goal:** 新增结果页菜单、路由和 `ResultPage` 基础组件。
+  - **Scope:** 新增“结果页”父菜单及成功页、失败页、信息页子菜单；封装 `ResultPage`，通过配置展示结果类型、标题、描述、详情区、操作按钮和扩展内容。
+  - **Files likely affected:** `src/components/ResultPage.tsx`、`src/views/result/`、`src/views/menu.tsx`、`src/views/router.tsx`、`src/views/layout/less/index.less`、相关测试文件。
+  - **Acceptance criteria:** 成功页、失败页、信息页三个页面可访问且展示美观；三页复用同一个基础组件；组件 props 可动态控制文案、状态、按钮和详情内容；相关测试或类型检查通过；执行日志已追加。
+  - **Constraints:** 不新增依赖；不接入真实业务流程；不做复杂状态机。
+  - **Notes:** 结果页要偏后台系统常见反馈页，视觉上保持简洁、稳定、可复用。
+
+- [ ] **Task ID:** Task 010
+  - **Status:** Pending (待办)
+  - **Goal:** 让 `ResultPage` 支持自动注册编辑配置，并补齐新组件回归测试。
+  - **Scope:** `ResultPage` 注册结果页配置；补充 editable registry、FormDetail、ExceptionPage、ResultPage 的关键测试；确认 `npm run test:unit -- --run` 和 `npm run type-check` 通过。
+  - **Files likely affected:** `src/components/ResultPage.tsx`、`src/views/result/`、`src/__tests__/`、`docs/ai/execution_log.md`。
+  - **Acceptance criteria:** 结果页在编辑模式下可通过外层入口编辑当前结果页配置；新基础组件关键渲染和注册行为有测试覆盖；全部单元测试和类型检查通过；执行日志已追加。
+  - **Constraints:** 不扩大到真实后端、权限、多语言或模板市场；不做无关重构。
+  - **Notes:** 这是本轮组件能力建设的收口任务，完成后再由 Reviewer 更新 `current_state.md`。
 
 ## 修复任务 (Bugfix Tasks)
-*(保留给在 NEEDS_FIX 审查期间生成的任务)*
-
-- [x] **Task ID:** Fix Task 002-005-A
-  - **Status:** Completed / PASS (已完成 / 已通过)
-  - **Goal:** 修复 Task 002-005 审查中发现的阻断问题，使统一低代码编辑模式达到可复审状态。
-  - **Scope:** 仅修复本次 review_report.md 中列出的 Must Fix：Planner 文档越权改动、测试挂起、JsonConfigDrawer 错误展示、type-check 新增/相关类型问题。不要推进 Task 006 或新增功能。
-  - **Files likely affected:** `docs/ai/architecture.md`、`docs/ai/tasklist.md`、`docs/ai/current_state.md`、`src/components/JsonConfigDrawer.tsx`、`src/__tests__/edit-mode-ui.spec.ts`、相关类型声明或受影响测试文件。
-  - **Acceptance criteria:** `npm.cmd run test:unit -- --run` 稳定通过并退出；`npm.cmd run type-check` 对本次新增/修改范围无新增错误，或已有基线问题被清楚隔离并记录；非法 JSON 会显示对应分区错误且不会触发 apply；Planner 专属文档恢复到 Reviewer 认可状态；执行日志追加修复记录。
-  - **Constraints:** 不新增依赖；不修改 `architecture.md` 的架构决策内容；不推进模板管理 Task 006+；`execution_log.md` 只能追加。
-  - **Notes:** 本修复任务由 2026-05-28 Reviewer 对 Task 002-005 的 NEEDS_FIX 结论生成。
+- [ ] **Task ID:** Fix Task 002-003-A
+  - **Status:** Pending (待办)
+  - **Goal:** 补齐自动注册编辑分区的回写链路，确保 JSON 面板应用后示例页面即时更新。
+  - **Scope:** 为 `formView` 补齐 `onUpdate:formItems`、`onUpdate:formProps`；为 `tableView` 和 `proTable` 补齐 `onUpdate:formProps`、`onUpdate:formButtonItems`、`onUpdate:tableProps`；补充 registry/组件应用回写测试。
+  - **Files likely affected:** `src/views/formView/index.tsx`、`src/views/tableView/index.tsx`、`src/views/proTable/index.tsx`、`src/__tests__/edit-mode-ui.spec.ts` 或新增 registry 测试文件。
+  - **Acceptance criteria:** 基本表单页应用 `formItems` / `formProps` 后页面状态更新；基本表格页和 ProTable 页应用搜索表单项、搜索表单属性、搜索按钮、表格列、表格属性、表格按钮后均能更新对应页面状态；公共入口仍按 registry 显示按钮或“当前页面暂无可编辑组件”；`npm run test:unit -- --run` 和 `npm run type-check` 通过；执行日志已追加。
+  - **Constraints:** 不恢复页面内手写 `openConfigPanel`；不新增依赖；不改模板 schema；不推进阶段二功能。
+  - **Notes:** `tableView` 中 `formProps` 是 reactive 对象，回写时应保留响应式引用；`proTable` 中相关配置多为 ref，可直接替换 `.value`。
 
 ## 审查后续 (Review Follow-ups)
-*(Reviewer 要求的不足以作为一个完整任务的微小调整)*
+*(Reviewer 要求的不足以作为完整任务的微小调整。)*
 
 ## 待办列表 (Backlog)
-- [ ] **Backlog:** README 与临时调试产物整理
-  - **Goal:** 清理项目入口文档与根目录 `tmp-*` 调试产物。
-  - **Notes:** 当前优先级低于统一低代码编辑模式；后续在编辑主线稳定后执行。
-- 为模板 schema 版本策略创建 ADR。
-- 评估真实后端和持久化方案，但必须等前端本地闭环稳定后再规划。
-- 评估模板导入安全模型，禁止直接执行不可信函数。
-- 为 `.env.example` 建立环境变量说明，等项目出现环境变量时执行。
+- README 与根目录临时调试产物整理。
+- 为基础组件配置类型建立更集中的类型导出入口。
+- 为函数/动态行为设计预设函数引用和 DSL 规则，不直接执行 JSON 中的函数字符串。
+- 为组件配置导入安全模型创建 ADR。
+- 后续再评估真实后端、持久化、模板版本和团队共享能力。
 
 ## 未来想法 (Future Ideas)
-- 结构化属性表单：在 JSON 配置面板基础上，为常用字段提供可视化编辑控件。
-- 模板收藏、标签、搜索和分类。
-- 多模板类型：表单页、搜索表格页、详情页、仪表盘卡片。
+- 为常用配置提供结构化属性面板，减少直接编辑 JSON 的比例。
+- 基础组件文档站和示例代码复制能力。
+- 更多组件：查询筛选、步骤条表单、详情卡片、统计卡片、仪表盘区块。
 - 模板代码生成能力。
-- 模板版本历史与回滚。
-- 远程模板仓库或团队共享。
-
-## 已完成的任务 (Completed Tasks)
-- [x] **Task ID:** Task 001
-  - **Status:** Completed / PASS (已完成 / 已通过)
-  - **Goal:** 登录页支持按 Enter 键触发登录。
-  - **Scope:** 只修改登录页键盘交互，让 Enter 与点击登录按钮共用现有登录逻辑。
-  - **Files affected:** `src/views/login/loginFrom.tsx`、`src/__tests__/login.spec.ts`
-  - **Acceptance criteria:** 用户输入用户名和密码后按 Enter 可以登录；点击登录按钮仍正常；loading 状态下不会重复提交；相关测试通过；执行日志已追加。
-  - **Constraints:** 未修改登录 store；未引入真实鉴权；未新增依赖；未改页面视觉设计。
-  - **Notes:** 2026-05-27 Reviewer 审查结论为 PASS。下一任务为 Task 002。
-
-- [x] **Task ID:** Task 000
-  - **Status:** Completed / PASS (已完成 / 已通过)
-  - **Goal:** 分析现有代码库并建立基线上下文。
-  - **Scope:** 项目理解、文档初始化、任务规划；不写业务代码。
-  - **Files likely affected:** `docs/ai/architecture.md`、`docs/ai/current_state.md`、`docs/ai/tasklist.md`、`docs/ai/review_report.md`
-  - **Acceptance criteria:** 架构宪法、当前状态、任务路线图、审查报告均基于当前代码库完成实装；不修改 `docs/ai/execution_log.md`；不写业务代码。
-  - **Constraints:** 保持轻量；不擅自引入新技术栈；基于现有代码做保守总结。
-  - **Notes:** 本任务由用户明确要求 Planner / Reviewer / Tech Lead 执行。
+- 远程组件配置仓库或团队共享。
 
 ---
 

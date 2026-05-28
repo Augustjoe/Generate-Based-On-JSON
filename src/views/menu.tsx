@@ -2,6 +2,7 @@ import { MenuOption } from 'naive-ui'
 import { ControlOutlined, ProfileOutlined } from '@vicons/antd'
 import { TableChartOutlined } from '@vicons/material'
 import { BookInformation20Regular } from '@vicons/fluent'
+import { FolderOpenOutline } from '@vicons/ionicons5'
 
 export const MenuOptions: MenuOption[] = [
   {
@@ -33,6 +34,11 @@ export const MenuOptions: MenuOption[] = [
     label: '基本表单',
     key: 'formView',
     icon: () => <BookInformation20Regular />,
+  },
+  {
+    label: '模板列表',
+    key: 'templateList',
+    icon: () => <FolderOpenOutline />,
   },
 ]
 

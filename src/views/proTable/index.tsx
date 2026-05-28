@@ -2,7 +2,6 @@ import ProTable from '@/components/ProTable'
 import { useAppSettingsStore } from '@/stores/appSettings'
 import { computed, defineComponent, h, ref, watch, onBeforeUnmount } from 'vue'
 import { NButton, NSpace, NTag, type DataTableColumns, type DataTableProps, type FormProps } from 'naive-ui'
-import { openJsonConfigDrawer, type JsonConfigSection } from '@/components/JsonConfigDrawer'
 import { useAppDrawerStore } from '@/stores/appDrawerStore'
 
 type OrderStatus = 'success' | 'pending' | 'failed'
@@ -222,39 +221,9 @@ export const ProTableView = defineComponent({
       }
     }
 
-    const openConfigPanel = () => {
-      const sections: JsonConfigSection[] = [
-        { key: 'formItems', title: '搜索表单项 (formItems)', value: formItems.value },
-        { key: 'formProps', title: '搜索表单属性 (formProps)', value: formProps.value },
-        { key: 'formButtonItems', title: '搜索按钮 (formButtonItems)', value: formButtonItems.value },
-        { key: 'columns', title: '表格列 (columns)', value: columns.value },
-        { key: 'tableProps', title: '表格属性 (tableProps)', value: tableProps.value },
-        { key: 'tableButtons', title: '表格按钮 (tableButtons)', value: tableButtons.value },
-      ]
-      openJsonConfigDrawer({
-        title: 'ProTable 配置面板',
-        sections,
-        onApply: (items) => {
-          items.forEach((item) => {
-            if (item.key === 'formItems') formItems.value = item.value as FormItem[]
-            if (item.key === 'formProps') formProps.value = item.value as FormProps
-            if (item.key === 'formButtonItems') formButtonItems.value = item.value as searchButtonItem
-            if (item.key === 'columns') columns.value = item.value as DataTableColumns<any>
-            if (item.key === 'tableProps') tableProps.value = item.value as DataTableProps
-            if (item.key === 'tableButtons') tableButtons.value = item.value as tableButtonItem
-          })
-        },
-      })
-    }
-
-    watch(
-      isEdit,
-      (val) => {
-        if (val) openConfigPanel()
-        else appDrawerStore.setDrawerProps({ show: false })
-      },
-      { immediate: true },
-    )
+    watch(isEdit, (val) => {
+      if (!val) appDrawerStore.setDrawerProps({ show: false })
+    })
 
     onBeforeUnmount(() => {
       appDrawerStore.setDrawerProps({ show: false })
@@ -284,8 +253,17 @@ export const ProTableView = defineComponent({
           onUpdate:formItems={(val: FormItem[]) => {
             formItems.value = val
           }}
+          onUpdate:formProps={(val: FormProps) => {
+            formProps.value = val
+          }}
+          onUpdate:formButtonItems={(val: searchButtonItem) => {
+            formButtonItems.value = val
+          }}
           onUpdate:columns={(val: any[]) => {
             columns.value = val
+          }}
+          onUpdate:tableProps={(val: DataTableProps) => {
+            tableProps.value = val
           }}
           onUpdate:tableButtons={(val: tableButtonItem) => {
             tableButtons.value = val

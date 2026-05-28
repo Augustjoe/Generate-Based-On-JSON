@@ -1,6 +1,8 @@
-import { defineComponent, toRef } from 'vue'
-import { NDrawer, NDrawerContent, NSpace, NSwitch, NDivider, NRadioGroup, NRadioButton, NTooltip } from 'naive-ui'
+import { defineComponent, nextTick, toRef } from 'vue'
+import { NDrawer, NDrawerContent, NSpace, NSwitch, NDivider, NRadioGroup, NRadioButton, NButton, NText } from 'naive-ui'
 import { useAppSettingsStore, MenuPosition, AppTheme } from '@/stores/appSettings'
+import { useEditableRegistryStore } from '@/stores/editableRegistryStore'
+import { openEditablePanelForPath } from '@/composables/useEditableRegistry'
 
 export default defineComponent({
   name: 'SettingsDrawer',
@@ -18,6 +20,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const show = toRef(props, 'show')
     const appSettings = useAppSettingsStore()
+    const editableRegistry = useEditableRegistryStore()
 
     const handleUpdateShow = (val: boolean) => {
       props['onUpdate:show'](val)
@@ -64,6 +67,29 @@ export default defineComponent({
               />
               </span>
             </NSpace>
+            {appSettings.isEdit && (
+              <>
+                {editableRegistry.sectionsByPath(window.location.pathname || '/').length > 0 ? (
+                  <NButton
+                    type="primary"
+                    secondary
+                    block
+                    style={{ marginTop: '10px' }}
+                    onClick={async () => {
+                      props['onUpdate:show'](false)
+                      await nextTick()
+                      openEditablePanelForPath(window.location.pathname || '/', '页面配置面板')
+                    }}
+                  >
+                    编辑当前页面
+                  </NButton>
+                ) : (
+                  <NText depth={3} style={{ marginTop: '10px', display: 'block' }}>
+                    当前页面暂无可编辑组件
+                  </NText>
+                )}
+              </>
+            )}
 
             <NDivider style={{ margin: '20px 0' }} />
 
@@ -104,7 +130,7 @@ export default defineComponent({
                 lineHeight: 1.5
               }}
             >
-              提示：您可以点击“编辑模式”直接在界面中调整表格列、搜索表单项和操作按钮。调整后的配置可以导出！
+              提示：开启“编辑模式”后，可在右侧 JSON 配置面板统一调整表单与表格模板结构，并支持在模板详情页导入/导出。
             </div>
           </div>
         </NDrawerContent>

@@ -2,7 +2,6 @@ import { computed, defineComponent, ref, reactive, watch, onBeforeUnmount } from
 import From from '@/components/Form'
 import { FormProps, NFlex, NCard, NRadio, NButton, FormValidationError } from 'naive-ui'
 import { useAppSettingsStore } from '@/stores/appSettings'
-import { openJsonConfigDrawer, type JsonConfigSection } from '@/components/JsonConfigDrawer'
 import { useAppDrawerStore } from '@/stores/appDrawerStore'
 
 export const FromView = defineComponent({
@@ -139,49 +138,9 @@ export const FromView = defineComponent({
       formRef.value.restoreValidation()
     }
 
-    const openConfigPanel = () => {
-      const sections: JsonConfigSection[] = [
-        {
-          key: 'formItems',
-          title: '表单项配置 (formItems)',
-          value: FormItems.value,
-        },
-        {
-          key: 'formProps',
-          title: '表单属性配置 (formProps)',
-          value: formProps,
-        },
-      ]
-      openJsonConfigDrawer({
-        title: '表单配置面板',
-        sections,
-        onApply: (items) => {
-          items.forEach((item) => {
-            if (item.key === 'formItems') {
-              FormItems.value = item.value as FormItem[]
-            }
-            if (item.key === 'formProps') {
-              Object.keys(formProps).forEach((key) => {
-                delete formProps[key as keyof FormProps]
-              })
-              Object.assign(formProps, item.value as FormProps)
-            }
-          })
-        },
-      })
-    }
-
-    watch(
-      isEdit,
-      (val) => {
-        if (val) {
-          openConfigPanel()
-        } else {
-          appDrawerStore.setDrawerProps({ show: false })
-        }
-      },
-      { immediate: true },
-    )
+    watch(isEdit, (val) => {
+      if (!val) appDrawerStore.setDrawerProps({ show: false })
+    })
 
     onBeforeUnmount(() => {
       appDrawerStore.setDrawerProps({ show: false })
@@ -210,6 +169,15 @@ export const FromView = defineComponent({
             formData={formData}
             formItems={FormItems.value}
             formProps={formProps}
+            onUpdate:formItems={(val: FormItem[]) => {
+              FormItems.value = val
+            }}
+            onUpdate:formProps={(val: FormProps) => {
+              Object.keys(formProps).forEach((key) => {
+                delete (formProps as Record<string, any>)[key]
+              })
+              Object.assign(formProps, val ?? {})
+            }}
           ></From>
           <NFlex justify="end" style={{ marginTop: '10px' }}>
             <NButton type="info" onClick={confirm}>

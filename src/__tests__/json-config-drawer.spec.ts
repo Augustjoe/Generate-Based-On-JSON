@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
 import { extractRenderFns } from '@/assets/render-fn-extractor'
-import JsonConfigDrawer, { parseJsonDrafts } from '@/components/JsonConfigDrawer'
+import JsonConfigDrawer, { parseJsonDrafts, parseSingleSectionDraft } from '@/components/JsonConfigDrawer'
 
 vi.mock('vue-codemirror', () => ({
   Codemirror: defineComponent({
@@ -71,6 +71,13 @@ describe('JsonConfigDrawer parser', () => {
     expect(result.sectionKey).toBe('sectionA')
   })
 
+  it('parses a single section independently', () => {
+    const result = parseSingleSectionDraft('formItems', '[{"itemType":"NInput"}]', {})
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.section.key).toBe('formItems')
+  })
+
   it('does not call onApply and shows section error for invalid JSON, then clears after edit', async () => {
     const onApply = vi.fn()
     const wrapper = mount(JsonConfigDrawer, {
@@ -104,11 +111,11 @@ describe('JsonConfigDrawer parser', () => {
 
     await wrapper.find('textarea').setValue('{invalid-json}')
     const buttons = wrapper.findAll('button')
-    await buttons[buttons.length - 1].trigger('click')
+    await buttons[0].trigger('click')
     await wrapper.vm.$nextTick()
 
     expect(onApply).not.toHaveBeenCalled()
-    expect((window as any).$message.error).toHaveBeenCalledWith('Section formItems JSON parse failed')
+    expect((window as any).$message.error).toHaveBeenCalledWith('分区 formItems 的 JSON 解析失败')
 
     await wrapper.find('textarea').setValue('[]')
     await wrapper.vm.$nextTick()
